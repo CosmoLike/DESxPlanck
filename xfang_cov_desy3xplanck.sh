@@ -14,4 +14,4 @@
 module load gsl/2/2.1
 
 cd $PBS_O_WORKDIR
-/home/u1/xfang/CosmoLike/DESxPlanck/compute_covariances_fourier $PBS_ARRAY_INDEX >&/home/u1/xfang/output/job_output_$PBS_ARRAY_INDEX.log
+/home/u1/xfang/CosmoLike/DESxPlanck/compute_covariances_fourier $PBS_ARRAY_INDEX ini_files/cov_y3_mcal_fourier.ini >&/home/u1/xfang/output/job_output_$PBS_ARRAY_INDEX.log

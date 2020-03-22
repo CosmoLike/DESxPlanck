@@ -95,7 +95,7 @@ void run_cov_ls_ss(char *OUTFILE, char *PATH, double *ell, double *dell, int n1,
       c_ng = 0.; c_g = 0.;
       weight = test_kmax(ell[nl1],zl);
       if (weight && ell[nl2] < like.lmax_shear){
-        if (test_zoverlap(zl,z3)*test_zoverlap(zl,z4)){
+        if (test_zoverlap(zl,z3)*test_zoverlap(zl,z4)*covparams.ng){
           c_ng = cov_NG_gl_shear_tomo(ell[nl1],ell[nl2],zl,zs,z3,z4);
         }
         if (nl1 == nl2){
@@ -127,7 +127,7 @@ void run_cov_ll_ss(char *OUTFILE, char *PATH, double *ell, double *dell, int n1,
       c_ng = 0.; c_g = 0.;
       weight = test_kmax(ell[nl1],z1);
       if (weight && ell[nl2] < like.lmax_shear){
-        if (test_zoverlap(z1,z3)*test_zoverlap(z1,z4)){
+        if (test_zoverlap(z1,z3)*test_zoverlap(z1,z4)*covparams.ng){
           c_ng = cov_NG_cl_shear_tomo(ell[nl1],ell[nl2],z1,z2,z3,z4);
         }
         if (nl1 == nl2){
@@ -160,7 +160,7 @@ void run_cov_ll_ls(char *OUTFILE, char *PATH, double *ell, double *dell, int n1,
       if (z1 == zl){
         weight = test_kmax(ell[nl1],z1)*test_kmax(ell[nl2],zl);
         if (weight){
-          c_ng = cov_NG_cl_gl_tomo(ell[nl1],ell[nl2],z1,z2,zl,zs);
+          if (covparams.ng) {c_ng = cov_NG_cl_gl_tomo(ell[nl1],ell[nl2],z1,z2,zl,zs);}
           if (nl1 == nl2){
             c_g =  cov_G_cl_gl_tomo(ell[nl1],dell[nl1],z1,z2,zl,zs);
           }
@@ -191,7 +191,7 @@ void run_cov_ll_ll(char *OUTFILE, char *PATH, double *ell, double *dell, int n1,
       c_ng = 0.; c_g = 0.;
       if (z1 == z3){
         weight = test_kmax(ell[nl1],z1)*test_kmax(ell[nl2],z3);
-        if (weight) {
+        if (weight*covparams.ng) {
           c_ng = cov_NG_cl_cl_tomo(ell[nl1],ell[nl2],z1,z2,z3,z4);
         }
         if (nl1 == nl2){
@@ -224,7 +224,7 @@ void run_cov_ls_ls(char *OUTFILE, char *PATH, double *ell, double *dell, int n1,
     for (nl2 = 0; nl2 < like.Ncl; nl2 ++){
       c_ng = 0.; c_g = 0.;
       weight = test_kmax(ell[nl1],zl1)*test_kmax(ell[nl2],zl2);
-      if (weight && zl1 == zl2) {
+      if (weight && zl1 == zl2 && covparams.ng) {
         c_ng = cov_NG_gl_gl_tomo(ell[nl1],ell[nl2],zl1,zs1,zl2,zs2);
       }
       if (nl1 == nl2){
@@ -257,7 +257,7 @@ void run_cov_ss_ss(char *OUTFILE, char *PATH, double *ell, double *dell,int n1, 
   for (nl1 = 0; nl1 < like.Ncl; nl1 ++){
     for (nl2 = 0; nl2 < like.Ncl; nl2 ++){
       c_ng = 0.; c_g = 0.;
-      if (ell[nl1] < like.lmax_shear && ell[nl2] < like.lmax_shear){
+      if (ell[nl1] < like.lmax_shear && ell[nl2] < like.lmax_shear && covparams.ng){
         c_ng = cov_NG_shear_shear_tomo(ell[nl1],ell[nl2],z1,z2,z3,z4);
       }
       if (nl1 == nl2){
@@ -290,7 +290,7 @@ void run_cov_ls_kk(char *OUTFILE, char *PATH, double *ell, double *dell, int n1,
          c_ng = 0.; c_g = 0.;
          weight = test_kmax(ell[nl1], zl1);
          if (weight && ell[nl2]<like.lmax_kappacmb) {
-            c_ng = cov_NG_gs_kk(ell[nl1],ell[nl2], zl1, zs1);
+            if (covparams.ng) {c_ng = cov_NG_gs_kk(ell[nl1],ell[nl2], zl1, zs1);}
             if (nl1==nl2){
                c_g = cov_G_gs_kk(ell[nl1], dell[nl1], zl1, zs1);
             }
@@ -320,7 +320,7 @@ void run_cov_ls_ks(char *OUTFILE, char *PATH, double *ell, double *dell, int n1,
          c_ng = 0.; c_g = 0.;
          weight = test_kmax(ell[nl1], zl1);
          if (weight && ell[nl2]<like.lmax_kappacmb) {
-            if (test_zoverlap(zl1, zs2)) {
+            if (test_zoverlap(zl1, zs2)*covparams.ng) {
                c_ng = cov_NG_gs_ks(ell[nl1],ell[nl2], zl1, zs1, zs2);
             }
             if (nl1==nl2){
@@ -350,7 +350,7 @@ void run_cov_lk_lk(char *OUTFILE, char *PATH, double *ell, double *dell, int zl1
          c_ng = 0.; c_g = 0.;
          weight = test_kmax(ell[nl1],zl1)*test_kmax(ell[nl2],zl2);
          bool compute = weight * (ell[nl1]<like.lmax_kappacmb) * (ell[nl2]<like.lmax_kappacmb);
-         if (compute && (zl1==zl2)) {
+         if (compute && (zl1==zl2) && covparams.ng) {
             c_ng = cov_NG_gk_gk(ell[nl1],ell[nl2], zl1, zl2);
          }
          if (nl1==nl2){
@@ -387,7 +387,7 @@ void run_cov_lk_ls(char *OUTFILE, char *PATH, double *ell, double *dell, int zl1
          c_ng = 0.; c_g = 0.;
          weight = test_kmax(ell[nl1],zl1)*test_kmax(ell[nl2],zl2);
          if (weight && ell[nl1]<like.lmax_kappacmb && ell[nl2]<like.lmax_kappacmb) {
-            if (zl1==zl2) {
+            if ((zl1==zl2) && covparams.ng) {
                c_ng = cov_NG_gk_gs(ell[nl1],ell[nl2],zl1,zl2,zs2);
             }
             if (nl1==nl2){
@@ -420,7 +420,7 @@ void run_cov_lk_kk(char *OUTFILE, char *PATH, double *ell, double *dell, int zl1
          c_ng = 0.; c_g = 0.;
          weight = test_kmax(ell[nl1],zl1);
          if (weight && ell[nl1]<like.lmax_kappacmb && ell[nl2]<like.lmax_kappacmb) {
-            c_ng = cov_NG_gk_kk(ell[nl1],ell[nl2],zl1);
+            if(covparams.ng) {c_ng = cov_NG_gk_kk(ell[nl1],ell[nl2],zl1);}
             if (nl1==nl2){
                c_g = cov_G_gk_kk(ell[nl1],dell[nl1],zl1);
             }
@@ -452,7 +452,7 @@ void run_cov_lk_ks(char *OUTFILE, char *PATH, double *ell, double *dell, int zl1
          c_ng = 0.; c_g = 0.;
          weight = test_kmax(ell[nl1], zl1);
          if (weight && ell[nl1]<like.lmax_kappacmb && ell[nl2]<like.lmax_kappacmb) {
-            if (test_zoverlap(zl1, zs2)) {
+            if (test_zoverlap(zl1, zs2)*covparams.ng) {
                c_ng = cov_NG_gk_ks(ell[nl1],ell[nl2], zl1, zs2);
             }
             if (nl1==nl2){
@@ -486,7 +486,7 @@ void run_cov_lk_ss(char *OUTFILE, char *PATH, double *ell, double *dell, int zl1
          c_ng = 0.; c_g = 0.;
          weight = test_kmax(ell[nl1],zl1);
          if (weight && ell[nl1]<like.lmax_kappacmb && ell[nl2]<like.lmax_shear){
-            if (test_zoverlap(zl1, zs2)*test_zoverlap(zl1, zs3)) {
+            if (test_zoverlap(zl1, zs2)*test_zoverlap(zl1, zs3)*covparams.ng) {
                c_ng = cov_NG_gk_ss(ell[nl1],ell[nl2],zl1,zs2,zs3);
             }
             if (nl1==nl2){
@@ -515,7 +515,7 @@ void run_cov_kk_kk(char *OUTFILE, char *PATH, double *ell, double *dell,int star
    for (nl1 = 0; nl1 < like.Ncl; nl1 ++){
       for (nl2 = 0; nl2 < like.Ncl; nl2 ++){
          c_ng = 0.; c_g = 0.;
-         if (ell[nl1]<like.lmax_kappacmb && ell[nl2]<like.lmax_kappacmb){
+         if (ell[nl1]<like.lmax_kappacmb && ell[nl2]<like.lmax_kappacmb && covparams.ng){
             c_ng = cov_NG_kk_kk(ell[nl1],ell[nl2]);
          }
          if (nl1==nl2){
@@ -546,7 +546,7 @@ void run_cov_kk_ks(char *OUTFILE, char *PATH, double *ell, double *dell, int zs2
       for (nl2 = 0; nl2 < like.Ncl; nl2 ++){
          c_ng = 0.; c_g = 0.;
          if (ell[nl1]<like.lmax_kappacmb && ell[nl2]<like.lmax_kappacmb) {
-            c_ng = cov_NG_kk_ks(ell[nl1],ell[nl2],zs2);
+            if( covparams.ng) {c_ng = cov_NG_kk_ks(ell[nl1],ell[nl2],zs2);}
             if (nl1==nl2){
                c_g = cov_G_kk_ks(ell[nl1],dell[nl1], zs2);
             }
@@ -576,7 +576,7 @@ void run_cov_kk_ss(char *OUTFILE, char *PATH, double *ell, double *dell, int n2,
       for (nl2 = 0; nl2 < like.Ncl; nl2 ++){
          c_ng = 0.; c_g = 0.;
          if (ell[nl1]<like.lmax_kappacmb && ell[nl2]<like.lmax_shear){
-            c_ng = cov_NG_kk_ss(ell[nl1],ell[nl2],z2,z3);
+            if(covparams.ng) {c_ng = cov_NG_kk_ss(ell[nl1],ell[nl2],z2,z3);}
             if (nl1==nl2){
                c_g = cov_G_kk_ss(ell[nl1],dell[nl1],z2,z3);
             }
@@ -604,7 +604,7 @@ void run_cov_ks_ks(char *OUTFILE, char *PATH, double *ell, double *dell, int zs1
    for (nl1 = 0; nl1 < like.Ncl; nl1 ++){
       for (nl2 = 0; nl2 < like.Ncl; nl2 ++){
          c_ng = 0.; c_g = 0.;
-         if (ell[nl1]<like.lmax_kappacmb && ell[nl2]<like.lmax_kappacmb) {
+         if (ell[nl1]<like.lmax_kappacmb && ell[nl2]<like.lmax_kappacmb && covparams.ng) {
             c_ng = cov_NG_ks_ks(ell[nl1],ell[nl2],zs1,zs2);
          }
          if (nl1==nl2){
@@ -638,7 +638,7 @@ void run_cov_ks_ss(char *OUTFILE, char *PATH, double *ell, double *dell, int zs1
       for (nl2 = 0; nl2 < like.Ncl; nl2 ++){
          c_ng = 0.; c_g = 0.;
          if (ell[nl1]<like.lmax_kappacmb && ell[nl2]<like.lmax_shear){
-            c_ng = cov_NG_ks_ss(ell[nl1],ell[nl2],zs1,z2,z3);
+            if(covparams.ng) {c_ng = cov_NG_ks_ss(ell[nl1],ell[nl2],zs1,z2,z3);}
             if (nl1==nl2){
                c_g = cov_G_ks_ss(ell[nl1],dell[nl1],zs1,z2,z3);
             }
@@ -668,7 +668,7 @@ void run_cov_ll_kk(char *OUTFILE, char *PATH, double *ell, double *dell, int n1,
          c_ng = 0.; c_g = 0.;
          weight = test_kmax(ell[nl1], n1);
          if (weight && ell[nl2]<like.lmax_kappacmb) {
-            c_ng = cov_NG_gg_kk(ell[nl1],ell[nl2], n1, n1);
+            if(covparams.ng) {c_ng = cov_NG_gg_kk(ell[nl1],ell[nl2], n1, n1);}
             if (nl1==nl2){
                c_g = cov_G_gg_kk(ell[nl1], dell[nl1], n1, n1);
             }
@@ -698,7 +698,7 @@ void run_cov_ll_ks(char *OUTFILE, char *PATH, double *ell, double *dell, int n1,
          c_ng = 0.; c_g = 0.;
          weight = test_kmax(ell[nl1], n1);
          if (weight && ell[nl2]<like.lmax_kappacmb) {
-            if (test_zoverlap(n1, zs2)) {
+            if (test_zoverlap(n1, zs2)*covparams.ng) {
                c_ng = cov_NG_gg_ks(ell[nl1],ell[nl2], n1, n1, zs2);
             }
             if (nl1==nl2){
@@ -733,7 +733,7 @@ void run_cov_ll_lk(char *OUTFILE, char *PATH, double *ell, double *dell, int n1,
       if (z1 == zl){
         weight = test_kmax(ell[nl1],z1)*test_kmax(ell[nl2],zl);
         if (weight){
-          c_ng = cov_NG_gg_gk(ell[nl1],ell[nl2],z1,z2,zl);
+          if(covparams.ng) {c_ng = cov_NG_gg_gk(ell[nl1],ell[nl2],z1,z2,zl);}
           if (nl1 == nl2){
             c_g =  cov_G_gg_gk(ell[nl1],dell[nl1],z1,z2,zl);
           }
@@ -783,7 +783,6 @@ int main(int argc, char** argv)
   init_source_sample_();
   init_lens_sample_();
 
-  init_IA("none","GAMA"); 
   init_probes("6x2pt");
   init_cmb("planck");   
 

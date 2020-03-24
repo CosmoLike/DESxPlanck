@@ -157,13 +157,11 @@ void run_cov_ll_ls(char *OUTFILE, char *PATH, double *ell, double *dell, int n1,
   for (nl1 = 0; nl1 < like.Ncl; nl1 ++){
     for (nl2 = 0; nl2 < like.Ncl; nl2 ++){
       c_ng = 0.; c_g = 0.;
-      if (z1 == zl){
-        weight = test_kmax(ell[nl1],z1)*test_kmax(ell[nl2],zl);
-        if (weight){
-          if (covparams.ng) {c_ng = cov_NG_cl_gl_tomo(ell[nl1],ell[nl2],z1,z2,zl,zs);}
-          if (nl1 == nl2){
-            c_g =  cov_G_cl_gl_tomo(ell[nl1],dell[nl1],z1,z2,zl,zs);
-          }
+      weight = test_kmax(ell[nl1],z1)*test_kmax(ell[nl2],zl);
+      if (weight){
+        if((z1 == zl) && covparams.ng){c_ng = cov_NG_cl_gl_tomo(ell[nl1],ell[nl2],z1,z2,zl,zs);}
+        if (nl1 == nl2){
+          c_g =  cov_G_cl_gl_tomo(ell[nl1],dell[nl1],z1,z2,zl,zs);
         }
       }
       i=like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra+n1)+nl1;
@@ -189,14 +187,12 @@ void run_cov_ll_ll(char *OUTFILE, char *PATH, double *ell, double *dell, int n1,
   for (nl1 = 0; nl1 < like.Ncl; nl1 ++){
     for (nl2 = 0; nl2 < like.Ncl; nl2 ++){
       c_ng = 0.; c_g = 0.;
-      if (z1 == z3){
-        weight = test_kmax(ell[nl1],z1)*test_kmax(ell[nl2],z3);
-        if (weight*covparams.ng) {
-          c_ng = cov_NG_cl_cl_tomo(ell[nl1],ell[nl2],z1,z2,z3,z4);
-        }
-        if (nl1 == nl2){
-          c_g =  cov_G_cl_cl_tomo(ell[nl1],dell[nl1],z1,z2,z3,z4);
-        }
+      weight = test_kmax(ell[nl1],z1)*test_kmax(ell[nl2],z3);
+      if ((z1 == z3) && weight && covparams.ng) {
+        c_ng = cov_NG_cl_cl_tomo(ell[nl1],ell[nl2],z1,z2,z3,z4);
+      }
+      if (nl1 == nl2){
+        c_g =  cov_G_cl_cl_tomo(ell[nl1],dell[nl1],z1,z2,z3,z4);
       }
       i=like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra+n1)+nl1;
       j=like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra+n2)+nl2;
@@ -730,13 +726,11 @@ void run_cov_ll_lk(char *OUTFILE, char *PATH, double *ell, double *dell, int n1,
   for (nl1 = 0; nl1 < like.Ncl; nl1 ++){
     for (nl2 = 0; nl2 < like.Ncl; nl2 ++){
       c_ng = 0.; c_g = 0.;
-      if (z1 == zl){
-        weight = test_kmax(ell[nl1],z1)*test_kmax(ell[nl2],zl);
-        if (weight){
-          if(covparams.ng) {c_ng = cov_NG_gg_gk(ell[nl1],ell[nl2],z1,z2,zl);}
-          if (nl1 == nl2){
-            c_g =  cov_G_gg_gk(ell[nl1],dell[nl1],z1,z2,zl);
-          }
+      weight = test_kmax(ell[nl1],z1)*test_kmax(ell[nl2],zl);
+      if (weight){
+        if((z1 == zl) && covparams.ng) {c_ng = cov_NG_gg_gk(ell[nl1],ell[nl2],z1,z2,zl);}
+        if (nl1 == nl2){
+          c_g =  cov_G_gg_gk(ell[nl1],dell[nl1],z1,z2,zl);
         }
       }
       i=like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra+n1)+nl1;

@@ -15,7 +15,7 @@ home:
 	make home_cov
 
 home_datav:
-	gcc like_fourier.c -o ./like_fourier $(opt_home)
+	gcc like_test_6x2pt.c -o ./like_fourier_6x2pt $(opt_home)
 
 home_cov:
 	gcc compute_covariances_fourier.c -o ./compute_covariances_fourier $(opt_home)
@@ -29,7 +29,7 @@ ocelote:
 	make ocelote_cov
 
 ocelote_datav:
-	gcc like_fourier.c -o ./like_fourier $(opt_ocelote)
+	gcc like_fourier_6x2pt.c -o ./like_fourier_6x2pt $(opt_ocelote)
 
 ocelote_cov:
 	gcc compute_covariances_fourier.c -o ./compute_covariances_fourier $(opt_ocelote)

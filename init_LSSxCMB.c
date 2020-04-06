@@ -285,26 +285,6 @@ void init_survey(char *surveyname, double nsource, double nlens, double area)
 }
 
 
-void init_galaxies(char *SOURCE_ZFILE, char *LENS_ZFILE, char *lensphotoz, char *sourcephotoz, char *tomo_binning_source, char *tomo_binning_lens)
-{
-  printf("\n");
-  printf("-----------------------------------\n");
-  printf("Initializing galaxy samples\n");
-  printf("-----------------------------------\n");
-  
-  sprintf(redshift.shear_REDSHIFT_FILE,"%s",SOURCE_ZFILE);
-  printf("PATH TO SOURCE_ZFILE: %s\n",redshift.shear_REDSHIFT_FILE);
-  
-  init_source_sample(sourcephotoz,tomo_binning_source);
-  
-  sprintf(redshift.clustering_REDSHIFT_FILE,"%s",LENS_ZFILE);
-  printf("\n");
-  printf("PATH TO LENS_ZFILE: %s\n",redshift.clustering_REDSHIFT_FILE);
-  init_lens_sample(lensphotoz,tomo_binning_lens);
-}
-
-
-
 void init_probes(char *probes)
 {
   printf("\n");
@@ -381,172 +361,6 @@ void init_probes(char *probes)
 
 
 
-void init_lens_sample(char *lensphotoz, char *tomo_binning_lens)
-{
-  if(strcmp(lensphotoz,"none")==0) redshift.clustering_photoz=0;
-  if(strcmp(lensphotoz,"voigt")==0) redshift.clustering_photoz=1;
-  if(strcmp(lensphotoz,"voigt_out")==0) redshift.clustering_photoz=2;
-  if(strcmp(lensphotoz,"gaussian")==0) redshift.clustering_photoz=3;
-  if(strcmp(lensphotoz,"multihisto")==0) redshift.clustering_photoz=4;
-  
-  if ((redshift.clustering_photoz !=0) && (redshift.clustering_photoz !=1) && (redshift.clustering_photoz !=2) && (redshift.clustering_photoz !=3)) 
-  {
-    printf("init.c: init_lens_sample: redshift.clustering_photoz = %d not set properly!\nEXIT!\n",redshift.clustering_photoz);
-    exit(1);
-  }
-  printf("Lens Sample Redshift Errors set to %s: redshift.clustering_photoz=%d\n",lensphotoz,redshift.clustering_photoz);
-  
-  if(strcmp(tomo_binning_lens,"LSST_gold")==0){
-    set_lens_galaxies_LSSTgoldsample();
-  }
-  //call test_kmax once to initialize look-up tables at reference cosmology
-  test_kmax(1000.,1);
-}
-
-
-
-void init_source_sample(char *sourcephotoz, char *tomo_binning_source)
-{
-  if(strcmp(sourcephotoz,"none")==0) redshift.shear_photoz=0;
-  if(strcmp(sourcephotoz,"voigt")==0) redshift.shear_photoz=1;
-  if(strcmp(sourcephotoz,"voigt_out")==0) redshift.shear_photoz=2;
-  if(strcmp(sourcephotoz,"gaussian")==0) redshift.shear_photoz=3;
-  if(strcmp(sourcephotoz,"multihisto")==0) {
-    printf("redshift.shear_photoz=4 not supported\n"); 
-    exit(1);
-  }
-  if ((redshift.shear_photoz !=0) && (redshift.shear_photoz !=1) && (redshift.shear_photoz !=2) && (redshift.shear_photoz !=3)) 
-  {
-    printf("init.c: init_source_sample: redshift.shear_photoz = %d not set properly!\nEXIT!\n",redshift.shear_photoz);
-    exit(1);
-  }
-
-  printf("Source Sample Redshift Errors set to %s: redshift.shear_photoz=%d\n",sourcephotoz,redshift.shear_photoz);
-  if(strcmp(tomo_binning_source,"source_std")==0)set_galaxies_source();
-}
-
-
-void set_galaxies_source()
-{
-  int k,j;
-  double frac, zi;
-  
-  tomo.shear_Npowerspectra=(int) (tomo.shear_Nbin*(tomo.shear_Nbin+1)/2);
-  
-  zdistr_histo_1(0.1, NULL);
-  int zbins =2000;
-  double da = (redshift.shear_zdistrpar_zmax-redshift.shear_zdistrpar_zmin)/(1.0*zbins);
-  double *sum;
-  sum=create_double_vector(0, zbins);
-  
-  sum[0] = 0.0;
-  for (k = 0, zi = redshift.shear_zdistrpar_zmin; k<zbins; k++,zi+=da){
-    sum[k+1] = sum[k]+zdistr_histo_1(zi, NULL);
-  }
-  
-  tomo.shear_zmin[0] = redshift.shear_zdistrpar_zmin;
-  tomo.shear_zmax[tomo.shear_Nbin-1] = redshift.shear_zdistrpar_zmax;
-  printf("\n");
-  printf("Source Sample - Tomographic Bin limits:\n");
-  for(k=0;k<tomo.shear_Nbin-1;k++){
-    frac=(k+1.)/(1.*tomo.shear_Nbin)*sum[zbins-1];
-    j = 0;
-    while (sum[j]< frac){
-      j++;
-    }
-    tomo.shear_zmax[k] = redshift.shear_zdistrpar_zmin+j*da;
-    tomo.shear_zmin[k+1] = redshift.shear_zdistrpar_zmin+j*da;
-    printf("min=%le max=%le\n",tomo.shear_zmin[k],tomo.shear_zmax[k]);
-  }
-  printf("min=%le max=%le\n",tomo.shear_zmin[tomo.shear_Nbin-1],tomo.shear_zmax[tomo.shear_Nbin-1]);
-  printf("redshift.shear_zdistrpar_zmin=%le max=%le\n",redshift.shear_zdistrpar_zmin,redshift.shear_zdistrpar_zmax);
-  free_double_vector(sum,0,zbins);
-}
-
-
-
-void set_lens_galaxies_LSSTgoldsample()
-{
-  int i,j,n,k;
-  double frac, zi;
-  redshift.clustering_zdistrpar_zmin = 0.01;
-  redshift.clustering_zdistrpar_zmax = 1.5;
-  tomo.clustering_Npowerspectra=tomo.clustering_Nbin;
-  tomo.clustering_zmin[0] = 0.2;
-  tomo.clustering_zmax[tomo.clustering_Nbin-1] = 1.2;
-
-  int zbins =2000;
-  double da = (tomo.clustering_zmax[tomo.clustering_Nbin-1]-tomo.clustering_zmin[0])/(1.0*zbins);
-  double *sum;
-  sum=create_double_vector(0, zbins);
-  
-  sum[0] = 0.0;
-  for (k = 0, zi = tomo.clustering_zmin[0]; k<zbins; k++,zi+=da){
-    sum[k+1] = sum[k]+pf_histo(zi, NULL);
-  }
-  printf("\n");
-  printf("Source Sample - Tomographic Bin limits:\n");
-  for(k=0;k<tomo.clustering_Nbin-1;k++){
-    frac=(k+1.)/(1.*tomo.clustering_Nbin)*sum[zbins-1];
-    j = 0;
-    while (sum[j]< frac){
-      j++;
-    }
-    tomo.clustering_zmax[k] = tomo.clustering_zmin[0]+j*da;
-    tomo.clustering_zmin[k+1] = tomo.clustering_zmin[0]+j*da;
-    printf("min=%le max=%le\n",tomo.clustering_zmin[k],tomo.clustering_zmax[k]);
-  }
-  printf("min=%le max=%le\n",tomo.clustering_zmin[tomo.clustering_Nbin-1],tomo.clustering_zmax[tomo.clustering_Nbin-1]);
-  printf("redshift.clustering_zdistrpar_zmin=%le max=%le\n",redshift.clustering_zdistrpar_zmin,redshift.clustering_zdistrpar_zmax);
-  free_double_vector(sum,0,zbins);
-    gbias.b1_function = &b1_per_bin;
-  for (i =0; i < tomo.clustering_Nbin ; i++){
-    gbias.b[i] = 0.95/(growfac(1./(1.+(tomo.clustering_zmax[i]+tomo.clustering_zmin[i]/2.)))/growfac(1.));
-    //gbias.b[i] = 1.3+0.1*i;
-    printf("Bin %d: galaxy bias=%le\n",i,gbias.b[i]);
-  }
-  n=0;
-  for (i = 0; i < tomo.clustering_Nbin; i++){
-    for(j = 0; j<tomo.shear_Nbin;j++){
-      n += test_zoverlap(i,j);
-      printf("GGL combinations zl=%d zs=%d accept=%d\n",i,j,test_zoverlap(i,j));
-    }
-  }
-  tomo.ggl_Npowerspectra = n;
-  printf("%d GGL Powerspectra\n",tomo.ggl_Npowerspectra);
-}  
-
-
-
-void init_IA(char *model,char *lumfct)
-{  
-  if(strcmp(lumfct,"GAMA")==0) set_LF_GAMA();
-  else if(strcmp(lumfct,"DEEP2")==0) set_LF_DEEP2();
-  else {
-    printf("init.c:init_IA: %s lumfct not defined\n",lumfct);
-    printf("USING GAMA LF INSTEAD\n");
-    set_LF_GAMA();
-  }
-  printf("SET LUMINOSITY FUNCTION=%s\n",lumfct);
-  
-  nuisance.oneplusz0_ia=1.3; 
-  //z0=0.3 is arbitrary pivot redshift J11 p18
-  nuisance.c1rhocrit_ia=0.0134; 
-  // J11 p.8
-  
-  if(strcmp(model,"none")==0)  like.IA=0;
-  else if(strcmp(model,"NLA_HF")==0)  like.IA=1;
-  else if(strcmp(model,"lin")==0)  like.IA=2;
-  else{
-    printf("init.c:init_IA: %s IA model not defined\n",model);
-    exit(1);
-  }
-  printf("SET IA MODEL=%s\n",model);
-  set_ia_priors();
-  log_like_f_red();
-}
-
-
 /************ CMB Settings ***********/
 void init_cmb(char * cmbName) {
    printf("\n");
@@ -598,47 +412,60 @@ void set_cmb_so_Y1() {
    printf("path for CMB lens noise: %s\n", cmb.pathLensRecNoise);
 }
 
-void init_lens_sample_()
-{
-  int i,j,n;
-
-  if(strcmp(survey.lensphotoz,"none")==0) redshift.clustering_photoz=0;
-  if(strcmp(survey.lensphotoz,"voigt")==0) redshift.clustering_photoz=1;
-  if(strcmp(survey.lensphotoz,"voigt_out")==0) redshift.clustering_photoz=2;
-  if(strcmp(survey.lensphotoz,"gaussian")==0) redshift.clustering_photoz=3;
-  if(strcmp(survey.lensphotoz,"multihisto")==0) redshift.clustering_photoz=4;
-  //  printf("Lens Sample Redshift Errors set to %s: redshift.clustering_photoz=%d\n",survey.lensphotoz,redshift.clustering_photoz);
-  tomo.clustering_Npowerspectra = tomo.clustering_Nbin;
-  n = 0;
-  for (i = 0; i < tomo.clustering_Nbin; i++){
-    // printf("zmean_lens=%f\n",zmean(i));
-    nuisance.bias_zphot_clustering[i]=0.0;
-    for(j = 0; j<tomo.shear_Nbin;j++){
+void init_ggl_tomo(){
+  if (tomo.clustering_Nbin ==0){
+    printf("WARNING! init_mpp.c: init_ggl_tomo called while tomo.clustering_Nbin =0\n");
+  }
+  if (tomo.shear_Nbin ==0){
+    printf("WARNING! init_mpp.c: init_ggl_tomo called while tomo.shear_Nbin =0\n");
+  }
+  int n = 0;
+  for (int i = 0; i < tomo.clustering_Nbin; i++){
+    for(int j = 0; j<tomo.shear_Nbin;j++){
       n += test_zoverlap(i,j);
+      //printf("GGL combinations zl=%d zs=%d accept=%d; <z_l> = %.3f, <z_s> = %.3f\n",i,j,test_zoverlap(i,j), zmean(i),zmean_source(j));
     }
   }
   tomo.ggl_Npowerspectra = n;
-
-  //call test_kmax once to initialize look-up tables at reference cosmology
-  test_kmax(1000.,1);
-  // printf("end of lens sample init\n");
+  printf("%d GGL Powerspectra\n",tomo.ggl_Npowerspectra);
 }
 
-void init_source_sample_()
+void init_lens_sample_mpp(char *multihisto_file, int Ntomo, double *b1, double *b2, double ggl_cut)
 {
-  int i;
-  if(strcmp(survey.sourcephotoz,"none")==0) redshift.shear_photoz=0;
-  if(strcmp(survey.sourcephotoz,"voigt")==0) redshift.shear_photoz=1;
-  if(strcmp(survey.sourcephotoz,"voigt_out")==0) redshift.shear_photoz=2;
-  if(strcmp(survey.sourcephotoz,"gaussian")==0) redshift.shear_photoz=3;
-  if(strcmp(survey.sourcephotoz,"multihisto")==0) redshift.shear_photoz=4;
-  //printf("Source Sample Redshift Errors set to %s: redshift.shear_photoz=%d\n",survey.sourcephotoz,redshift.shear_photoz);
-
-  // if (redshift.shear_photoz!=4)  set_equal_tomo_bins(tomo.shear_Nbin);
-  for (i=0;i<tomo.shear_Nbin; i++)
+  sprintf(redshift.clustering_REDSHIFT_FILE,"%s",multihisto_file);
+  redshift.clustering_photoz=4;
+  tomo.clustering_Nbin = Ntomo;
+  tomo.clustering_Npowerspectra = tomo.clustering_Nbin;
+  survey.ggl_overlap_cut = ggl_cut;
+  printf("Lens redshifts: multi-histo file %s, containing %d tomography bins\n",multihisto_file,tomo.clustering_Nbin);
+  pf_photoz(0.1,0);
+  for (int i=0;i<tomo.clustering_Nbin; i++)
   {
-    //printf("zmean_source=%f\n",zmean_source(i));
+    gbias.b1_function = & b1_per_bin;
+ //   tomo.n_lens[i]= n_lens[i];
+    gbias.b[i] = b1[i];
+    gbias.b2[i] = b2[i];
+    nuisance.bias_zphot_clustering[i]=0.0;
+ //   printf("bin %d: <z_l>=%.3f, b_1=%.3f, b_2=%.3f\n",i,zmean(i),gbias.b[i],gbias.b2[i]);
+  }
+  init_ggl_tomo();
+  printf("init_lens_sample_mpp complete\n");
+}
+
+
+void init_source_sample_mpp(char *multihisto_file, int Ntomo)
+{
+  sprintf(redshift.shear_REDSHIFT_FILE,"%s",multihisto_file);
+  redshift.shear_photoz=4;
+  tomo.shear_Nbin = Ntomo;
+  tomo.shear_Npowerspectra = tomo.shear_Nbin*(tomo.shear_Nbin+1)/2;
+  printf("Source redshifts: multi-histo file %s, containing %d tomography bins\n",multihisto_file,tomo.shear_Nbin);
+  for (int i=0;i<tomo.shear_Nbin; i++)
+  {
+    printf("bin %d: <z_s>=%f\n",i,zmean_source(i));
+    //tomo.n_source[i]= n_source[i];
     nuisance.bias_zphot_shear[i]=0.0;
   }
-  tomo.shear_Npowerspectra = tomo.shear_Nbin*(tomo.shear_Nbin+1)/2;
+  printf("init_source_sample_mpp complete\n");
 }
+

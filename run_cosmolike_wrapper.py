@@ -3,7 +3,7 @@ import os.path
 import argparse
 import yaml
 import numpy as np
-from run_cosmolike_6x2pt.py import *
+from run_cosmolike_6x2pt import *
 
 def make_mask(params, MASK):
 	nl = params['lbins']
@@ -18,72 +18,72 @@ def make_mask(params, MASK):
 	ntomo_source = params['ntomo_source']
 	ntomo_lens = params['ntomo_lens']
 	ndata = 0
-# 	mask = []
-# 	if "xip" in params['twoptnames']:
-# 		for i in range(0,ntomo_source):
-# 			for j in range(i,ntomo_source):
-# 				param = "angle_range_xip_{}_{}".format(i+1,j+1)
-# 				tmin, tmax = params[param]
-# 				for k in range(0,ntheta):
-# 					if ((theta[k] < tmin) | (theta[k] > tmax)):
-# 						mask.append(0.)
-# 					else:
-# 						mask.append(1.)
-# 						ndata += 1
-# 	else:
-# 		for i in range(0,ntomo_source):
-# 			for j in range(i,ntomo_source):
-# 				for k in range(0,ntheta):
-# 		 			mask.append(0.)
-# 	if "xim" in params['twoptnames']:
-# 		for i in range(0,ntomo_source):
-# 			for j in range(i,ntomo_source):
-# 				param = "angle_range_xim_{}_{}".format(i+1,j+1)
-# 				tmin, tmax = params[param]
-# 				for k in range(0,ntheta):
-# 					if ((theta[k] < tmin) | (theta[k] > tmax)):
-# 						mask.append(0.)
-# 					else:
-# 						mask.append(1.)
-# 						ndata += 1
-# 	else:
-# 		for i in range(0,ntomo_source):
-# 			for j in range(i,ntomo_source):
-# 				for k in range(0,ntheta):
-# 		 			mask.append(0.)
-# 	if "gammat" in params['twoptnames']:
-# 		for i in range(0,ntomo_lens):
-# 			for j in range(0,ntomo_source):
-# #				if ggltomo[i*ntomo_source+j,2]:
-# 					param = "angle_range_gammat_{}_{}".format(i+1,j+1)
-# 					tmin, tmax = params[param]
-# 					for k in range(0,ntheta):
-# 						if ((theta[k] < tmin) | (theta[k] > tmax)):
-# 							mask.append(0.)
-# 						else:
-# 							mask.append(1.)
-# 							ndata += 1
-# 	else:
-# 		for i in range(0,ntomo_lens):
-# 			for j in range(0,ntomo_source):
-# 				#if ggltomo[i*ntomo_source+j,2]:
-# 					for k in range(0,ntheta):
-# 			 			mask.append(0.)
-# 	if "wtheta" in params['twoptnames']:
-# 		for i in range(0,ntomo_lens):
-# 			param = "angle_range_wtheta_{}_{}".format(i+1,i+1)
-# 			tmin, tmax = params[param]
-# 			for k in range(0,ntheta):
-# 				if ((theta[k] < tmin) | (theta[k] > tmax)):
-# 					mask.append(0.)
-# 				else:
-# 					mask.append(1.)
-# 					ndata += 1
-# 	else:
-# 		for i in range(0,ntomo_lens):
-# 			for k in range(0,ntheta):
-# 					mask.append(0.)
-# 	params['mask_checksum'] = ndata
+	mask = []
+	if "xip" in params['twoptnames']:
+		for i in range(0,ntomo_source):
+			for j in range(i,ntomo_source):
+				param = "angle_range_xip_{}_{}".format(i+1,j+1)
+				tmin, tmax = params[param]
+				for k in range(0,ntheta):
+					if ((theta[k] < tmin) | (theta[k] > tmax)):
+						mask.append(0.)
+					else:
+						mask.append(1.)
+						ndata += 1
+	else:
+		for i in range(0,ntomo_source):
+			for j in range(i,ntomo_source):
+				for k in range(0,ntheta):
+		 			mask.append(0.)
+	if "xim" in params['twoptnames']:
+		for i in range(0,ntomo_source):
+			for j in range(i,ntomo_source):
+				param = "angle_range_xim_{}_{}".format(i+1,j+1)
+				tmin, tmax = params[param]
+				for k in range(0,ntheta):
+					if ((theta[k] < tmin) | (theta[k] > tmax)):
+						mask.append(0.)
+					else:
+						mask.append(1.)
+						ndata += 1
+	else:
+		for i in range(0,ntomo_source):
+			for j in range(i,ntomo_source):
+				for k in range(0,ntheta):
+		 			mask.append(0.)
+	if "gammat" in params['twoptnames']:
+		for i in range(0,ntomo_lens):
+			for j in range(0,ntomo_source):
+#				if ggltomo[i*ntomo_source+j,2]:
+					param = "angle_range_gammat_{}_{}".format(i+1,j+1)
+					tmin, tmax = params[param]
+					for k in range(0,ntheta):
+						if ((theta[k] < tmin) | (theta[k] > tmax)):
+							mask.append(0.)
+						else:
+							mask.append(1.)
+							ndata += 1
+	else:
+		for i in range(0,ntomo_lens):
+			for j in range(0,ntomo_source):
+				#if ggltomo[i*ntomo_source+j,2]:
+					for k in range(0,ntheta):
+			 			mask.append(0.)
+	if "wtheta" in params['twoptnames']:
+		for i in range(0,ntomo_lens):
+			param = "angle_range_wtheta_{}_{}".format(i+1,i+1)
+			tmin, tmax = params[param]
+			for k in range(0,ntheta):
+				if ((theta[k] < tmin) | (theta[k] > tmax)):
+					mask.append(0.)
+				else:
+					mask.append(1.)
+					ndata += 1
+	else:
+		for i in range(0,ntomo_lens):
+			for k in range(0,ntheta):
+					mask.append(0.)
+	params['mask_checksum'] = ndata
 	if MASK:
 		f = open(params['mask_file'],"w")
 		for i in range(0,len(mask)):

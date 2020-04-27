@@ -71,7 +71,7 @@ get_N_ggl = lib.get_N_ggl
 get_N_ggl.argtypes = []
 get_N_ggl.restype = ctypes.c_int
 
-initcmb = lib.initcmb
+initcmb = lib.init_cmb
 initcmb.argtypes = [ctypes.c_char_p]
 
 class IterableStruct(ctypes.Structure):

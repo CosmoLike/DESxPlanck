@@ -35,22 +35,23 @@ def run_cosmolike(params, pool=None):
         runmode = params['run_mode']
     # probes = "".join(params['twoptnames'])
     probes = "6x2pt"
+    cmbname = "planck"
     initcosmo(runmode.encode('utf-8'))
     initsources(source_nz.encode('utf-8'), ntomo_source)
     initlenses(lens_nz.encode('utf-8'), ntomo_lens, Double10(), Double10(),ggl_cut)
     initbins(nl, l_min, l_max)
     initprobes(probes.encode('utf-8'))
-
-    initdata_real(cov_file.encode('utf-8'), mask_file.encode('utf-8'), data_file.encode('utf-8'))
+    initcmb(cmbname.encode('utf-8'))
+    initdata_fourier(cov_file.encode('utf-8'), mask_file.encode('utf-8'), data_file.encode('utf-8'))
 
     (varied_params,
         cosmo_min, cosmo_fid, cosmo_max,
         nuisance_min, nuisance_fid, nuisance_max) = parse_priors_and_ranges(params)
 
     #test_datavector = chain_file+".test_datavector"
-    if (get_N_data() != params['mask_checksum']):
-        print("Number of data points computed from yaml file = %d; N_data from maskfile = %d",params['mask_checksum'],get_N_data())
-        exit(1)
+    # if (get_N_data() != params['mask_checksum']):
+    #     print("Number of data points computed from yaml file = %d; N_data from maskfile = %d",params['mask_checksum'],get_N_data())
+    #     exit(1)
 #    cosmo_fid.print_struct()
 #    nuisance_fid.print_struct()
     #write_cosmolike_datavector(test_datavector, cosmo_fid, nuisance_fid)

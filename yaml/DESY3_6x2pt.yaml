@@ -13,7 +13,7 @@ data_file   : datav/xi_Y3_test
 
 # if no mask_file specified,
 # then generate mask from scale cuts specified below
-mask_file   : yaml/DESY3_6x2.yaml.mask
+mask_file   : yaml/DESY3_6x2_nomask.yaml.mask
 source_nz   : zdistris/mcal_1101_source.nz
 lens_nz     : zdistris/mcal_1101_lens.nz
 
@@ -145,7 +145,7 @@ ntomo_source : 4
 ntomo_lens   : 5
 
 # correlation function binning
-lbins       : 26
+lbins       : 20
 lbounds     : [30.,3000.]
 
 #from covariance computation

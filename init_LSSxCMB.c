@@ -29,6 +29,8 @@ int get_N_ggl(void);
 int get_N_ell(void);
 int get_N_data_masked(void);
 
+double mask(int ci);
+
 void init_sample_theta_s(){
   like.theta_s = 1;
 }

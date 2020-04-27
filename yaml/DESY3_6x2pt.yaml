@@ -26,11 +26,11 @@ run_mode    : Halofit
 # The mean parameter vectors must always be specified:
 # sigma vectors are optional - if not set the parameter is fixed to the
 # mean value above.
-shear_m_mean : [0.0, 0.0, 0.0, 0.0, 0.0]
-source_z_bias_mean: [0.0, 0.0, 0.0, 0.0, 0.0]
+shear_m_mean : [0.0, 0.0, 0.0, 0.0]
+source_z_bias_mean: [0.0, 0.0, 0.0, 0.0]
 lens_z_bias_mean: [0.0, 0.0, 0.0, 0.0, 0.0]
-shear_m_sigma: [0.005,0.005,0.005,0.005,0.005]
-source_z_bias_sigma: [0.002,0.002,0.002,0.002,0.002]
+shear_m_sigma: [0.005,0.005,0.005,0.005]
+source_z_bias_sigma: [0.002,0.002,0.002,0.002]
 lens_z_bias_sigma: [0.005,0.005,0.005,0.005,0.005]
 
 ######################################
@@ -141,7 +141,7 @@ MGmu_range : 0.0
 # twoptnames  : ['xip', 'xim', 'gammat', 'wtheta']
 
 # nofz parameters
-ntomo_source : 5
+ntomo_source : 4
 ntomo_lens   : 5
 
 # correlation function binning

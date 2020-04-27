@@ -1,30 +1,55 @@
-double invcov_read(int READ, int ci, int cj);
+double invcov_mask(int READ, int ci, int cj);
 double data_read(int READ, int ci);
 double bary_read(int READ, int PC, int cj);
 void init_data_inv_bary(char *INV_FILE, char *DATA_FILE, char *BARY_FILE);
 void init_priors(double M_Prior, double SigZ_source, double DeltaZ_source_Prior, double SigZ_source_Prior, double SigZ_lens, double DeltaZ_lens_Prior, double SigZ_lens_Prior, double A_IA_Prior, double betaIA_Prior, double etaIA_Prior, double etaZIA_Prior, double Q1_Prior, double Q2_Prior, double Q3_Prior);
 void init_survey(char *surveyname, double nsource, double nlens, double area);
-void init_galaxies(char *SOURCE_ZFILE, char *LENS_ZFILE, char *lensphotoz, char *sourcephotoz, char *tomo_binning_source, char *tomo_binning_lens);
+// void init_galaxies(char *SOURCE_ZFILE, char *LENS_ZFILE, char *lensphotoz, char *sourcephotoz, char *tomo_binning_source, char *tomo_binning_lens);
 void init_cosmo_runmode(char *runmode);
-void init_binning_fourier(int Ncl, double lmin, double lmax, double lmax_shear, double Rmin_bias, int Ntomo_source, int Ntomo_lens);
+void init_binning_fourier(int Ncl, double lmin, double lmax);
 void init_probes(char *probes);
 
+void init_data_fourier(char *COV_FILE, char *MASK_FILE, char *DATA_FILE);
 
-void init_lens_sample(char *lensphotoz, char *tomo_binning_lens);
-void init_source_sample(char *sourcephotoz, char *tomo_binning_source);
+void init_sample_theta_s();
 
-void set_galaxies_source();
-void set_lens_galaxies_LSSTgoldsample();
-void set_galaxies_WFIRST_SN10();
-
-void set_equal_tomo_bins();
-void init_IA(char *model,char *lumfct);
+void init_source_sample_mpp(char *multihisto_file, int Ntomo);
+void init_lens_sample_mpp(char *multihisto_file, int Ntomo, double *b1, double *b2, double ggl_cut);
+void init_IA_mpp(int N);
 
 void init_cmb(char * cmbName);
 void set_cmb_planck();
 void set_cmb_cmbs4();
 void set_cmb_so_Y5();
 void set_cmb_so_Y1();
+
+int get_N_tomo_shear(void);
+int get_N_tomo_clustering(void);
+int get_N_ggl(void);
+int get_N_ell(void);
+int get_N_data_masked(void);
+
+void init_sample_theta_s(){
+  like.theta_s = 1;
+}
+
+int get_N_tomo_shear(void){
+  return tomo.shear_Nbin;
+}
+int get_N_tomo_clustering(void){
+  return tomo.clustering_Nbin;
+}
+int get_N_ggl(void){
+  return tomo.ggl_Npowerspectra;
+}
+int get_N_ell(void){
+  return like.Ncl;
+}
+int get_N_data_masked(void){
+  int N = 0;
+  for (int i = 0; i < like.Ndata; i++){ N += mask(i);}
+  return N;
+}
 
 int count_rows(char* filename,const char delimiter){
   FILE *file = fopen (filename, "r" );
@@ -53,7 +78,26 @@ int count_rows(char* filename,const char delimiter){
 }
 
 
-void init_data_inv_bary(char *INV_FILE, char *DATA_FILE, char *BARY_FILE)
+// void init_data_inv_bary(char *INV_FILE, char *DATA_FILE, char *BARY_FILE)
+// {
+//   double init;
+//   printf("\n");
+//   printf("---------------------------------------\n");
+//   printf("Initializing data vector and covariance\n");
+//   printf("---------------------------------------\n");
+
+//   sprintf(like.INV_FILE,"%s",INV_FILE);
+//   printf("PATH TO INVCOV: %s\n",like.INV_FILE);
+//   sprintf(like.DATA_FILE,"%s",DATA_FILE);
+//   printf("PATH TO DATA: %s\n",like.DATA_FILE);
+//   sprintf(like.BARY_FILE,"%s",BARY_FILE);
+//   printf("PATH TO BARYONS: %s\n",like.BARY_FILE);
+//   init=data_read(0,1);
+//   init=bary_read(0,1,1);
+//   init=invcov_read(0,1,1);
+// }
+
+void init_data_fourier(char *COV_FILE, char *MASK_FILE, char *DATA_FILE)
 {
   double init;
   printf("\n");
@@ -61,36 +105,192 @@ void init_data_inv_bary(char *INV_FILE, char *DATA_FILE, char *BARY_FILE)
   printf("Initializing data vector and covariance\n");
   printf("---------------------------------------\n");
 
-  sprintf(like.INV_FILE,"%s",INV_FILE);
-  printf("PATH TO INVCOV: %s\n",like.INV_FILE);
+  sprintf(like.MASK_FILE,"%s",MASK_FILE);
+  printf("PATH TO MASK: %s\n",like.MASK_FILE);
+  init=mask(1);
+
+  sprintf(like.COV_FILE,"%s",COV_FILE);
+  printf("PATH TO COV: %s\n",like.COV_FILE);
+  init=invcov_mask(0,1,1);
+
   sprintf(like.DATA_FILE,"%s",DATA_FILE);
   printf("PATH TO DATA: %s\n",like.DATA_FILE);
-  sprintf(like.BARY_FILE,"%s",BARY_FILE);
-  printf("PATH TO BARYONS: %s\n",like.BARY_FILE);
   init=data_read(0,1);
-  init=bary_read(0,1,1);
-  init=invcov_read(0,1,1);
 }
 
-double invcov_read(int READ, int ci, int cj)
+double mask(int ci) // For fourier space
+{
+  int i,intspace;
+  static double *mask =0;
+  if(mask ==0){
+    int N = 0;
+    FILE *F;
+    mask  = create_double_vector(0, like.Ndata-1); 
+    double *maskc;
+    maskc  = create_double_vector(0, like.Ndata-1); 
+    if (strcmp(like.MASK_FILE,"none")==0){
+      for (i=0;i<like.Ndata; i++){
+        mask[i] = 1.0;
+        maskc[i] =1.0;
+      }
+    }
+    else{
+      F=fopen(like.MASK_FILE,"r");
+      if (!F){
+        printf("init.c: invcov_mask: like.MASK_FILE = %s not found!\nEXIT!\n",like.MASK_FILE);
+        exit(1);
+      }
+      for (i=0;i<like.Ndata; i++){
+        fscanf(F,"%d %le\n",&intspace,&mask[i]);
+        maskc[i] = mask[i];
+        N += mask[i];
+      }
+     fclose(F);
+     printf("%d bins within angular mask\n",N);
+     printf("like.pos_pos = %d, like.shear_pos = %d,like.shear_shear = %d, like.ks = %d, like.gk = %d\n\n",like.pos_pos,like.shear_pos,like.shear_shear,like.ks,like.gk); 
+    }
+     int N3x2pt, N5x2pt, N6x2pt;
+     N3x2pt = like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra+tomo.clustering_Npowerspectra);    
+     N5x2pt = like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra+tomo.clustering_Npowerspectra+tomo.shear_Nbin+tomo.clustering_Nbin);
+     N6x2pt = like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra+tomo.clustering_Npowerspectra+tomo.shear_Nbin+tomo.clustering_Nbin+1);
+    //test whether Ndata assumes 3x2pt or 5x2pt format
+    //if so, mask out probes excluded from the analysis
+     if (N == N3x2pt || N== N5x2pt || N == N6x2pt){
+      if(like.shear_shear==0){
+        printf("masking out shear-shear bins\n");
+       for (i = 0; i< like.Ncl*tomo.shear_Npowerspectra;i++){mask[i] = 0.;}
+      }
+      if(like.pos_pos==0){
+        N = like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra);
+        printf("masking out clustering bins\n");
+        for (i = N; i< N+like.Ncl*tomo.clustering_Npowerspectra;i++){mask[i] = 0.;}
+      }
+      if(like.shear_pos==0){
+        N = like.Ncl*tomo.shear_Npowerspectra;
+        printf("masking out ggl bins\n");
+        for (i = N; i <N+like.Ncl*tomo.ggl_Npowerspectra; i++){mask[i] = 0.;}
+      }
+    }
+    //test whether Ndata 5x2pt format
+    //if so, mask out probes excluded from the analysis
+    if (like.Ndata == N5x2pt){
+      if(like.ks==0){
+        printf("masking out shear x kappa bins\n");
+        N = like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra+tomo.clustering_Npowerspectra);
+        for (i = N; i <N+like.Ncl*tomo.shear_Nbin; i++){mask[i] = 0.;}
+      }
+      if(like.gk==0){
+        printf("masking out galaxies x kappa bins\n");
+        N = like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra+tomo.clustering_Npowerspectra+tomo.shear_Nbin);
+        for (i = N; i < N+like.Ncl*tomo.clustering_Nbin; i++){mask[i] = 0.;}
+      }
+    }
+    N = 0;
+    for (i=0;i<like.Ndata; i++){
+      //printf("mask(%d) = %.1f (was %.1f before probe cut)\n",i,mask[i],maskc[i]);
+      N +=  mask[i];
+    }
+    printf("%d data points left after masking probes\n",N);
+    if (N == 0){
+      printf("init.c: mask: no data points left\nEXIT\n");
+      exit(1);
+    }
+    printf("READ MASK FILE\n");
+  }
+  return mask[ci];
+}
+
+double invcov_mask(int READ, int ci, int cj)
 {
   int i,j,intspace;
   static double **inv =0;
 
   if(READ==0 || inv == 0){
-    inv   = create_double_matrix(0, like.Ndata-1, 0, like.Ndata-1);      
+    inv   = create_double_matrix(0, like.Ndata-1, 0, like.Ndata-1);  
+
+    gsl_matrix * cov   = gsl_matrix_calloc(like.Ndata, like.Ndata);      
+    printf("Ndata: %d\n", like.Ndata);
+    // gsl_matrix * inv_c   = gsl_matrix_calloc(like.Ndata, like.Ndata);
+    gsl_matrix_set_zero(cov);
+   
+    double cov_G,cov_NG,doublespace,m;
+
     FILE *F;
-    F=fopen(like.INV_FILE,"r");
+    int n_rows =count_rows(like.COV_FILE,' ');
+    F=fopen(like.COV_FILE,"r");
+
+    if (!F){printf("init_LSSxCMB.c: invcov_mask: like.COV_FILE = %s not found!\nEXIT!\n",like.COV_FILE);exit(1);}
+    switch (n_rows){
+      case 3: while (fscanf(F,"%d %d %le\n", &i, &j, &cov_G) ==3) {
+              m = 1.0;
+              if (i < like.Ndata && j < like.Ndata){
+              // apply mask to off-diagonal covariance elements
+                if (i!=j){m = mask(i)*mask(j);}
+              //  printf("%d %d (/%d) %e\n",i,j,like.Ndata,cov_G);
+                gsl_matrix_set(cov,i,j,(cov_G)*m);
+                gsl_matrix_set(cov,j,i,(cov_G)*m);
+              }
+            } break;
+      case 4: while (fscanf(F,"%d %d %le %le\n", &i, &j, &cov_G, &cov_NG) ==4) {
+              m = 1.0;
+              if (i < like.Ndata && j < like.Ndata){
+              // apply mask to off-diagonal covariance elements
+                if (i!=j){m = mask(i)*mask(j);}
+                //printf("%d %d (/%d) %e %e\n",i,j,like.Ndata,cov_G,cov_NG);
+                gsl_matrix_set(cov,i,j,(cov_G+cov_NG)*m);
+                gsl_matrix_set(cov,j,i,(cov_G+cov_NG)*m);
+              }
+            } break;
+      case 10: while (fscanf(F,"%d %d %le %le %d %d %d %d %le %le\n", &i, &j, &doublespace, &doublespace,&intspace,&intspace,&intspace,&intspace,&cov_G,&cov_NG) ==10) {
+              m = 1.0;
+              if (i < like.Ndata && j < like.Ndata){
+              // apply mask to off-diagonal covariance elements
+                if (i!=j){m = mask(i)*mask(j);}
+                //printf("%d %d (/%d) %e %e\n",i,j,like.Ndata,cov_G,cov_NG);
+                gsl_matrix_set(cov,i,j,(cov_G+cov_NG)*m);
+                gsl_matrix_set(cov,j,i,(cov_G+cov_NG)*m);
+              }
+            } break;
+      default: printf("init_LSSxCMB.c:invcov_mask: covariance file %s has %d columns - unsupported format!\nEXIT\n",like.COV_FILE,n_rows);exit(1);
+    }
+    fclose(F);
+    printf("READ COV_FILE\n");
+    //SVD_inversion(cov,inv_c,like.Ndata);
+    invert_matrix_colesky(cov);
+
     for (i=0;i<like.Ndata; i++){
       for (j=0;j<like.Ndata; j++){
-       fscanf(F,"%d %d %le\n",&intspace,&intspace,&inv[i][j]);  
-     }
-   }
-   fclose(F);
-   printf("FINISHED READING COVARIANCE\n");
- }    
+        //apply mask again, to make sure numerical errors in matrix inversion don't cause problems...
+        //also, set diagonal elements corresponding to datavector elements outside mask to zero, so that these elements don't contribute to chi2
+        inv[i][j] =gsl_matrix_get(cov,i,j)*mask(i)*mask(j);
+      }
+    }
+    gsl_matrix_free(cov);
+    // gsl_matrix_free(inv_c);
+    printf("FINISHED BUILDING INV COV\n");
+  }
  return inv[ci][cj];
 }
+
+// double invcov_read(int READ, int ci, int cj)
+// {
+//   int i,j,intspace;
+//   static double **inv =0;
+
+//   if(READ==0 || inv == 0){
+//     inv   = create_double_matrix(0, like.Ndata-1, 0, like.Ndata-1);      
+//     FILE *F;
+//     F=fopen(like.INV_FILE,"r");
+//     for (i=0;i<like.Ndata; i++){
+//       for (j=0;j<like.Ndata; j++){
+//        fscanf(F,"%d %d %le\n",&intspace,&intspace,&inv[i][j]);  
+//      }
+//    }
+//    fclose(F);
+//    printf("FINISHED READING COVARIANCE\n");
+//  }    
+//  return inv[ci][cj];
+// }
 
 
 double data_read(int READ, int ci)
@@ -141,31 +341,21 @@ void init_cosmo_runmode(char *runmode)
   printf("pdeltaparams.runmode =%s\n",pdeltaparams.runmode);
 }
 
-void init_binning_fourier(int Ncl, double lmin, double lmax, double lmax_shear, double Rmin_bias, int Ntomo_source, int Ntomo_lens)
+void init_binning_fourier(int Ncl, double lmin, double lmax)
 {
   printf("-------------------------------------------\n");
   printf("Initializing Binning\n");
   printf("-------------------------------------------\n");
   
-  like.Rmin_bias=Rmin_bias;
   like.Ncl=Ncl;
   like.lmin= lmin; //std=20
   like.lmax= lmax; //15,000
-  like.lmax_shear = lmax_shear; //5000
-  tomo.shear_Nbin=Ntomo_source;
-  tomo.clustering_Nbin=Ntomo_lens;
-  double ell;
-  int i,k=0;
-  double logdl=(log(like.lmax)-log(like.lmin))/like.Ncl;
-  for(i=0;i<like.Ncl;i++){
-    ell=exp(log(like.lmin)+(i+0.5)*logdl);
-  } 
   
   printf("number of ell bins Ncl: %d\n",like.Ncl);
   printf("minimum ell: %le\n",like.lmin);
   printf("maximum ell: %le\n",like.lmax);
+  printf("init_binning_mpp complete\n");
 }
-
 
 void init_priors(double M_Prior, double SigZ_source, double DeltaZ_source_Prior, double SigZ_source_Prior, double SigZ_lens, double DeltaZ_lens_Prior, double SigZ_lens_Prior, double A_ia_Prior, double beta_ia_Prior, double eta_ia_Prior, double etaZ_ia_Prior, double Q1_Prior, double Q2_Prior, double Q3_Prior)
 {
@@ -469,3 +659,27 @@ void init_source_sample_mpp(char *multihisto_file, int Ntomo)
   printf("init_source_sample_mpp complete\n");
 }
 
+
+void init_IA_mpp(int N)
+{  
+  if(N ==3){
+    like.IA = N;
+    printf("Set like.IA =3: NLA with per-z-bin amplitude\nSupply one nuisance.A_z[] parameter per source tomo bin\n");
+  }
+  else if(N ==4){
+    like.IA = N;
+    printf("Set like.IA =4; NLA with powerlaw z-evolution\nSupply nuisance.A_ia and nuisance.eta_ia\n");
+  }
+  else if(N ==5){
+    like.IA = N;
+    printf("Set like.IA =5; TATT with per-z-bin amplitude\nSupply nuisance.A_z[], nuisance.b_ta_z[], nuisance.A2_z[] parameters per source tomo bin\n");
+  }
+  else if(N ==6){
+    like.IA = N;
+    printf("Set like.IA =6; TATT with powerlaw z-evolution\nSupply nuisance.A_ia, nuisance.eta_ia, nuisance.b_ta_z[0], nuisance.A2_ia and nuisance.eta_ia_tt\n");
+  }
+  else{
+    printf("like.IA = %d not supported in des_mpp\nEXIT\n", N);
+    exit(1);
+  }
+}

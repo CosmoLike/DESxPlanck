@@ -9,7 +9,7 @@
 #PBS -l place=free:shared
 #PBS -l cput=10000:00:00
 #PBS -l walltime=18:00:00
-#PBS -N y6xplanck
+#PBS -N y3xplanck
 #PBS -e /home/u1/xfang/output/
 #PBS -o /home/u1/xfang/output/
 

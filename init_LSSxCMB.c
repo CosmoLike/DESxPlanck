@@ -33,6 +33,87 @@ int get_N_data_masked(void);
 
 double mask(int ci);
 
+void set_equal_tomo_bins(int Ntomo)
+{
+  int k,j;
+  double frac, zi;
+  tomo.shear_Nbin=Ntomo;
+  tomo.shear_Npowerspectra=(int) (Ntomo*(Ntomo+1)/2);
+  zdistr_histo_1(0.1, NULL);
+  int zbins =2000;
+  double da = (redshift.shear_zdistrpar_zmax-redshift.shear_zdistrpar_zmin)/(1.0*zbins);
+  double *sum;
+  sum=create_double_vector(0, zbins);
+  
+  sum[0] = 0.0;
+  for (k = 0, zi = redshift.shear_zdistrpar_zmin; k<zbins; k++,zi+=da){
+    sum[k+1] = sum[k]+zdistr_histo_1(zi, NULL);
+  }
+  
+  tomo.shear_zmin[0] = redshift.shear_zdistrpar_zmin;
+  tomo.shear_zmax[tomo.shear_Nbin-1] = redshift.shear_zdistrpar_zmax;
+  printf("\n");
+  printf("Source Sample - Tomographic Bin limits:\n");
+  for(k=0;k<tomo.shear_Nbin-1;k++){
+    frac=(k+1.)/(1.*Ntomo)*sum[zbins-1];
+    j = 0;
+    while (sum[j]< frac){
+      j++;
+    }
+    tomo.shear_zmax[k] = redshift.shear_zdistrpar_zmin+j*da;
+    tomo.shear_zmin[k+1] = redshift.shear_zdistrpar_zmin+j*da;
+    printf("min=%le max=%le\n",tomo.shear_zmin[k],tomo.shear_zmax[k]);
+  }
+  printf("min=%le max=%le\n",tomo.shear_zmin[tomo.shear_Nbin-1],tomo.shear_zmax[tomo.shear_Nbin-1]);
+  printf("redshift.shear_zdistrpar_zmin=%le max=%le\n",redshift.shear_zdistrpar_zmin,redshift.shear_zdistrpar_zmax);
+  free_double_vector(sum,0,zbins);
+}
+
+void init_source_sample_()
+{
+  int i;
+  if(strcmp(survey.sourcephotoz,"none")==0) redshift.shear_photoz=0;
+  if(strcmp(survey.sourcephotoz,"voigt")==0) redshift.shear_photoz=1;
+  if(strcmp(survey.sourcephotoz,"voigt_out")==0) redshift.shear_photoz=2;
+  if(strcmp(survey.sourcephotoz,"gaussian")==0) redshift.shear_photoz=3;
+  if(strcmp(survey.sourcephotoz,"multihisto")==0) redshift.shear_photoz=4;
+  //printf("Source Sample Redshift Errors set to %s: redshift.shear_photoz=%d\n",survey.sourcephotoz,redshift.shear_photoz);
+
+  if (redshift.shear_photoz!=4)  set_equal_tomo_bins(tomo.shear_Nbin);
+  for (i=0;i<tomo.shear_Nbin; i++)
+  {
+    //printf("zmean_source=%f\n",zmean_source(i));
+    nuisance.bias_zphot_shear[i]=0.0;
+  }
+  tomo.shear_Npowerspectra = tomo.shear_Nbin*(tomo.shear_Nbin+1)/2;
+}
+
+void init_lens_sample_()
+{
+  int i,j,n;
+
+  if(strcmp(survey.lensphotoz,"none")==0) redshift.clustering_photoz=0;
+  if(strcmp(survey.lensphotoz,"voigt")==0) redshift.clustering_photoz=1;
+  if(strcmp(survey.lensphotoz,"voigt_out")==0) redshift.clustering_photoz=2;
+  if(strcmp(survey.lensphotoz,"gaussian")==0) redshift.clustering_photoz=3;
+  if(strcmp(survey.lensphotoz,"multihisto")==0) redshift.clustering_photoz=4;
+  //  printf("Lens Sample Redshift Errors set to %s: redshift.clustering_photoz=%d\n",survey.lensphotoz,redshift.clustering_photoz);
+  tomo.clustering_Npowerspectra = tomo.clustering_Nbin;
+  n = 0;
+  for (i = 0; i < tomo.clustering_Nbin; i++){
+    // printf("zmean_lens=%f\n",zmean(i));
+    nuisance.bias_zphot_clustering[i]=0.0;
+    for(j = 0; j<tomo.shear_Nbin;j++){
+      n += 1;
+    }
+  }
+  tomo.ggl_Npowerspectra = n;printf("ggl number: %d\n", n);
+
+  //call test_kmax once to initialize look-up tables at reference cosmology
+  test_kmax(1000.,1);
+  // printf("end of lens sample init\n");
+}
+
 void init_sample_theta_s(){
   like.theta_s = 1;
 }

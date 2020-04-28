@@ -28,6 +28,9 @@ def run_cosmolike(params, pool=None):
     l_min = params['lbounds'][0]
     l_max = params['lbounds'][1]
 
+    Rmin_bias = params['Rmin_bias']
+    lmax_shear= params['lmax_shear']
+
     ggl_cut = params['ggl_overlap_cut']
 
     runmode ="Halofit"
@@ -40,6 +43,7 @@ def run_cosmolike(params, pool=None):
     initsources(source_nz.encode('utf-8'), ntomo_source)
     initlenses(lens_nz.encode('utf-8'), ntomo_lens, Double10(), Double10(),ggl_cut)
     initbins(nl, l_min, l_max)
+    initscalecuts(Rmin_bias, lmax_shear)
     initprobes(probes.encode('utf-8'))
     initcmb(cmbname.encode('utf-8'))
     initdata_fourier(cov_file.encode('utf-8'), mask_file.encode('utf-8'), data_file.encode('utf-8'))
@@ -48,13 +52,13 @@ def run_cosmolike(params, pool=None):
         cosmo_min, cosmo_fid, cosmo_max,
         nuisance_min, nuisance_fid, nuisance_max) = parse_priors_and_ranges(params)
 
-    #test_datavector = chain_file+".test_datavector"
+    test_datavector = chain_file+".test_datavector"
     # if (get_N_data() != params['mask_checksum']):
     #     print("Number of data points computed from yaml file = %d; N_data from maskfile = %d",params['mask_checksum'],get_N_data())
     #     exit(1)
 #    cosmo_fid.print_struct()
 #    nuisance_fid.print_struct()
-    #write_cosmolike_datavector(test_datavector, cosmo_fid, nuisance_fid)
+    write_cosmolike_datavector(test_datavector, cosmo_fid, nuisance_fid)
     print ("will sample over", varied_params)
 
     nthreads = 1

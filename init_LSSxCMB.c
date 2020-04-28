@@ -7,6 +7,8 @@ void init_survey(char *surveyname, double nsource, double nlens, double area);
 // void init_galaxies(char *SOURCE_ZFILE, char *LENS_ZFILE, char *lensphotoz, char *sourcephotoz, char *tomo_binning_source, char *tomo_binning_lens);
 void init_cosmo_runmode(char *runmode);
 void init_binning_fourier(int Ncl, double lmin, double lmax);
+void init_scalecuts(double Rmin_bias, double lmax_shear);
+
 void init_probes(char *probes);
 
 void init_data_fourier(char *COV_FILE, char *MASK_FILE, char *DATA_FILE);
@@ -684,4 +686,11 @@ void init_IA_mpp(int N)
     printf("like.IA = %d not supported in des_mpp\nEXIT\n", N);
     exit(1);
   }
+}
+
+
+void init_scalecuts(double Rmin_bias, double lmax_shear){
+  like.Rmin_bias = Rmin_bias;
+  like.lmax_shear = lmax_shear;
+  printf("Initializing Rmin_bias = %lg, lmax_shear = %lg\n", Rmin_bias, lmax_shear);
 }

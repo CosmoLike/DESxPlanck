@@ -59,86 +59,6 @@ omega_nuh2_range : 0.0
 h0_range : [0.55, 0.69, 0.91]
 MGSigma_range : 0.0
 MGmu_range : 0.0
-####################################
-####################################
-#         ANGULAR SCALE CUTS
-####################################
-# cuts:
-
-# #21Mpc/h
-# angle_range_wtheta_1_1 : [108.26,  900.0]
-# angle_range_wtheta_2_2 : [69.77,  900.0]
-# angle_range_wtheta_3_3 : [52.53,  900.0]
-# angle_range_wtheta_4_4 : [42.37,  900.0]
-# angle_range_wtheta_5_5 : [36.15,  900.0]
-
-# #shear
-# angle_range_xip_1_1: [2.76, 900.0]
-# angle_range_xip_1_2: [2.76, 900.0]
-# angle_range_xip_2_2: [2.76, 900.0]
-# angle_range_xip_1_3: [2.76, 900.0]
-# angle_range_xip_2_3: [2.76, 900.0]
-# angle_range_xip_3_3: [2.76, 900.0]
-# angle_range_xip_1_4: [2.76, 900.0]
-# angle_range_xip_2_4: [2.76, 900.0]
-# angle_range_xip_3_4: [2.76, 900.0]
-# angle_range_xip_4_4: [2.76, 900.0]
-# angle_range_xip_1_5: [2.76, 900.0]
-# angle_range_xip_2_5: [2.76, 900.0]
-# angle_range_xip_3_5: [2.76, 900.0]
-# angle_range_xip_4_5: [2.76, 900.0]
-# angle_range_xip_5_5: [2.76, 900.0]
-
-# angle_range_xim_1_1: [8.70, 900.0]
-# angle_range_xim_1_2: [8.70, 900.0]
-# angle_range_xim_2_2: [8.70, 900.0]
-# angle_range_xim_1_3: [8.70, 900.0]
-# angle_range_xim_2_3: [8.70, 900.0]
-# angle_range_xim_3_3: [8.70, 900.0]
-# angle_range_xim_1_4: [8.70, 900.0]
-# angle_range_xim_2_4: [8.70, 900.0]
-# angle_range_xim_3_4: [8.70, 900.0]
-# angle_range_xim_4_4: [8.70, 900.0]
-# angle_range_xim_1_5: [8.70, 900.0]
-# angle_range_xim_2_5: [8.70, 900.0]
-# angle_range_xim_3_5: [8.70, 900.0]
-# angle_range_xim_4_5: [8.70, 900.0]
-# angle_range_xim_5_5: [8.70, 900.0]
-
-
-# #12Mpc/h
-# angle_range_gammat_1_1 : [108.26,  900.0]
-# angle_range_gammat_1_2 : [108.26,  900.0]
-# angle_range_gammat_1_3 : [108.26,  900.0]
-# angle_range_gammat_1_4 : [108.26,  900.0]
-# angle_range_gammat_1_5 : [108.26,  900.0]
-
-# angle_range_gammat_2_1 : [69.77,  900.0]
-# angle_range_gammat_2_2 : [69.77,  900.0]
-# angle_range_gammat_2_3 : [69.77,  900.0]
-# angle_range_gammat_2_4 : [69.77,  900.0]
-# angle_range_gammat_2_5 : [69.77,  900.0]
-
-# angle_range_gammat_3_1 : [52.53,  900.0]
-# angle_range_gammat_3_2 : [52.53,  900.0]
-# angle_range_gammat_3_3 : [52.53,  900.0]
-# angle_range_gammat_3_4 : [52.53,  900.0]
-# angle_range_gammat_3_5 : [52.53,  900.0]
-
-# angle_range_gammat_4_1 : [42.37,  900.0]
-# angle_range_gammat_4_2 : [42.37,  900.0]
-# angle_range_gammat_4_3 : [42.37,  900.0]
-# angle_range_gammat_4_4 : [42.37,  900.0]
-# angle_range_gammat_4_5 : [42.37,  900.0]
-
-# angle_range_gammat_5_1 : [36.15,  900.0]
-# angle_range_gammat_5_2 : [36.15,  900.0]
-# angle_range_gammat_5_3 : [36.15,  900.0]
-# angle_range_gammat_5_4 : [36.15,  900.0]
-# angle_range_gammat_5_5 : [36.15,  900.0]
-
-#DO NOT CHANGE THIS!
-# twoptnames  : ['xip', 'xim', 'gammat', 'wtheta']
 
 # nofz parameters
 ntomo_source : 4
@@ -147,6 +67,11 @@ ntomo_lens   : 5
 # correlation function binning
 lbins       : 20
 lbounds     : [30.,3000.]
+
+# galaxy bias scale cuts [Mpc/h]
+Rmin_bias   : 20
+# shear cuts
+lmax_shear  : 3000
 
 #from covariance computation
 ggl_overlap_cut : 0.0

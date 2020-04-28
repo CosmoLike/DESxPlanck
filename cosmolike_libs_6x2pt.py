@@ -21,6 +21,9 @@ initcosmo.argtypes=[ctypes.c_char_p]
 initbins=lib.init_binning_fourier
 initbins.argtypes=[ctypes.c_int,ctypes.c_double,ctypes.c_double]
 
+initscalecuts=lib.init_scalecuts
+initscalecuts.argtypes=[ctypes.c_double,ctypes.c_double]
+
 initsources=lib.init_source_sample_mpp
 initsources.argtypes=[ctypes.c_char_p,ctypes.c_int]
 
@@ -343,6 +346,7 @@ class LikelihoodFunctionWrapper(object):
         #    print "outside flat prior range"
             return -np.inf,-1.
         like = lib.log_like_wrapper(icp, inp)
+        print like
         if like < -1.0e+14:
             return -np.inf,-1.
 

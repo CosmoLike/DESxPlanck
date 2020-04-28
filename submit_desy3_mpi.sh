@@ -9,7 +9,7 @@
 #PBS -l place=free:shared
 #PBS -l cput=5000:00:00
 #PBS -l walltime=9:00:00
-#PBS -N y3xplanck
+#PBS -N y3
 #PBS -e /home/u1/xfang/output/
 #PBS -o /home/u1/xfang/output/
 
@@ -24,5 +24,5 @@ module load openmpi
 ### run your executable program with begin and end date and time output
 export MPI_DSM_DISTRIBUTE
 date
-/usr/bin/time mpiexec -n 560 python run_cosmolike_wrapper_6x2pt.py yaml/DESY3_6x2pt.yaml
+/usr/bin/time mpiexec -n 560 python run_cosmolike_wrapper_3x2pt.py yaml/DESY3_3x2pt.yaml
 date

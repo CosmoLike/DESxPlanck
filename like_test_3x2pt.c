@@ -109,7 +109,7 @@ void test_Cls_desy3_planck()
   init_binning_fourier(20, 30., 3000.);
   init_scalecuts(20., 3000.); // Rmin_bias = 20Mpc/h, lmax_shear=3000
 
-  sprintf(survey.name,"%s","DESY3xplanck");
+  sprintf(survey.name,"%s","DESY3");
 
   // init_bary(argv[2]);
 
@@ -171,8 +171,7 @@ void test_Cls_desy3_planck()
 
   // init_binning_mpp(20,2.5,250.);
 
-  init_probes("6x2pt");
-  init_cmb("planck");
+  init_probes("3x2pt");
   
   // set_shear_priors_mpp(mean_m,sigma_m);
   //set_wlphotoz_priors_mpp(bias_photoz_s,sigma_b_photoz_s);
@@ -182,7 +181,7 @@ void test_Cls_desy3_planck()
   printf("PATH TO MASK: %s\n",like.MASK_FILE);
   begin = clock();
   char datavfile[200];
-  sprintf(datavfile,"datav/xi_Y3_6x2pt");
+  sprintf(datavfile,"datav/xi_Y3_3x2pt");
 //  sprintf(datavfile,"datav/xi_Y3_baseline+b2_MICE+bary_owls_AGN");
   compute_data_vector(datavfile,cosmology.Omega_m,NORM ,cosmology.n_spec,cosmology.w0,cosmology.wa,cosmology.omb,Omega_nuh2,cosmology.h0,0.0,0.0,cosmology.theta_s,
     b1, b_mag,

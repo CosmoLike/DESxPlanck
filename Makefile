@@ -11,11 +11,12 @@ cfftlog := $(cfftlog_dir)cfftlog.c $(cfftlog_dir)utils.c $(cfftlog_dir)utils_com
 
 home: 
 	make home_lib
-	make home_datav
+	make home_datavs
 	make home_cov
 
-home_datav:
+home_datavs:
 	gcc like_test_6x2pt.c -o ./like_fourier_6x2pt $(opt_home)
+	gcc like_test_3x2pt.c -o ./like_fourier_3x2pt $(opt_home)
 
 home_cov:
 	gcc compute_covariances_fourier.c -o ./compute_covariances_fourier $(opt_home)
@@ -26,10 +27,10 @@ home_lib:
 
 ocelote:
 	make ocelote_lib
-	make ocelote_datav
+	make ocelote_datavs
 	make ocelote_cov
 
-ocelote_datav:
+ocelote_datavs:
 	gcc like_fourier_6x2pt.c -o ./like_fourier_6x2pt $(opt_ocelote)
 
 ocelote_cov:

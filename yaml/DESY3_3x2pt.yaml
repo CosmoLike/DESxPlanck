@@ -1,19 +1,19 @@
 # output file
 ######## specify base_dir only if absolute path required. chain_file will use base_dir as prefix
 base_dir : ./
-chain_file : chains/DESY3_6x2
+chain_file : chains/DESY3_3x2
 
 n_threads  : 1
 iterations : 2000
 nwalkers : 560
 
 # 2pt files
-cov_file    : covs/cov_desy3xplanck
-data_file   : datav/xi_Y3_6x2pt
+cov_file    : covs/cov_desy3
+data_file   : datav/xi_Y3_3x2pt
 
 # if no mask_file specified,
 # then generate mask from scale cuts specified below
-mask_file   : yaml/DESY3_6x2_nomask.yaml.mask
+mask_file   : yaml/DESY3_3x2_nomask.yaml.mask
 source_nz   : zdistris/mcal_1101_source.nz
 lens_nz     : zdistris/mcal_1101_lens.nz
 

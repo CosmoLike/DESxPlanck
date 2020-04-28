@@ -125,10 +125,12 @@ double C_shear_tomo_sys(double ell, int z1, int z2)
   // C= C_shear_tomo_nointerp(ell,z1,z2);
   // if(like.IA==1) C+=C_II_nointerp(ell,z1,z2)+C_GI_nointerp(ell,z1,z2);
   
-  if(like.IA!=1) C= C_shear_tomo_nointerp(ell,z1,z2);
-  //if(like.IA==1) C= C_shear_shear_IA(ell,z1,z2);
-  if(like.IA==1) C = C_shear_tomo_nointerp(ell,z1,z2)+C_II_nointerp(ell,z1,z2)+C_GI_nointerp(ell,z1,z2);
-  if(like.IA==2) C += C_II_lin_nointerp(ell,z1,z2)+C_GI_lin_nointerp(ell,z1,z2);  
+  // if(like.IA!=1) C= C_shear_tomo_nointerp(ell,z1,z2);
+  // //if(like.IA==1) C= C_shear_shear_IA(ell,z1,z2);
+  // if(like.IA==1) C = C_shear_tomo_nointerp(ell,z1,z2)+C_II_nointerp(ell,z1,z2)+C_GI_nointerp(ell,z1,z2);
+  // if(like.IA==2) C += C_II_lin_nointerp(ell,z1,z2)+C_GI_lin_nointerp(ell,z1,z2);  
+  if(like.IA==4){C = C_shear_shear_IA_tab(ell,z1,z2);}
+  else{printf("only support IA==4!\n");exit(1);}
   if(like.shearcalib==1) C *=(1.0+nuisance.shear_calibration_m[z1])*(1.0+nuisance.shear_calibration_m[z2]);
   //printf("%le %d %d %le\n",ell,z1,z2,C_shear_tomo_nointerp(ell,z1,z2)+C_II_JB_nointerp(ell,z1,z2)+C_GI_JB_nointerp(ell,z1,z2));
 return C;
@@ -140,9 +142,11 @@ double C_gl_tomo_sys(double ell,int zl,int zs)
   // C=C_gl_tomo_nointerp(ell,zl,zs); 
   // if(like.IA==1) C += C_gI_nointerp(ell,zl,zs);
   
-  if(like.IA!=1) C=C_gl_tomo_nointerp(ell,zl,zs);
-  if(like.IA==1) C = C_ggl_IA(ell,zl,zs);
-  if(like.IA==2) C += C_gI_lin_nointerp(ell,zl,zs);
+  // if(like.IA!=1) C=C_gl_tomo_nointerp(ell,zl,zs);
+  // if(like.IA==1) C = C_ggl_IA(ell,zl,zs);
+  // if(like.IA==2) C += C_gI_lin_nointerp(ell,zl,zs);
+  if(like.IA==4){C = C_ggl_IA_tab(ell,zl,zs);}
+  else{printf("only support IA==4!\n");exit(1);}
   if(like.shearcalib==1) C *=(1.0+nuisance.shear_calibration_m[zs]);
 return C;
 }

@@ -104,7 +104,7 @@ void init_lens_sample_()
     // printf("zmean_lens=%f\n",zmean(i));
     nuisance.bias_zphot_clustering[i]=0.0;
     for(j = 0; j<tomo.shear_Nbin;j++){
-      n += 1;
+      n += test_zoverlap(i,j);
     }
   }
   tomo.ggl_Npowerspectra = n;printf("ggl number: %d\n", n);

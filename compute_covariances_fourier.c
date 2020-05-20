@@ -748,7 +748,7 @@ int main(int argc, char** argv)
   char OUTFILE[400],filename[400];
   
   int hit=atoi(argv[1]);
-  Ntable.N_a=20;
+  Ntable.N_a=100;
   k=1;
 
   char *inifile;

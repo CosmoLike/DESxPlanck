@@ -390,7 +390,6 @@ double log_multi_like(double OMM, double NORM, double NS, double W0,double WA, d
     printf("b_mag out of bounds\n");
     return -1.0e15;
   }
-       
   // printf("like %le %le %le %le %le %le %le %le\n",cosmology.Omega_m, cosmology.Omega_v,cosmology.sigma_8,cosmology.n_spec,cosmology.w0,cosmology.wa,cosmology.omb,cosmology.h0); 
   // printf("like %le %le %le %le\n",gbias.b[0][0], gbias.b[1][0], gbias.b[2][0], gbias.b[3][0]);    
   // for (i=0; i<10; i++){

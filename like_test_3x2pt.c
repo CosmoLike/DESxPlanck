@@ -151,7 +151,7 @@ void test_Cls_desy3()
   b_mag[3] = 1.17735723;
   b_mag[4] = 1.87509758;
 
-  double A_ia=0., eta_ia=0.;
+  double A_ia=0.5, eta_ia=0.;
   double p_ia[10]={0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
   p_ia[0] = A_ia; p_ia[1] = eta_ia;
 
@@ -349,7 +349,7 @@ void test_Cls_desy6_3src()
   b_mag[3] = 1.06;
   b_mag[4] = 1.06;
 
-  double A_ia=0.0, eta_ia=0.;
+  double A_ia=0.5, eta_ia=0.;
   double p_ia[10]={0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
   p_ia[0] = A_ia; p_ia[1] = eta_ia;
 
@@ -379,7 +379,7 @@ void test_Cls_desy6_3src()
   printf("PATH TO MASK: %s\n",like.MASK_FILE);
   begin = clock();
   char datavfile[200];
-  sprintf(datavfile,"datav/xi_Y6_3x2pt_3src_noia");
+  sprintf(datavfile,"datav/xi_Y6_3x2pt_3src");
 //  sprintf(datavfile,"datav/xi_Y3_baseline+b2_MICE+bary_owls_AGN");
   compute_data_vector(datavfile,cosmology.Omega_m,NORM ,cosmology.n_spec,cosmology.w0,cosmology.wa,cosmology.omb,Omega_nuh2,cosmology.h0,0.0,0.0,cosmology.theta_s,
     b1, b_mag,

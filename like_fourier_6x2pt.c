@@ -309,7 +309,7 @@ int set_nuisance_clustering_photoz(double *CP)
 int set_nuisance_ia(double *p_ia)
 {
   nuisance.A_ia=p_ia[0];
-  nuisance.eta_ia=p_ia[0];
+  nuisance.eta_ia=p_ia[1];
   nuisance.oneplusz0_ia = 1.62;
   // if (nuisance.A_ia < 0.0 || nuisance.A_ia > 10.0) return 0;
   // if (nuisance.eta_ia < -10.0 || nuisance.eta_ia> 10.0) return 0;

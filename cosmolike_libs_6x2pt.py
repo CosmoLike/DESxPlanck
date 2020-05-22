@@ -233,20 +233,20 @@ class InputNuisanceParams(IterableStruct):
     _fields_ = [
         ("bias", double*10),
         ("b_mag", double*10),
-        ("p_ia", double*10),
         ("lens_z_bias", double*10),
         ("source_z_bias", double*10),
-        ("shear_m", double*10)
+        ("shear_m", double*10),
+        ("p_ia", double*10)
     ]
     @classmethod
     def fiducial(cls):
         c = cls()
         c.bias[:] = [1.7, 1.7, 1.7, 2.0,2.0,2.0,2.0,2.0,2.0,2.0]
         c.b_mag[:] = [0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]
-        c.p_ia[:] = [0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]
         c.lens_z_bias[:] = [0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]
         c.source_z_bias[:] = [0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]
         c.shear_m[:] = [0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]
+        c.p_ia[:] = [0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]
         return c
 
     @classmethod
@@ -255,11 +255,11 @@ class InputNuisanceParams(IterableStruct):
         c.bias[:] = np.repeat(0.2, 10)
         # c.bias2[:] = np.repeat(0.05, 10)
         c.b_mag[:] = np.repeat(0.05, 10)
-        c.p_ia[:] = np.repeat(0.1, 10)
         # c.b_ta[:] = np.repeat(0.05, 10)
         c.lens_z_bias[:] = np.repeat(0.002, 10)
         c.source_z_bias[:] = np.repeat(0.002, 10)
         c.shear_m[:] = np.repeat(0.002, 10)
+        c.p_ia[:] = np.repeat(0.1, 10)
         return c
 
 write_cosmolike_datavector.argtypes = [ctypes.c_char_p,InputCosmologyParams, InputNuisanceParams]

@@ -151,8 +151,8 @@ void test_Cls_desy3()
   b_mag[3] = 1.17735723;
   b_mag[4] = 1.87509758;
 
-  double A_ia=0.5, eta_ia=0.;
   double p_ia[10]={0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+  double A_ia=0.5, eta_ia=0.;
   p_ia[0] = A_ia; p_ia[1] = eta_ia;
 
   double mean_m[10]={0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
@@ -497,11 +497,11 @@ void test_likelihood_desy6_planck()
   double time_spent;
 
   int i;
-  sprintf(like.DATA_FILE, "datav/xi_Y6_test");
+  sprintf(like.DATA_FILE, "datav/xi_Y6_6x2pt");
   sprintf(like.COV_FILE, "covs/cov_desy6xplanck");
 
   init_binning_fourier(20, 30., 3000.);
-
+  init_scalecuts(20., 3000.);
   sprintf(survey.name,"%s","DESY6xplanck");
 
   // init_bary(argv[2]);
@@ -530,29 +530,32 @@ void test_likelihood_desy6_planck()
   double Omega_nuh2 = 0.0;//0.00083;//0.001743331232934258;
   cosmology.Omega_v=1.0-cosmology.Omega_m;
 //  cosmology.theta_s  = -1.;
-  double b1[10]={0.,0.,0.,0.,0.,0.,0.,0.,0.,0.}, b2[10] ={0.,0.,0.,0.,0.,0.,0.,0.,0.,0.},b_mag[10] ={0.,0.,0.,0.,0.,0.,0.,0.,0.,0.};
-  b1[0] = 1.7;
-  b1[1] = 1.7;
-  b1[2] = 1.7;
-  b1[3] = 2.0;
-  b1[4] = 2.0;
-//
-//  b2[0] = 0.23; b2[1] = 0.23; b2[2] = 0.23; b2[3] = 0.5; b2[4] = .5;
-  b_mag[0] = -0.19375;
-  b_mag[1] = -0.6285407;
-  b_mag[2] = -0.69319886;
-  b_mag[3] = 1.17735723;
-  b_mag[4] = 1.87509758;
+//   double b1[10]={0.,0.,0.,0.,0.,0.,0.,0.,0.,0.} ,b_mag[10] ={0.,0.,0.,0.,0.,0.,0.,0.,0.,0.};
+  double b1[10]={1.12284, 1.59082, 1.45414, 1.61371, 1.75653, 2, 2, 2, 2, 2};
 
-  double A_ia=0., eta_ia=0.;
+double b2[10] ={0.,0.,0.,0.,0.,0.,0.,0.,0.,0.};
+//   b1[0] = 1.44;
+//   b1[1] = 1.70;
+//   b1[2] = 1.698;
+//   b1[3] = 1.997;
+//   b1[4] = 2.058;
+// //
+// //  b2[0] = 0.23; b2[1] = 0.23; b2[2] = 0.23; b2[3] = 0.5; b2[4] = .5;
+//   b_mag[0] = -0.102;
+//   b_mag[1] = -0.102;
+//   b_mag[2] = -0.102;
+//   b_mag[3] = 1.06;
+//   b_mag[4] = 1.06;
+
+  double A_ia=0.0, eta_ia=0.;
   double p_ia[10]={0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
   p_ia[0] = A_ia; p_ia[1] = eta_ia;
 
-  double mean_m[10]={0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+  // double mean_m[10]={0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
   double sigma_m[10]={0.03,0.03,0.03,0.03,0.03,0.03,0.03,0.03,0.03,0.03};
-  double bias_photoz_s[10]={0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+  // double bias_photoz_s[10]={0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
   // double sigma_b_photoz_s[10]={0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08};
-  double bias_photoz_l[10]={0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+  // double bias_photoz_l[10]={0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
   // double sigma_b_photoz_l[10]={0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04};
 
   // init_source_sample_mpp("./zdistris/nz_v0.16_smoothed.txt",4);
@@ -576,13 +579,24 @@ void test_likelihood_desy6_planck()
 
 //  sprintf(datavfile,"datav/xi_Y3_baseline+b2_MICE+bary_owls_AGN");
   double loglike;
-  loglike = log_multi_like(cosmology.Omega_m,NORM ,cosmology.n_spec,cosmology.w0,cosmology.wa,cosmology.omb,Omega_nuh2,cosmology.h0,0.0,0.0,cosmology.theta_s,
+  // loglike = log_multi_like(cosmology.Omega_m,NORM ,cosmology.n_spec,cosmology.w0,cosmology.wa,cosmology.omb,Omega_nuh2,cosmology.h0,0.0,0.0,cosmology.theta_s,
+  //   b1, b_mag,
+  //   bias_photoz_s, //source photo-z bias
+  //   bias_photoz_l, //lens photo-z bias
+  //   mean_m, //shear calibration
+  //   p_ia); // IA
+  double b_mag[10] ={0.0763057, 0.0921815, 0.0315041, 0.114855, -0.0681918, 0, 0, 0, 0, 0};
+
+ double bias_photoz_l[10]={0.000348045, 0.00580718, -0.00200309, 0.00210533, -0.0011209,0.0,0.0,0.0,0.0,0.0};
+ double bias_photoz_s[10]={-0.00117484, -0.0010133, 0.000757794, -0.000348866, -0.0015606,0.0,0.0,0.0,0.0,0.0};
+  double mean_m[10]={-0.00170711, 0.00136659, 0.00172648, -0.00149607, -0.0015889,0.0,0.0,0.0,0.0,0.0};
+  p_ia[0] = 0.0168433; p_ia[1]= 0.0804398;
+  loglike = log_multi_like(0.310246,0.815847,0.963305,cosmology.w0,cosmology.wa,0.0491755,Omega_nuh2,0.679244,0.0,0.0,cosmology.theta_s,
     b1, b_mag,
     bias_photoz_s, //source photo-z bias
     bias_photoz_l, //lens photo-z bias
     mean_m, //shear calibration
     p_ia); // IA
-
    printf("loglike = %lg\n", loglike);
 
 }
@@ -592,7 +606,7 @@ int main(void)
   // test_Cls_desy3();
   // test_Cls_desy6();
   test_Cls_desy6_3src();
-  // test_likelihood_desy3_planck();
+  // test_likelihood_desy6_planck();
   return 0;
 }
 

@@ -185,7 +185,9 @@ def parse_priors_and_ranges(params):
     #     is_var_TT = parse_nuisance_flat_prior(params, "A2_z", ntomo_source, nuisance_min, nuisance_fid, nuisance_max, varied_params)
     #     if is_var_TT:
     #         initia(5)
-
+    # print (varied_params,
+    #         cosmo_min, cosmo_fid, cosmo_max,
+    #         nuisance_min, nuisance_fid, nuisance_max)
     return (varied_params,
             cosmo_min, cosmo_fid, cosmo_max,
             nuisance_min, nuisance_fid, nuisance_max)
@@ -287,7 +289,7 @@ def parse_IA_mpp_flat_prior(params, nuisance_min, nuisance_fid, nuisance_max, va
 
     if "eta_ia_range" in params:
         initia(4)
-        p_range = params["A_ia_range"]
+        p_range = params["eta_ia_range"]
         min_val, fid_val, max_val, is_var = parse_range(p_range)
         i = 1            
         getattr(nuisance_min, p)[i] = min_val

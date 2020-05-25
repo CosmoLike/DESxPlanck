@@ -13,7 +13,7 @@ data_file   : datav/xi_Y3_3x2pt
 
 # if no mask_file specified,
 # then generate mask from scale cuts specified below
-mask_file   : yaml/DESY3_3x2_nomask.yaml.mask
+mask_file   : yaml/xi_Y3_3x2pt.mask
 source_nz   : zdistris/mcal_1101_source.nz
 lens_nz     : zdistris/mcal_1101_lens.nz
 

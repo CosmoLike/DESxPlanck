@@ -342,26 +342,26 @@ double log_multi_like(double OMM, double NORM, double NS, double W0,double WA, d
                       double *p_ia)
 {
   int i,j,k,m=0,l;
-  printf("%lg, %lg, %lg, %lg, %lg, %lg, %lg, %lg, %lg, %lg, %lg, \n", OMM,NORM,NS,W0,WA,OMB,OMNUh2,H0, MGSigma, MGmu, THETA_S);
-  for(i=0;i<10;i++){
-    printf("%lg, ", B[i]);
-  }printf("\n");
-  for(i=0;i<10;i++){
-    printf("%lg, ", b_mag[i]);
-  }printf("\n");
-  for(i=0;i<10;i++){
-    printf("%lg, ", SP[i]);
-  }printf("\n");
-  for(i=0;i<10;i++){
-    printf("%lg, ", CP[i]);
-  }printf("\n");
-  for(i=0;i<10;i++){
-    printf("%lg, ", M[i]);
-  }printf("\n");
-  for(i=0;i<10;i++){
-    printf("%lg, ", p_ia[i]);
-  }printf("\n");
-  printf("finish print parameters\n");
+  // printf("%lg, %lg, %lg, %lg, %lg, %lg, %lg, %lg, %lg, %lg, %lg, \n", OMM,NORM,NS,W0,WA,OMB,OMNUh2,H0, MGSigma, MGmu, THETA_S);
+  // for(i=0;i<10;i++){
+  //   printf("%lg, ", B[i]);
+  // }printf("\n");
+  // for(i=0;i<10;i++){
+  //   printf("%lg, ", b_mag[i]);
+  // }printf("\n");
+  // for(i=0;i<10;i++){
+  //   printf("%lg, ", SP[i]);
+  // }printf("\n");
+  // for(i=0;i<10;i++){
+  //   printf("%lg, ", CP[i]);
+  // }printf("\n");
+  // for(i=0;i<10;i++){
+  //   printf("%lg, ", M[i]);
+  // }printf("\n");
+  // for(i=0;i<10;i++){
+  //   printf("%lg, ", p_ia[i]);
+  // }printf("\n");
+  // printf("finish print parameters\n");
 
   static double *pred;
   static double *ell;

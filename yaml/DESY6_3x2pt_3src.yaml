@@ -15,7 +15,7 @@ data_file   : datav/xi_Y6_3x2pt_3src
 # then generate mask from scale cuts specified below
 mask_file   : yaml/xi_Y6_3x2pt_3src.mask
 source_nz   : zdistris/source_DESY6_3bins.nz
-lens_nz     : zdistris/lens_DESY6.nz
+lens_nz     : zdistris/mcal_1101_lens.nz
 
 run_mode    : Halofit
 #run_mode    : CLASS

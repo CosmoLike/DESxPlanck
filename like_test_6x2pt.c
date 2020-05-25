@@ -167,7 +167,7 @@ void test_Cls_desy6_planck()
   // init_lens_sample_mpp("./zdistris/nz_y3_redmagic_v0.5.1_wide_gold_2.2.1_combined_hd3_hl2_z_samp.txt",5,b1,b2,0.0);
 
   init_source_sample_mpp("./zdistris/source_DESY6.nz",5);
-  init_lens_sample_mpp("./zdistris/lens_DESY6.nz",5,b1,b2,0.0);
+  init_lens_sample_mpp("./zdistris/mcal_1101_lens.nz",5,b1,b2,0.0);
 
 
   // init_binning_mpp(20,2.5,250.);
@@ -267,7 +267,7 @@ void test_Cls_desy6_planck_3src()
   // init_lens_sample_mpp("./zdistris/nz_y3_redmagic_v0.5.1_wide_gold_2.2.1_combined_hd3_hl2_z_samp.txt",5,b1,b2,0.0);
 
   init_source_sample_mpp("./zdistris/source_DESY6_3bins.nz",3);
-  init_lens_sample_mpp("./zdistris/lens_DESY6.nz",5,b1,b2,0.0);
+  init_lens_sample_mpp("./zdistris/mcal_1101_lens.nz",5,b1,b2,0.0);
 
 
   // init_binning_mpp(20,2.5,250.);
@@ -463,7 +463,7 @@ void test_likelihood_desy6_planck()
   // init_lens_sample_mpp("./zdistris/nz_y3_redmagic_v0.5.1_wide_gold_2.2.1_combined_hd3_hl2_z_samp.txt",5,b1,b2,0.0);
 
   init_source_sample_mpp("./zdistris/source_DESY6.nz",5);
-  init_lens_sample_mpp("./zdistris/lens_DESY6.nz",5,b1,b2,0.0);
+  init_lens_sample_mpp("./zdistris/mcal_1101_lens.nz",5,b1,b2,0.0);
 
 
   // init_binning_mpp(20,2.5,250.);
@@ -493,9 +493,9 @@ void test_likelihood_desy6_planck()
 
 int main(void)
 {
-  // test_Cls_desy3_planck();
+  test_Cls_desy3_planck();
   // test_Cls_desy6_planck();
-  test_Cls_desy6_planck_3src();
+  // test_Cls_desy6_planck_3src();
   // test_likelihood_desy3_planck();
   return 0;
 }

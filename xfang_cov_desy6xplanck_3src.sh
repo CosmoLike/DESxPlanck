@@ -3,7 +3,7 @@
 #PBS -V
 #PBS -W group_list=cosmo
 #PBS -q high_pri
-#PBS -J 1-595
+#PBS -J 1-630
 #PBS -l select=1:ncpus=1:mem=1GB
 #PBS -l place=pack:shared
 #PBS -l walltime=7:00:00

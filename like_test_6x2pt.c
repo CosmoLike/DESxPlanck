@@ -28,7 +28,7 @@ void test_Cls_desy3_planck()
 //  init_bary("owls_AGN");
   cosmology.Omega_m   = 0.3;
   NORM    = 0.82355;
-  // NORM  = 2.19e-09;
+  // NORM  = 2.13137e-09;
   cosmology.n_spec    = 0.97;
   
   cosmology.w0=-1.;

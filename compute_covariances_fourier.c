@@ -93,7 +93,7 @@ void run_cov_ls_ss(char *OUTFILE, char *PATH, double *ell, double *dell, int n1,
   for (nl1 = 0; nl1 < like.Ncl; nl1 ++){
     for (nl2 = 0; nl2 <like.Ncl; nl2 ++){
       c_ng = 0.; c_g = 0.;
-      if (covparams.ng){
+      if (covparams.ng*test_zoverlap(zl,z3)*test_zoverlap(zl,z4)){
         c_ng = cov_NG_gl_shear_tomo(ell[nl1],ell[nl2],zl,zs,z3,z4);
       }
       if (nl1 == nl2){
@@ -122,7 +122,7 @@ void run_cov_ll_ss(char *OUTFILE, char *PATH, double *ell, double *dell, int n1,
   for (nl1 = 0; nl1 < like.Ncl; nl1 ++){
     for (nl2 = 0; nl2 <like.Ncl; nl2 ++){
       c_ng = 0.; c_g = 0.;
-      if (covparams.ng){
+      if (covparams.ng*test_zoverlap(z1,z3)*test_zoverlap(z1,z4)){
         c_ng = cov_NG_cl_shear_tomo(ell[nl1],ell[nl2],z1,z2,z3,z4);
       }
       if (nl1 == nl2){
@@ -151,7 +151,7 @@ void run_cov_ll_ls(char *OUTFILE, char *PATH, double *ell, double *dell, int n1,
   for (nl1 = 0; nl1 < like.Ncl; nl1 ++){
     for (nl2 = 0; nl2 < like.Ncl; nl2 ++){
       c_ng = 0.; c_g = 0.;
-      if(covparams.ng){c_ng = cov_NG_cl_gl_tomo(ell[nl1],ell[nl2],z1,z2,zl,zs);}
+      if((z1 == zl) && covparams.ng){c_ng = cov_NG_cl_gl_tomo(ell[nl1],ell[nl2],z1,z2,zl,zs);}
       if (nl1 == nl2){
         c_g =  cov_G_cl_gl_tomo(ell[nl1],dell[nl1],z1,z2,zl,zs);
       }
@@ -178,7 +178,7 @@ void run_cov_ll_ll(char *OUTFILE, char *PATH, double *ell, double *dell, int n1,
   for (nl1 = 0; nl1 < like.Ncl; nl1 ++){
     for (nl2 = 0; nl2 < like.Ncl; nl2 ++){
       c_ng = 0.; c_g = 0.;
-      if (covparams.ng) {
+      if ((z1 == z3) && covparams.ng) {
         c_ng = cov_NG_cl_cl_tomo(ell[nl1],ell[nl2],z1,z2,z3,z4);
       }
       if (nl1 == nl2){
@@ -209,7 +209,7 @@ void run_cov_ls_ls(char *OUTFILE, char *PATH, double *ell, double *dell, int n1,
   for (nl1 = 0; nl1 < like.Ncl; nl1 ++){
     for (nl2 = 0; nl2 < like.Ncl; nl2 ++){
       c_ng = 0.; c_g = 0.;
-      if (covparams.ng) {
+      if (covparams.ng && zl1 == zl2) {
         c_ng = cov_NG_gl_gl_tomo(ell[nl1],ell[nl2],zl1,zs1,zl2,zs2);
       }
       if (nl1 == nl2){
@@ -296,7 +296,7 @@ void run_cov_ls_ks(char *OUTFILE, char *PATH, double *ell, double *dell, int n1,
    for (int nl1 = 0; nl1 < like.Ncl; nl1 ++){
       for (int nl2 = 0; nl2 < like.Ncl; nl2 ++){
          c_ng = 0.; c_g = 0.;
-         if (covparams.ng) {
+         if (covparams.ng * test_zoverlap(zl1, zs2)) {
              c_ng = cov_NG_gs_ks(ell[nl1],ell[nl2], zl1, zs1, zs2);
          }
          if (nl1==nl2){
@@ -324,7 +324,7 @@ void run_cov_lk_lk(char *OUTFILE, char *PATH, double *ell, double *dell, int zl1
       for (int nl2 = 0; nl2 < like.Ncl; nl2 ++){
          c_ng = 0.; c_g = 0.;
          weight = test_kmax(ell[nl1],zl1)*test_kmax(ell[nl2],zl2);
-         if (covparams.ng) {
+         if (covparams.ng && (zl1==zl2)) {
             c_ng = cov_NG_gk_gk(ell[nl1],ell[nl2], zl1, zl2);
          }
          if (nl1==nl2){
@@ -345,7 +345,7 @@ void run_cov_lk_ls(char *OUTFILE, char *PATH, double *ell, double *dell, int zl1
    double c_ng, c_g;
    FILE *F1;
    char filename[300];
-   // sprintf(filename,"%scov/%s_%s_cov_gkgs_Nell%d_Ns%d_Ng%d_%d", PATH, survey.name, cmb.name, like.Ncl, tomo.shear_Nbin, tomo.clustering_Nbin, start);
+   // sprintf(filename,"%scov/%s_%s_cov_gkgs_Nell%d_Ns%d_Ng%d_%d", PATH, covparams.filename, cmb.name, like.Ncl, tomo.shear_Nbin, tomo.clustering_Nbin, start);
    // printf("Saving to: %s\n",filename);
    sprintf(filename,"%s%s_%d",PATH,OUTFILE,start);
    F1 =fopen(filename,"w");
@@ -356,7 +356,7 @@ void run_cov_lk_ls(char *OUTFILE, char *PATH, double *ell, double *dell, int zl1
    for (nl1 = 0; nl1 < like.Ncl; nl1 ++){
       for (nl2 = 0; nl2 < like.Ncl; nl2 ++){
          c_ng = 0.; c_g = 0.;
-          if (covparams.ng) {
+          if (covparams.ng && zl1==zl2) {
              c_ng = cov_NG_gk_gs(ell[nl1],ell[nl2],zl1,zl2,zs2);
           }
           if (nl1==nl2){
@@ -377,7 +377,7 @@ void run_cov_lk_kk(char *OUTFILE, char *PATH, double *ell, double *dell, int zl1
    double c_ng, c_g;
    FILE *F1;
    char filename[300];
-   // sprintf(filename,"%scov/%s_%s_cov_gkkk_Nell%d_Ns%d_Ng%d_%d", PATH, survey.name, cmb.name, like.Ncl, tomo.shear_Nbin, tomo.clustering_Nbin, start);
+   // sprintf(filename,"%scov/%s_%s_cov_gkkk_Nell%d_Ns%d_Ng%d_%d", PATH, covparams.filename, cmb.name, like.Ncl, tomo.shear_Nbin, tomo.clustering_Nbin, start);
    // printf("Saving to: %s\n",filename);
    sprintf(filename,"%s%s_%d",PATH,OUTFILE,start);
    F1 =fopen(filename,"w");
@@ -405,7 +405,7 @@ void run_cov_lk_ks(char *OUTFILE, char *PATH, double *ell, double *dell, int zl1
    double c_ng, c_g;
    FILE *F1;
    char filename[300];
-   // sprintf(filename,"%scov/%s_%s_cov_gkks_Nell%d_Ns%d_Ng%d_%d", PATH, survey.name, cmb.name, like.Ncl, tomo.shear_Nbin, tomo.clustering_Nbin, start);
+   // sprintf(filename,"%scov/%s_%s_cov_gkks_Nell%d_Ns%d_Ng%d_%d", PATH, covparams.filename, cmb.name, like.Ncl, tomo.shear_Nbin, tomo.clustering_Nbin, start);
    // printf("Saving to: %s\n",filename);
    sprintf(filename,"%s%s_%d",PATH,OUTFILE,start);
    F1 =fopen(filename,"w");
@@ -415,7 +415,7 @@ void run_cov_lk_ks(char *OUTFILE, char *PATH, double *ell, double *dell, int zl1
    for (int nl1 = 0; nl1 < like.Ncl; nl1 ++){
       for (int nl2 = 0; nl2 < like.Ncl; nl2 ++){
          c_ng = 0.; c_g = 0.;
-          if (covparams.ng) {
+          if (covparams.ng * test_zoverlap(zl1, zs2)) {
              c_ng = cov_NG_gk_ks(ell[nl1],ell[nl2], zl1, zs2);
           }
           if (nl1==nl2){
@@ -436,7 +436,7 @@ void run_cov_lk_ss(char *OUTFILE, char *PATH, double *ell, double *dell, int zl1
    double c_ng, c_g;
    FILE *F1;
    char filename[300];
-   // sprintf(filename,"%scov/%s_%s_cov_gkss_Nell%d_Ns%d_Ng%d_%d",PATH,survey.name, cmb.name, like.Ncl, tomo.shear_Nbin, tomo.clustering_Nbin, start);
+   // sprintf(filename,"%scov/%s_%s_cov_gkss_Nell%d_Ns%d_Ng%d_%d",PATH,covparams.filename, cmb.name, like.Ncl, tomo.shear_Nbin, tomo.clustering_Nbin, start);
    // printf("Saving to: %s\n",filename);
    sprintf(filename,"%s%s_%d",PATH,OUTFILE,start);
    F1 =fopen(filename,"w");
@@ -446,7 +446,7 @@ void run_cov_lk_ss(char *OUTFILE, char *PATH, double *ell, double *dell, int zl1
    for (nl1 = 0; nl1 < like.Ncl; nl1 ++){
       for (nl2 = 0; nl2 <like.Ncl; nl2 ++){
          c_ng = 0.; c_g = 0.;
-          if (covparams.ng) {
+          if (covparams.ng*test_zoverlap(zl1, zs2)*test_zoverlap(zl1, zs3)) {
              c_ng = cov_NG_gk_ss(ell[nl1],ell[nl2],zl1,zs2,zs3);
           }
           if (nl1==nl2){
@@ -467,7 +467,7 @@ void run_cov_kk_kk(char *OUTFILE, char *PATH, double *ell, double *dell,int star
    double c_ng, c_g;
    FILE *F1;
    char filename[300];
-   // sprintf(filename,"%scov/%s_%s_cov_kkkk_Nell%d_Ns%d_Ng%d_%d",PATH,survey.name, cmb.name,like.Ncl, tomo.shear_Nbin, tomo.clustering_Nbin, start);
+   // sprintf(filename,"%scov/%s_%s_cov_kkkk_Nell%d_Ns%d_Ng%d_%d",PATH,covparams.filename, cmb.name,like.Ncl, tomo.shear_Nbin, tomo.clustering_Nbin, start);
    // printf("Saving to: %s\n",filename);
    sprintf(filename,"%s%s_%d",PATH,OUTFILE,start);
    F1 =fopen(filename,"w");
@@ -496,7 +496,7 @@ void run_cov_kk_ks(char *OUTFILE, char *PATH, double *ell, double *dell, int zs2
    double c_ng, c_g;
    FILE *F1;
    char filename[300];
-   // sprintf(filename,"%scov/%s_%s_cov_kkks_Nell%d_Ns%d_Ng%d_%d", PATH, survey.name, cmb.name, like.Ncl, tomo.shear_Nbin, tomo.clustering_Nbin, start);
+   // sprintf(filename,"%scov/%s_%s_cov_kkks_Nell%d_Ns%d_Ng%d_%d", PATH, covparams.filename, cmb.name, like.Ncl, tomo.shear_Nbin, tomo.clustering_Nbin, start);
    // printf("Saving to: %s\n",filename);
    sprintf(filename,"%s%s_%d",PATH,OUTFILE,start);
    F1 =fopen(filename,"w");
@@ -525,7 +525,7 @@ void run_cov_kk_ss(char *OUTFILE, char *PATH, double *ell, double *dell, int n2,
    char filename[300];
    z2 = Z1(n2); z3 = Z2(n2);
    printf("Bin for ss: %d (%d, %d)\n", n2, z2, z3);
-   // sprintf(filename,"%scov/%s_%s_cov_kkss_Nell%d_Ns%d_Ng%d_%d",PATH,survey.name, cmb.name,like.Ncl, tomo.shear_Nbin, tomo.clustering_Nbin, start);
+   // sprintf(filename,"%scov/%s_%s_cov_kkss_Nell%d_Ns%d_Ng%d_%d",PATH,covparams.filename, cmb.name,like.Ncl, tomo.shear_Nbin, tomo.clustering_Nbin, start);
    // printf("Saving to: %s\n",filename);
    sprintf(filename,"%s%s_%d",PATH,OUTFILE,start);
    F1 =fopen(filename,"w");
@@ -551,7 +551,7 @@ void run_cov_ks_ks(char *OUTFILE, char *PATH, double *ell, double *dell, int zs1
    double c_ng, c_g;
    FILE *F1;
    char filename[300];
-   // sprintf(filename,"%scov/%s_%s_cov_ksks_Nell%d_Ns%d_Ng%d_%d", PATH, survey.name, cmb.name, like.Ncl, tomo.shear_Nbin, tomo.clustering_Nbin, start);
+   // sprintf(filename,"%scov/%s_%s_cov_ksks_Nell%d_Ns%d_Ng%d_%d", PATH, covparams.filename, cmb.name, like.Ncl, tomo.shear_Nbin, tomo.clustering_Nbin, start);
    // printf("Saving to: %s\n",filename);
    sprintf(filename,"%s%s_%d",PATH,OUTFILE,start);
    F1 =fopen(filename,"w");
@@ -643,7 +643,7 @@ void run_cov_ll_ks(char *OUTFILE, char *PATH, double *ell, double *dell, int n1,
    for (int nl1 = 0; nl1 < like.Ncl; nl1 ++){
       for (int nl2 = 0; nl2 < like.Ncl; nl2 ++){
          c_ng = 0.; c_g = 0.;
-          if (covparams.ng) {
+          if (covparams.ng*test_zoverlap(n1, zs2)) {
              c_ng = cov_NG_gg_ks(ell[nl1],ell[nl2], n1, n1, zs2);
           }
           if (nl1==nl2){
@@ -674,7 +674,7 @@ void run_cov_ll_lk(char *OUTFILE, char *PATH, double *ell, double *dell, int n1,
   for (nl1 = 0; nl1 < like.Ncl; nl1 ++){
     for (nl2 = 0; nl2 < like.Ncl; nl2 ++){
       c_ng = 0.; c_g = 0.;
-      if(covparams.ng) {c_ng = cov_NG_gg_gk(ell[nl1],ell[nl2],z1,z2,zl);}
+      if((z1 == zl) && covparams.ng) {c_ng = cov_NG_gg_gk(ell[nl1],ell[nl2],z1,z2,zl);}
       if (nl1 == nl2){
         c_g =  cov_G_gg_gk(ell[nl1],dell[nl1],z1,z2,zl);
       }
@@ -737,11 +737,10 @@ int main(int argc, char** argv)
   }
 
   printf("----------------------------------\n");
-  sprintf(survey.name,"%s","DESY3xPlanck");
   printf("area: %le n_source: %le n_lens: %le\n",survey.area,survey.n_gal,survey.n_lens);
   printf("----------------------------------\n");
 
-  sprintf(OUTFILE,"%s_ssss_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_ssss_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.shear_Npowerspectra; l++){
     for (m=l;m<tomo.shear_Npowerspectra; m++){
       if(k==hit){ 
@@ -753,7 +752,7 @@ int main(int argc, char** argv)
     }
   }
 
-  sprintf(OUTFILE,"%s_lsls_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_lsls_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.ggl_Npowerspectra; l++){
     for (m=l;m<tomo.ggl_Npowerspectra; m++){
       if(k==hit){
@@ -764,7 +763,7 @@ int main(int argc, char** argv)
       k=k+1;
     }
   }
-  sprintf(OUTFILE,"%s_llll_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_llll_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.clustering_Npowerspectra; l++){ //auto bins only for now!
     for (m=l;m<tomo.clustering_Npowerspectra; m++){
       if(k==hit){ 
@@ -775,7 +774,7 @@ int main(int argc, char** argv)
       //printf("%d %d %d\n",l,m,k);
     }
   }
-  sprintf(OUTFILE,"%s_llss_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_llss_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.clustering_Npowerspectra; l++){
     for (m=0;m<tomo.shear_Npowerspectra; m++){
       if(k==hit){
@@ -786,7 +785,7 @@ int main(int argc, char** argv)
       //printf("%d\n",k);
     }
   }
-  sprintf(OUTFILE,"%s_llls_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_llls_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.clustering_Npowerspectra; l++){
     for (m=0;m<tomo.ggl_Npowerspectra; m++){
       if(k==hit){
@@ -797,7 +796,7 @@ int main(int argc, char** argv)
       //printf("%d\n",k);
     }
   }
-  sprintf(OUTFILE,"%s_lsss_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_lsss_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.ggl_Npowerspectra; l++){
     for (m=0;m<tomo.shear_Npowerspectra; m++){
       if(k==hit){
@@ -810,7 +809,7 @@ int main(int argc, char** argv)
   }
 
  // lk_lk
-  sprintf(OUTFILE,"%s_lklk_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_lklk_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.clustering_Nbin; l++){
      for (m=l;m<tomo.clustering_Nbin; m++){
         if (k==hit){
@@ -824,7 +823,7 @@ int main(int argc, char** argv)
   printf("lklk %d\n",k);
 
   // lk_ls
-  sprintf(OUTFILE,"%s_lkls_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_lkls_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.clustering_Nbin; l++){
      for (m=0;m<tomo.ggl_Npowerspectra; m++){
         if (k==hit){
@@ -837,7 +836,7 @@ int main(int argc, char** argv)
   printf("lkls %d\n",k);
 
   // lk_kk
-  sprintf(OUTFILE,"%s_lkkk_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_lkkk_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.clustering_Nbin; l++){
      if (k==hit){
         sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
@@ -849,7 +848,7 @@ int main(int argc, char** argv)
   printf("lkkk %d\n",k);
 
   // lk_ks
-  sprintf(OUTFILE,"%s_lkks_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_lkks_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.clustering_Nbin; l++){
      for (m=0;m<tomo.shear_Nbin;m++) {
         if (k==hit){
@@ -863,7 +862,7 @@ int main(int argc, char** argv)
   printf("lkks %d\n",k);
 
   // lk_ss
-  sprintf(OUTFILE,"%s_lkss_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_lkss_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.clustering_Nbin; l++){
      for (m=0;m<tomo.shear_Npowerspectra; m++){
         if (k==hit){
@@ -877,7 +876,7 @@ int main(int argc, char** argv)
   printf("lkss %d\n",k);
 
   // ls_kk
-  sprintf(OUTFILE,"%s_lskk_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_lskk_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.ggl_Npowerspectra; l++){
      if (k==hit){
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
@@ -889,7 +888,7 @@ int main(int argc, char** argv)
   printf("lskk%d\n",k);
   
   // ls_ks
-  sprintf(OUTFILE,"%s_lsks_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_lsks_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.ggl_Npowerspectra; l++){
      for (m=0;m<tomo.shear_Nbin;m++) {
         if (k==hit){
@@ -903,7 +902,7 @@ int main(int argc, char** argv)
   printf("lsks %d\n",k);
   
   // kk_kk
-  sprintf(OUTFILE,"%s_kkkk_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_kkkk_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   if (k==hit){
     sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
     run_cov_kk_kk(OUTFILE,covparams.outdir,ell,dell,k);
@@ -913,7 +912,7 @@ int main(int argc, char** argv)
   printf("kkkk %d\n",k);
 
   // kk_ks
-  sprintf(OUTFILE,"%s_kkks_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_kkks_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.shear_Nbin; l++){
      if (k==hit){
         sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
@@ -925,7 +924,7 @@ int main(int argc, char** argv)
   printf("kkks %d\n",k);
 
   // kk_ss
-  sprintf(OUTFILE,"%s_kkss_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_kkss_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.shear_Npowerspectra; l++){
      if (k==hit){
       sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
@@ -937,7 +936,7 @@ int main(int argc, char** argv)
   printf("kkss %d\n",k);
   
   // ks_ks
-  sprintf(OUTFILE,"%s_ksks_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_ksks_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.shear_Nbin; l++){
      for (m=l;m<tomo.shear_Nbin; m++){
         if (k==hit){
@@ -951,7 +950,7 @@ int main(int argc, char** argv)
   printf("ksks %d\n",k);
   
  // ks_ss
- sprintf(OUTFILE,"%s_ksss_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+ sprintf(OUTFILE,"%s_ksss_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
  for (l=0;l<tomo.shear_Nbin; l++){
    for (m=0;m<tomo.shear_Npowerspectra; m++){
      if (k==hit){
@@ -965,7 +964,7 @@ int main(int argc, char** argv)
   printf("ksss %d\n",k);
 
   // ll_kk
-  sprintf(OUTFILE,"%s_llkk_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_llkk_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.clustering_Npowerspectra; l++){
      if (k==hit){
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
@@ -977,7 +976,7 @@ int main(int argc, char** argv)
   printf("llkk %d\n",k);
   
   // ll_ks
-  sprintf(OUTFILE,"%s_llks_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_llks_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.clustering_Npowerspectra; l++){
      for (m=0;m<tomo.shear_Nbin;m++) {
         if (k==hit){
@@ -991,7 +990,7 @@ int main(int argc, char** argv)
   printf("llks %d\n",k);
 
   // ll_lk
-  sprintf(OUTFILE,"%s_lllk_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_lllk_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.clustering_Npowerspectra; l++){
      for (m=0;m<tomo.clustering_Nbin;m++) {
         if (k==hit){

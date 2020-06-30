@@ -22,7 +22,7 @@ home_cov:
 	gcc compute_covariances_fourier.c -o ./compute_covariances_fourier $(opt_home)
 
 home_lib:
-	gcc -shared -o like_fourier_6x2pt.so -fPIC like_fourier_6x2pt.c $(opt_home) $(cfftlog) $(cfastpt)
+	gcc -shared -o like_fourier_6x2pt.so -fPIC like_fourier_6x2pt.c -DSAMPLING $(opt_home) $(cfftlog) $(cfastpt)
 
 
 ocelote:
@@ -37,5 +37,5 @@ ocelote_cov:
 	gcc compute_covariances_fourier.c -o ./compute_covariances_fourier $(opt_ocelote)
 
 ocelote_lib:
-	gcc -shared -o like_fourier_6x2pt.so -fPIC like_fourier_6x2pt.c $(opt_ocelote) $(cfftlog) $(cfastpt)
+	gcc -shared -o like_fourier_6x2pt.so -fPIC like_fourier_6x2pt.c -DSAMPLING $(opt_ocelote) $(cfftlog) $(cfastpt)
 

@@ -767,7 +767,7 @@ int main(int argc, char** argv)
   double lmax = covparams.lmax;
 
   // Yeah this part looks redundant, but just due to historical reasons, keep it for now!
-  like.Rmin_bias=0.;
+  like.Rmin_bias=20.;
   like.Ncl=covparams.ncl;
   like.lmax_shear = covparams.lmax;
   like.lmin = covparams.lmin;

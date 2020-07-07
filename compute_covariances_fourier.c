@@ -777,6 +777,11 @@ int main(int argc, char** argv)
   init_source_sample_();
   init_lens_sample_();
 
+  /// set fid bmag
+  // for (i = 0; i < tomo.clustering_Nbin; i++){
+  //   gbias.b_mag[i] = 0.1;
+  // }
+  ///
   init_probes("6x2pt");
   init_cmb("planck");   
 
@@ -792,11 +797,10 @@ int main(int argc, char** argv)
   }
 
   printf("----------------------------------\n");
-  sprintf(survey.name,"%s","DESY3xPlanck");
   printf("area: %le n_source: %le n_lens: %le\n",survey.area,survey.n_gal,survey.n_lens);
   printf("----------------------------------\n");
 
-  sprintf(OUTFILE,"%s_ssss_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_ssss_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.shear_Npowerspectra; l++){
     for (m=l;m<tomo.shear_Npowerspectra; m++){
       if(k==hit){ 
@@ -808,7 +812,7 @@ int main(int argc, char** argv)
     }
   }
 
-  sprintf(OUTFILE,"%s_lsls_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_lsls_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.ggl_Npowerspectra; l++){
     for (m=l;m<tomo.ggl_Npowerspectra; m++){
       if(k==hit){
@@ -819,7 +823,7 @@ int main(int argc, char** argv)
       k=k+1;
     }
   }
-  sprintf(OUTFILE,"%s_llll_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_llll_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.clustering_Npowerspectra; l++){ //auto bins only for now!
     for (m=l;m<tomo.clustering_Npowerspectra; m++){
       if(k==hit){ 
@@ -830,7 +834,7 @@ int main(int argc, char** argv)
       //printf("%d %d %d\n",l,m,k);
     }
   }
-  sprintf(OUTFILE,"%s_llss_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_llss_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.clustering_Npowerspectra; l++){
     for (m=0;m<tomo.shear_Npowerspectra; m++){
       if(k==hit){
@@ -841,7 +845,7 @@ int main(int argc, char** argv)
       //printf("%d\n",k);
     }
   }
-  sprintf(OUTFILE,"%s_llls_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_llls_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.clustering_Npowerspectra; l++){
     for (m=0;m<tomo.ggl_Npowerspectra; m++){
       if(k==hit){
@@ -852,7 +856,7 @@ int main(int argc, char** argv)
       //printf("%d\n",k);
     }
   }
-  sprintf(OUTFILE,"%s_lsss_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_lsss_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.ggl_Npowerspectra; l++){
     for (m=0;m<tomo.shear_Npowerspectra; m++){
       if(k==hit){
@@ -865,7 +869,7 @@ int main(int argc, char** argv)
   }
 
  // lk_lk
-  sprintf(OUTFILE,"%s_lklk_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_lklk_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.clustering_Nbin; l++){
      for (m=l;m<tomo.clustering_Nbin; m++){
         if (k==hit){
@@ -879,7 +883,7 @@ int main(int argc, char** argv)
   printf("lklk %d\n",k);
 
   // lk_ls
-  sprintf(OUTFILE,"%s_lkls_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_lkls_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.clustering_Nbin; l++){
      for (m=0;m<tomo.ggl_Npowerspectra; m++){
         if (k==hit){
@@ -892,7 +896,7 @@ int main(int argc, char** argv)
   printf("lkls %d\n",k);
 
   // lk_kk
-  sprintf(OUTFILE,"%s_lkkk_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_lkkk_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.clustering_Nbin; l++){
      if (k==hit){
         sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
@@ -904,7 +908,7 @@ int main(int argc, char** argv)
   printf("lkkk %d\n",k);
 
   // lk_ks
-  sprintf(OUTFILE,"%s_lkks_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_lkks_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.clustering_Nbin; l++){
      for (m=0;m<tomo.shear_Nbin;m++) {
         if (k==hit){
@@ -918,7 +922,7 @@ int main(int argc, char** argv)
   printf("lkks %d\n",k);
 
   // lk_ss
-  sprintf(OUTFILE,"%s_lkss_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_lkss_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.clustering_Nbin; l++){
      for (m=0;m<tomo.shear_Npowerspectra; m++){
         if (k==hit){
@@ -932,7 +936,7 @@ int main(int argc, char** argv)
   printf("lkss %d\n",k);
 
   // ls_kk
-  sprintf(OUTFILE,"%s_lskk_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_lskk_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.ggl_Npowerspectra; l++){
      if (k==hit){
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
@@ -944,7 +948,7 @@ int main(int argc, char** argv)
   printf("lskk%d\n",k);
   
   // ls_ks
-  sprintf(OUTFILE,"%s_lsks_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_lsks_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.ggl_Npowerspectra; l++){
      for (m=0;m<tomo.shear_Nbin;m++) {
         if (k==hit){
@@ -958,7 +962,7 @@ int main(int argc, char** argv)
   printf("lsks %d\n",k);
   
   // kk_kk
-  sprintf(OUTFILE,"%s_kkkk_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_kkkk_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   if (k==hit){
     sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
     run_cov_kk_kk(OUTFILE,covparams.outdir,ell,dell,k);
@@ -968,7 +972,7 @@ int main(int argc, char** argv)
   printf("kkkk %d\n",k);
 
   // kk_ks
-  sprintf(OUTFILE,"%s_kkks_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_kkks_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.shear_Nbin; l++){
      if (k==hit){
         sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
@@ -980,7 +984,7 @@ int main(int argc, char** argv)
   printf("kkks %d\n",k);
 
   // kk_ss
-  sprintf(OUTFILE,"%s_kkss_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_kkss_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.shear_Npowerspectra; l++){
      if (k==hit){
       sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
@@ -992,7 +996,7 @@ int main(int argc, char** argv)
   printf("kkss %d\n",k);
   
   // ks_ks
-  sprintf(OUTFILE,"%s_ksks_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_ksks_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.shear_Nbin; l++){
      for (m=l;m<tomo.shear_Nbin; m++){
         if (k==hit){
@@ -1006,7 +1010,7 @@ int main(int argc, char** argv)
   printf("ksks %d\n",k);
   
  // ks_ss
- sprintf(OUTFILE,"%s_ksss_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+ sprintf(OUTFILE,"%s_ksss_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
  for (l=0;l<tomo.shear_Nbin; l++){
    for (m=0;m<tomo.shear_Npowerspectra; m++){
      if (k==hit){
@@ -1020,7 +1024,7 @@ int main(int argc, char** argv)
   printf("ksss %d\n",k);
 
   // ll_kk
-  sprintf(OUTFILE,"%s_llkk_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_llkk_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.clustering_Npowerspectra; l++){
      if (k==hit){
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
@@ -1032,7 +1036,7 @@ int main(int argc, char** argv)
   printf("llkk %d\n",k);
   
   // ll_ks
-  sprintf(OUTFILE,"%s_llks_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_llks_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.clustering_Npowerspectra; l++){
      for (m=0;m<tomo.shear_Nbin;m++) {
         if (k==hit){
@@ -1046,7 +1050,7 @@ int main(int argc, char** argv)
   printf("llks %d\n",k);
 
   // ll_lk
-  sprintf(OUTFILE,"%s_lllk_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
+  sprintf(OUTFILE,"%s_lllk_cov_Ncl%d_Ntomo%d",covparams.filename,like.Ncl,tomo.shear_Nbin);
   for (l=0;l<tomo.clustering_Npowerspectra; l++){
      for (m=0;m<tomo.clustering_Nbin;m++) {
         if (k==hit){
@@ -1065,4 +1069,3 @@ int main(int argc, char** argv)
   printf("-----------------\n");
   return 0;   
 }
-

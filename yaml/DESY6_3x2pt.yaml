@@ -1,7 +1,7 @@
 # output file
 ######## specify base_dir only if absolute path required. chain_file will use base_dir as prefix
 base_dir : ./
-chain_file : chains/DESY6_3x2
+chain_file : chains/DESY6_3x2_40-3000_15
 
 n_threads  : 1
 iterations : 2000
@@ -65,8 +65,8 @@ ntomo_source : 5
 ntomo_lens   : 5
 
 # correlation function binning
-lbins       : 20
-lbounds     : [30.,3000.]
+lbins       : 15
+lbounds     : [40.,3000.]
 
 # galaxy bias scale cuts [Mpc/h]
 Rmin_bias   : 20
@@ -74,7 +74,7 @@ Rmin_bias   : 20
 lmax_shear  : 3000
 
 #from covariance computation
-ggl_overlap_cut : 0.0
+ggl_overlap_cut : 0.1
 
 
 

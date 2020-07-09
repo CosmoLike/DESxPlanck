@@ -21,6 +21,10 @@ home_datavs:
 home_cov:
 	gcc compute_covariances_fourier.c -o ./compute_covariances_fourier $(opt_home)
 
+home_cov_planck:
+	gcc compute_covariances_fourier_planck.c -o ./compute_covariances_fourier_planck $(opt_home)
+
+
 home_lib:
 	gcc -shared -o like_fourier_6x2pt.so -fPIC like_fourier_6x2pt.c -DSAMPLING $(opt_home) $(cfftlog) $(cfastpt)
 
@@ -35,6 +39,9 @@ ocelote_datavs:
 
 ocelote_cov:
 	gcc compute_covariances_fourier.c -o ./compute_covariances_fourier $(opt_ocelote)
+
+ocelote_cov_planck:
+	gcc compute_covariances_fourier_planck.c -o ./compute_covariances_fourier_planck $(opt_ocelote)
 
 ocelote_lib:
 	gcc -shared -o like_fourier_6x2pt.so -fPIC like_fourier_6x2pt.c -DSAMPLING $(opt_ocelote) $(cfftlog) $(cfastpt)

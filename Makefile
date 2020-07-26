@@ -21,6 +21,10 @@ home_datavs:
 home_cov:
 	gcc compute_covariances_fourier.c -o ./compute_covariances_fourier $(opt_home)
 
+home_cov_real:
+	gcc compute_covariances_real_6x2pt.c -o ./compute_covariances_real_6x2pt $(opt_home)
+
+
 home_cov_planck:
 	gcc compute_covariances_fourier_planck.c -o ./compute_covariances_fourier_planck $(opt_home)
 

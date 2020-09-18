@@ -14,4 +14,4 @@
 module load gsl/2/2.1
 
 cd $PBS_O_WORKDIR
-/home/u1/xfang/CosmoLike/DESxPlanck/compute_covariances_real $PBS_ARRAY_INDEX ini_files/cov_y1_mcal_mix.ini >&/home/u1/xfang/output/job_output_$PBS_ARRAY_INDEX.log
+/home/u1/xfang/CosmoLike/DESxPlanck/compute_covariances_real_6x2pt $PBS_ARRAY_INDEX ini_files/cov_y1_mcal_mix.ini >&/home/u1/xfang/output/job_output_$PBS_ARRAY_INDEX.log

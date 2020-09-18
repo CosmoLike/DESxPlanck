@@ -36,8 +36,8 @@
 #include "../cosmolike_core/theory/HOD.c"
 #include "../cosmolike_core/theory/pt.c"
 #include "../cosmolike_core/theory/cosmo2D_fourier.c"
-#include "../cosmolike_core/theory/CMBxLSS_fourier.c"
 #include "../cosmolike_core/theory/IA.c"
+#include "../cosmolike_core/theory/CMBxLSS_fourier.c"
 #include "../cosmolike_core/theory/cluster.c"
 #include "../cosmolike_core/theory/BAO.c"
 #include "../cosmolike_core/theory/external_prior.c"
@@ -79,11 +79,6 @@ int main(int argc, char** argv)
   set_cosmological_parameters_to_(argv[2],1);
 
   set_survey_parameters_to_(argv[2],1);
-  init_source_sample_();
-  init_lens_sample_();
-
-  init_probes("6x2pt");
-  init_cmb("planck");   
   //init_clusters();
   //init_IA("none", "GAMA");
   //printf("test values: %d, %d, %s",redshift.clustering_photoz,tomo.clustering_Nbin,redshift.clustering_REDSHIFT_FILE);
@@ -129,6 +124,12 @@ int main(int argc, char** argv)
   like.lmax = covparams.lmax;
 
 
+  init_source_sample_();
+  init_lens_sample_();
+
+  init_probes("6x2pt");
+  init_cmb("planck");
+
   /* pre-Calculate galaxy bias for src (5 bins) and lens (5 bins) galaxies */
   // double zbins[10] = {0.318457,0.518719,0.724785,0.993135,1.595836,0.320976,0.508596,0.686747,0.882423,1.131005};
   // double grow_z;
@@ -152,6 +153,7 @@ int main(int argc, char** argv)
           // if (fopen(filename, "r") != NULL){exit(1);}
           run_cov_shear_shear_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,l,m,1,1,k);
         }
+
         k=k+1;
       }
     }
@@ -380,7 +382,7 @@ int main(int argc, char** argv)
   {
     sprintf(OUTFILE,"%s_lklk_cov_Ntheta%d_Ntomo%d",covparams.filename,Ntheta,tomo.shear_Nbin);
     for (l=0;l<tomo.clustering_Nbin; l++){
-      for (m=0;m<tomo.clustering_Nbin; m++){
+      for (m=l;m<tomo.clustering_Nbin; m++){
         if(k==hit) {
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
           // if (fopen(filename, "r") != NULL){exit(1);}
@@ -408,7 +410,7 @@ int main(int argc, char** argv)
   {
     sprintf(OUTFILE,"%s_ksks_cov_Ntheta%d_Ntomo%d",covparams.filename,Ntheta,tomo.shear_Nbin);
     for (l=0;l<tomo.shear_Nbin; l++){
-      for (m=0;m<tomo.shear_Nbin; m++){
+      for (m=l;m<tomo.shear_Nbin; m++){
         if(k==hit) {
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
           // if (fopen(filename, "r") != NULL){exit(1);}

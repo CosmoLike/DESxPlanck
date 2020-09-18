@@ -50,3 +50,7 @@ ocelote_cov_planck:
 ocelote_lib:
 	gcc -shared -o like_fourier_6x2pt.so -fPIC like_fourier_6x2pt.c -DSAMPLING $(opt_ocelote) $(cfftlog) $(cfastpt)
 
+
+ocelote_cov_real:
+	gcc compute_covariances_real_6x2pt.c -o ./compute_covariances_real_6x2pt $(opt_ocelote)
+

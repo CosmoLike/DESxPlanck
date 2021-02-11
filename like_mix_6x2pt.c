@@ -441,27 +441,6 @@ double log_multi_like(double OMM, double NORM, double NS, double W0,double WA, d
   // printf("%d %d %d %d\n",like.BAO,like.wlphotoz,like.clphotoz,like.shearcalib);
   // printf("logl %le %le %le %le\n",log_L_shear_calib(),log_L_wlphotoz(),log_L_clphotoz(),log_L_clusterMobs());
   int start=0;  
-  
-  // if(like.shear_shear==1) {
-  //   set_data_shear(like.Ncl, ell, pred, start);
-  //   start=start+like.Ncl*tomo.shear_Npowerspectra;
-  // }
-  // if(like.shear_pos==1){
-  //   set_data_ggl(like.Ncl, ell, pred, start);
-  //   start=start+like.Ncl*tomo.ggl_Npowerspectra;
-  // } 
-  // if(like.pos_pos==1){
-  //   set_data_clustering(like.Ncl,ell,pred, start);
-  //   start=start+like.Ncl*tomo.clustering_Npowerspectra;
-  // }
-  // if(like.gk==1) {
-  //   set_data_gk(ell, pred, start);
-  //   start += like.Ncl*tomo.clustering_Nbin;
-  // }
-  // if(like.ks==1) {
-  //   set_data_ks(ell, pred, start);
-  //   start += like.Ncl*tomo.shear_Nbin;
-  // }
 
   if(like.shear_shear==1) {
     set_data_shear(theta, pred, start);
@@ -516,8 +495,8 @@ void compute_data_vector(char *filename, double OMM, double NORM, double NS, dou
 
   int i,j,k,m=0,l;
   static double *pred;
-  static double *ell;
-  static double darg;
+  static double *ell, *theta;
+  static double darg, dt;
   double chisqr,a,log_L_prior=0.0;
   
   if(ell==0){
@@ -526,6 +505,12 @@ void compute_data_vector(char *filename, double OMM, double NORM, double NS, dou
     darg=(log(like.lmax)-log(like.lmin))/like.Ncl;
     for (l=0;l<like.Ncl;l++){
       ell[l]=exp(log(like.lmin)+(l+0.5)*darg);
+    }
+
+    theta= create_double_vector(0, like.Ntheta-1);
+    dt=(log(like.tmax)-log(like.tmin))/like.Ntheta;
+    for (l=0;l<like.Ntheta;l++){
+      theta[l]=exp(log(like.tmin)+(l+0.5)*dt);
     }
   }
 // for (l=0;l<like.Ncl;l++){
@@ -542,32 +527,26 @@ void compute_data_vector(char *filename, double OMM, double NORM, double NS, dou
 
   int start=0;  
   if(like.shear_shear==1) {
-    set_data_shear(like.Ncl, ell, pred, start);
-    start=start+like.Ncl*tomo.shear_Npowerspectra;
+    set_data_shear(theta, pred, start);
+    start=start+2*like.Ntheta*tomo.shear_Npowerspectra; 
   }
   if(like.shear_pos==1){
-    //printf("ggl\n");
-    set_data_ggl(like.Ncl, ell, pred, start);
-    start=start+like.Ncl*tomo.ggl_Npowerspectra;
+    set_data_ggl(theta, pred, start);
+    start=start+like.Ntheta*tomo.ggl_Npowerspectra;
   } 
   if(like.pos_pos==1){
-    //printf("clustering\n");
-    set_data_clustering(like.Ncl,ell,pred, start);
-    start=start+like.Ncl*tomo.clustering_Npowerspectra;
+    set_data_clustering(theta, pred, start);
+    start=start+like.Ntheta*tomo.clustering_Npowerspectra;
   }
-
   if(like.gk==1) {
-    printf("Computing data vector: gk\n");
-    set_data_gk(ell, pred, start);
-    start += like.Ncl * tomo.clustering_Nbin;
+    set_data_gk(theta, pred, start);
+    start += like.Ntheta*tomo.clustering_Nbin;
   }
   if(like.ks==1) {
-    printf("Computing data vector: ks\n");
-    set_data_ks(ell, pred, start);
-    start += like.Ncl * tomo.shear_Nbin;
-  }
-  if (like.kk) {
-    printf("Computing data vector: kk\n");
+    set_data_ks(theta, pred, start);
+    start += like.Ntheta*tomo.shear_Nbin;
+  } 
+  if(like.kk==1) {
     set_data_kk(ell, pred, start);
     start += like.Ncl;
   }

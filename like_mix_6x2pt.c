@@ -147,10 +147,10 @@ void set_data_shear(double *theta, double *data, int start)
   for (nz = 0; nz < tomo.shear_Npowerspectra; nz++){
     z1 = Z1(nz); z2 = Z2(nz);
     for (i = 0; i < like.Ntheta; i++){
-      if (mask(1,like.Ntheta*nz+i)){
+      if (mask(like.Ntheta*nz+i)){
         data[like.Ntheta*nz+i] = xi_shear_tomo_sys(1,theta[i],i,z1,z2);
       }
-      if (mask(1,like.Ntheta*(tomo.shear_Npowerspectra+nz)+i)){
+      if (mask(like.Ntheta*(tomo.shear_Npowerspectra+nz)+i)){
         data[like.Ntheta*(tomo.shear_Npowerspectra+nz)+i] = xi_shear_tomo_sys(-1,theta[i],i,z1,z2);
       }
     }
@@ -164,7 +164,7 @@ void set_data_ggl(double *theta, double *data, int start)
     zl = ZL(nz); zs = ZS(nz);
     //printf("ggl bin combos %d %d\n",zl,zs);
     for (i = 0; i < like.Ntheta; i++){
-      if (mask(1,start+(like.Ntheta*nz)+i)){
+      if (mask(start+(like.Ntheta*nz)+i)){
         data[start+(like.Ntheta*nz)+i] = xi_gamma_t_tomo_sys(theta[i],i,zl,zs);
       }
     }
@@ -176,7 +176,7 @@ void set_data_clustering(double *theta, double *data, int start)
   int i,nz,j;
   for (nz = 0; nz < tomo.clustering_Npowerspectra; nz++){
     for (i = 0; i < like.Ntheta; i++){
-      if (mask(1,start+(like.Ntheta*nz)+i)){
+      if (mask(start+(like.Ntheta*nz)+i)){
         // data[start+(like.Ntheta*nz)+i] = w_tomo_exact(i,nz,nz); //curved sky legendre, std for Y1
         data[start+(like.Ntheta*nz)+i] = w_tomo_nonLimber(i, nz, nz); //nonLimber+RSD
       }
@@ -188,7 +188,7 @@ void set_data_clustering(double *theta, double *data, int start)
 double w_ks_sys(int i, int zs)
 {
    double w;
-   w = w_gk_fullsky(i,ns);
+   w = w_gk_fullsky(i,zs);
    if(like.shearcalib==1) w *=(1.0+nuisance.shear_calibration_m[zs]);
    return w;
 }
@@ -370,9 +370,9 @@ double log_multi_like(double OMM, double NORM, double NS, double W0,double WA, d
     }
 
     theta= create_double_vector(0, like.Ntheta-1);
-    dt=(log(like.tmax)-log(like.tmin))/like.Ntheta;
+    dt=(log(like.vtmax)-log(like.vtmin))/like.Ntheta;
     for (l=0;l<like.Ntheta;l++){
-      theta[l]=exp(log(like.tmin)+(l+0.5)*dt);
+      theta[l]=exp(log(like.vtmin)+(l+0.5)*dt);
     }
 
   }
@@ -508,9 +508,9 @@ void compute_data_vector(char *filename, double OMM, double NORM, double NS, dou
     }
 
     theta= create_double_vector(0, like.Ntheta-1);
-    dt=(log(like.tmax)-log(like.tmin))/like.Ntheta;
+    dt=(log(like.vtmax)-log(like.vtmin))/like.Ntheta;
     for (l=0;l<like.Ntheta;l++){
-      theta[l]=exp(log(like.tmin)+(l+0.5)*dt);
+      theta[l]=exp(log(like.vtmin)+(l+0.5)*dt);
     }
   }
 // for (l=0;l<like.Ncl;l++){

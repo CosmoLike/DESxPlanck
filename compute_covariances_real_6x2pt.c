@@ -45,13 +45,16 @@
 #include "../cosmolike_core/theory/covariances_fourier.c"
 #include "../cosmolike_core/theory/covariances_CMBxLSS_fourier_planck.c"
 // #include "../cosmolike_core/theory/covariances_real_binned.c"
-#include "../cosmolike_core/theory/covariances_real_binned_fullsky_simple.c"
+// #include "../cosmolike_core/theory/covariances_real_binned_fullsky_simple.c"
+// #include "../cosmolike_core/theory/covariances_real_binned_fullsky.c"
+#include "../cosmolike_core/theory/covariances_binned_simple.c"
 // #include "../cosmolike_core/theory/run_covariances_real.c"
 #include "../cosmolike_core/theory/run_covariances_real_fullsky.c"
 #include "../cosmolike_core/theory/run_covariances_real_fullsky_6x2pt.c"
 #include "init_LSSxCMB.c"
 
-
+// Usage example
+// compute_covariances_real_6x2pt $PBS_ARRAY_INDEX ini_files/cov_y1_mcal_mix.ini >&/home/u1/xfang/output/job_output_$PBS_ARRAY_INDEX.log
 int main(int argc, char** argv)
 {
   int hit=atoi(argv[1]);
@@ -60,7 +63,7 @@ int main(int argc, char** argv)
   double ktmp;
   char OUTFILE[400],filename[400];
   Ntable.N_a=100;
-  set_cov_parameters_to_(argv[2],1);
+  set_cov_parameters_to_(argv[2],1);// ini_files -> covparams
   //here: setting values internally
 
   // set this to zero to quickly run Gaussian-only covariances for testing
@@ -76,9 +79,9 @@ int main(int argc, char** argv)
   FILE *F;
   printf("running multi_covariance_real with NG = %d\n",NG);
   
-  set_cosmological_parameters_to_(argv[2],1);
+  set_cosmological_parameters_to_(argv[2],1);// ini_files -> cosmoparams?
 
-  set_survey_parameters_to_(argv[2],1);
+  set_survey_parameters_to_(argv[2],1);// ini_files -> surveyparams?
   //init_clusters();
   //init_IA("none", "GAMA");
   //printf("test values: %d, %d, %s",redshift.clustering_photoz,tomo.clustering_Nbin,redshift.clustering_REDSHIFT_FILE);

@@ -5,6 +5,10 @@ opt_ocelote := -std=c99 -Wno-missing-braces -Wno-missing-field-initializers \
 -I/cm/shared/uaapps/gsl/2.1/include -L/cm/shared/uaapps/gsl/2.1/lib \
 -lfftw3 -lgsl -lgslcblas -lm -g -O3 \
 -ffast-math -funroll-loops -std=gnu99 -L../cosmolike_core/class -lclass
+opt_puma := -std=c99 -Wno-missing-braces -Wno-missing-field-initializers \
+-I/opt/ohpc/pub/libs/gnu8/gsl/2.6/include -L/opt/ohpc/pub/libs/gnu8/gsl/2.6/lib \
+-lfftw3 -lgsl -lgslcblas -lm -g -O3 \
+-ffast-math -funroll-loops -std=gnu99 -L../cosmolike_core/class -lclass
 cfftlog_dir := ../cosmolike_core/cfftlog/
 cfftlog := $(cfftlog_dir)cfftlog.c $(cfftlog_dir)utils.c $(cfftlog_dir)utils_complex.c
 
@@ -34,7 +38,7 @@ home_cov_planck:
 home_lib:
 	gcc -shared -o like_fourier_6x2pt.so -fPIC like_fourier_6x2pt.c -DSAMPLING $(opt_home) $(cfftlog) $(cfastpt)
 
-
+################################################
 ocelote:
 	make ocelote_lib
 	make ocelote_datavs
@@ -56,3 +60,35 @@ ocelote_lib:
 ocelote_cov_real:
 	gcc compute_covariances_real_6x2pt.c -o ./compute_covariances_real_6x2pt $(opt_ocelote)
 
+##########################################
+puma_fourier:
+	make puma_lib
+	#make puma_datavs
+	make puma_cov
+
+puma_mix:
+	make puma_lib_mix
+	#make puma_datavs
+	make puma_cov_real
+
+
+puma_datavs:
+	gcc like_fourier_6x2pt.c -o ./like_fourier_6x2pt $(opt_puma)
+
+puma_cov:
+	gcc compute_covariances_fourier.c -o ./compute_covariances_fourier $(opt_puma)
+
+puma_cov_planck:
+	gcc compute_covariances_fourier_planck.c -o ./compute_covariances_fourier_planck $(opt_puma)
+
+puma_lib:
+	gcc -shared -o like_fourier_6x2pt.so -fPIC like_fourier_6x2pt.c -DSAMPLING $(opt_puma) $(cfftlog) $(cfastpt)
+
+puma_lib_mix:
+	gcc -shared -o like_mix_6x2pt.so -fPIC like_mix_6x2pt.c -DSAMPLING $(opt_puma) $(cfftlog) $(cfastpt)
+
+puma_cov_real:
+	gcc compute_covariances_real_6x2pt.c -o ./compute_covariances_real_6x2pt $(opt_puma)
+
+puma_mix_clean:
+	rm like_mix_6x2pt.so ./compute_covariances_real_6x2pt

@@ -38,6 +38,8 @@
 #include "../cosmolike_core/theory/pt.c"
 #include "../cosmolike_core/theory/cosmo2D_fourier.c"
 #include "../cosmolike_core/theory/IA.c"
+#include "../cosmolike_core/theory/cosmo2D_exact.c"
+#include "../cosmolike_core/theory/cosmo2D_real.c"
 #include "../cosmolike_core/theory/cluster.c"
 #include "../cosmolike_core/theory/BAO.c"
 #include "../cosmolike_core/theory/external_prior.c"
@@ -484,7 +486,7 @@ double log_multi_like(double OMM, double NORM, double NS, double W0,double WA, d
   }
   if (chisqr<-1.0) exit(EXIT_FAILURE);
   if (isnan(chisqr)){return -1.e+16;}
-  printf("%le\n",chisqr);
+  //printf("%le\n",chisqr);
   return -0.5*chisqr+log_L_prior;
 }
 

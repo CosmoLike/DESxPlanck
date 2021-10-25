@@ -1,7 +1,7 @@
 # output file
 ######## specify base_dir only if absolute path required. chain_file will use base_dir as prefix
 base_dir : ./
-chain_file : ../../../../../groups/timeifler/jiachuanxu/temp/DESY1_3x2_public_test
+chain_file : ../../../../../groups/timeifler/jiachuanxu/temp/DESY1_3x2pt_treecorr_test
 
 n_threads  : 1
 iterations : 2000
@@ -10,7 +10,7 @@ nwalkers : 192
 # 2pt files
 cov_file    : covs/invcov_y1_3x2pt_public
 # homebrew datavec
-data_file   : datav/xi_Y1_3x2pt_public
+data_file   : datav/xi_Y1_3x2pt_treecorr_test
 
 # if no mask_file specified,
 # then generate mask from scale cuts specified below

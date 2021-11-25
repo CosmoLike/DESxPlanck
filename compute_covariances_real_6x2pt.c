@@ -43,7 +43,7 @@
 #include "../cosmolike_core/theory/external_prior.c"
 #include "../cosmolike_core/theory/covariances_3D.c"
 #include "../cosmolike_core/theory/covariances_fourier.c"
-#include "../cosmolike_core/theory/covariances_CMBxLSS_fourier_planck.c"
+#include "../cosmolike_core/theory/covariances_CMBxLSS_fourier.c"
 // #include "../cosmolike_core/theory/covariances_real_binned.c"
 // #include "../cosmolike_core/theory/covariances_real_binned_fullsky_simple.c"
 // #include "../cosmolike_core/theory/covariances_real_binned_fullsky.c"
@@ -132,7 +132,9 @@ int main(int argc, char** argv)
 
   init_probes("6x2pt");
   init_cmb("planck");
-
+  //cmb.pathLensRecNoise="./cmblensrec/plancksmica/cmb_tSZ_contaminated_smoothed_7arcmin.txt";
+  // cmb.pathLensRecNoise = "./cmblensrec/plancksmica/cmb_lmax3000.txt";
+  //cmb.pathLensRecNoise = argv[3];
   /* pre-Calculate galaxy bias for src (5 bins) and lens (5 bins) galaxies */
   // double zbins[10] = {0.318457,0.518719,0.724785,0.993135,1.595836,0.320976,0.508596,0.686747,0.882423,1.131005};
   // double grow_z;

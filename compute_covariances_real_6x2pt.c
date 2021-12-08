@@ -45,8 +45,6 @@
 #include "../cosmolike_core/theory/covariances_fourier.c"
 #include "../cosmolike_core/theory/covariances_CMBxLSS_fourier.c"
 // #include "../cosmolike_core/theory/covariances_real_binned.c"
-// #include "../cosmolike_core/theory/covariances_real_binned_fullsky_simple.c"
-// #include "../cosmolike_core/theory/covariances_real_binned_fullsky.c"
 #include "../cosmolike_core/theory/covariances_binned_simple.c"
 // #include "../cosmolike_core/theory/run_covariances_real.c"
 #include "../cosmolike_core/theory/run_covariances_real_fullsky.c"

@@ -576,6 +576,7 @@ int main(int argc, char** argv)
     }
   }
   // fourier kkkk
+  // This does not include CMB smoothing.
   if (strcmp(covparams.kk,"true")==0)
   {
     sprintf(OUTFILE,"%s_kkkk_cov_Ntheta%d_Ntomo%d",covparams.filename,Ntheta,tomo.shear_Nbin);

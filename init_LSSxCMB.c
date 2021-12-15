@@ -658,6 +658,7 @@ void set_cmb_planck() {
    sprintf(cmb.name, "planck");
    cmb.pathLensRecNoise = "./cmblensrec/plancksmica/cmb_lmax3000.txt";
    cmb.fsky = 0.673;
+   cmb.fwhm = 7.0 * constants.arcmin;
    like.lmax_kappacmb = 2999.;
    printf("path for CMB lens noise: %s\n", cmb.pathLensRecNoise);
 }

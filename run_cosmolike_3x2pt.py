@@ -1,4 +1,4 @@
-from cosmolike_libs_6x2pt import *
+from cosmolike_libs_6x2pt_mix import *
 
 import os
 import numpy as np
@@ -56,9 +56,9 @@ def run_cosmolike(params, pool=None):
     # if (get_N_data() != params['mask_checksum']):
     #     print("Number of data points computed from yaml file = %d; N_data from maskfile = %d",params['mask_checksum'],get_N_data())
     #     exit(1)
-#    cosmo_fid.print_struct()
-#    nuisance_fid.print_struct()
-    write_cosmolike_datavector(test_datavector, cosmo_fid, nuisance_fid)
+    cosmo_fid.print_struct()
+    nuisance_fid.print_struct()
+    write_cosmolike_datavector(test_datavector.encode('utf-8'), cosmo_fid, nuisance_fid)
     print ("will sample over", varied_params)
 
     nthreads = 1
@@ -283,7 +283,7 @@ def parse_IA_mpp_flat_prior(params, nuisance_min, nuisance_fid, nuisance_max, va
             var = 1
     else:
         if "A_z_range" not in params:
-            print "run_cosmolike_mpp.py: A_ia not found in yaml file, use cosmolike_libs_real_mpp.py default value"
+            print ("run_cosmolike_mpp.py: A_ia not found in yaml file, use cosmolike_libs_real_mpp.py default value")
 
     if "eta_ia_range" in params:
         initia(4)
@@ -298,7 +298,7 @@ def parse_IA_mpp_flat_prior(params, nuisance_min, nuisance_fid, nuisance_max, va
             var +=1
     else:
         if "A_z_range" not in params:
-            print "run_cosmolike_mpp.py: eta_ia not found in yaml file, use cosmolike_libs_real_mpp.py default value"
+            print ("run_cosmolike_mpp.py: eta_ia not found in yaml file, use cosmolike_libs_real_mpp.py default value")
     if (var == 0):
         is_var = 0
     return is_var

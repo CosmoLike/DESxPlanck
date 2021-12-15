@@ -99,16 +99,16 @@ parser.add_argument('-mask',dest = "mask", action='store_true',help ="create mas
 args = parser.parse_args()
 try:
     param_file = args.parameter_file
+    print(param_file)
 except SystemExit:
 	sys.exit(1)
 load_yaml = 1
 try:
-	params = yaml.load(open(param_file))
+	params = yaml.load(open(param_file), Loader=yaml.FullLoader)
 	for sc in params.get("scale_cuts", []):
 		params.update(yaml.load(open(sc)))
 except:
 	load_yaml = 0
-
 if (not load_yaml):
 	try:
 		params = yaml.full_load(open(param_file))
@@ -122,4 +122,5 @@ if ((not os.path.isfile(params['mask_file'])) and (not args.mask)):
 	print("\nmask_file %s doesn't exist!\nRerun \"run_cosmolike_wrapper.py YAML_FILE -mask\" to create mask_file from scale cuts\n"%(params['mask_file']))
 	exit(1)
 # make_mask(params, args.mask)
+print("Alive")
 run_cosmolike(params)

@@ -188,7 +188,7 @@ void set_data_clustering(double *theta, double *data, int start)
 double w_ks_sys(int i, int zs)
 {
    double w;
-   w = w_gk_fullsky(i,ns);
+   w = w_ks_fullsky(i,ns);
    if(like.shearcalib==1) w *=(1.0+nuisance.shear_calibration_m[zs]);
    return w;
 }

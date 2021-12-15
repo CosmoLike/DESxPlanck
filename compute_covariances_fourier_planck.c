@@ -43,7 +43,7 @@
 #include "../cosmolike_core/theory/covariances_3D.c"
 #include "../cosmolike_core/theory/covariances_fourier.c"
 #include "../cosmolike_core/theory/CMBxLSS_fourier.c"
-#include "../cosmolike_core/theory/covariances_CMBxLSS_fourier_planck.c"
+#include "../cosmolike_core/theory/covariances_CMBxLSS_fourier.c"
 
 #include "init_LSSxCMB.c"
 

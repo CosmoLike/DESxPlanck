@@ -12,7 +12,7 @@
 #SBATCH --error=/home/u17/jiachuanxu/output/%x-%j.err
 
 ###--- Optionan. Array job submission
-#SBATCH --array=1-154
+###SBATCH --array=1-10
 
 ###--- REQUIRED. Specify the PI group for this job
 #SBATCH --account=timeifler
@@ -37,7 +37,7 @@
 #SBATCH --mem=16gb
 
 ###--- REQUIRED. Specify the walltime required for this job, hhh:mm:ss
-#SBATCH --time=36:00:00
+#SBATCH --time=72:00:00
 
 
 # --------------------------------------------------------------
@@ -46,7 +46,7 @@
 ### Load required modules/libraries if needed
 #module load gnu/5.4.0
 module load gsl/2.6
-#module load python/3.6/3.6.5
+module load python/3.6
 #module load mpich/3.3.1
 module load openmpi3/3.1.4
 
@@ -55,10 +55,18 @@ cd $SLURM_SUBMIT_DIR
 
 ### Run your work
 ### run your executable program with begin and end date and time output
-for (( c=0; c<10; c++ ))
-do
-    hit=$(( ${SLURM_ARRAY_TASK_ID} + $c * 154 ))
-    ./compute_covariances_real_6x2pt $hit ini_files/cov_y1_mcal_mix.ini >&/home/u17/jiachuanxu/output/job_output_${hit}.log
-done
 
-#./compute_covariances_real_6x2pt ${SLURM_ARRAY_TASK_ID} ini_files/cov_y1_mcal_mix.ini >&/home/u17/jiachuanxu/output/job_output_${SLURM_ARRAY_TASK_ID}.log
+#for (( c=0; c<2; c++ ))
+#do
+#    hit=$(( ${SLURM_ARRAY_TASK_ID} + $c * 770 ))
+#    ./compute_covariances_real_6x2pt $hit ini_files/cov_y1_mcal_mix.ini ./cmblensrec/plancksmica/cmb_lmax3000.txt >&/home/u17/jiachuanxu/output/job_output_${hit}.log
+#done
+
+### In case some jobs failed, uncomment the following lines
+
+#TODO_list=(275 276 277 281 282 1045 1046 1047 1051 1052)
+#hit=${TODO_list[${SLURM_ARRAY_TASK_ID}]}
+hit=275
+echo ${hit}
+./compute_covariances_real_6x2pt $hit ini_files/cov_y1_mcal_mix.ini ./cmblensrec/plancksmica/cmb_lmax3000.txt >&/home/u17/jiachuanxu/output/job_output_${hit}.log
+

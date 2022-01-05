@@ -19,8 +19,8 @@ void init_source_sample_mpp(char *multihisto_file, int Ntomo);
 void init_lens_sample_mpp(char *multihisto_file, int Ntomo, double *b1, double *b2, double ggl_cut);
 void init_IA_mpp(int N);
 
-void init_cmb(char * cmbName);
-void set_cmb_planck();
+void init_cmb(char * cmbName, char * cmb_lens_noise_file);
+void set_cmb_planck(char * cmb_lens_noise_file);
 void set_cmb_cmbs4();
 void set_cmb_so_Y5();
 void set_cmb_so_Y1();
@@ -637,7 +637,7 @@ void init_probes(char *probes)
 
 
 /************ CMB Settings ***********/
-void init_cmb(char * cmbName) {
+void init_cmb(char * cmbName, char *cmb_lens_noise_file) {
    printf("\n");
    printf("-----------------------------------\n");
    printf("Initializing CMB\n");
@@ -645,7 +645,7 @@ void init_cmb(char * cmbName) {
    
    printf("CMB survey: %s\n", cmbName);
    if (strcmp(cmbName, "planck")==0)
-      set_cmb_planck();
+      set_cmb_planck(cmb_lens_noise_file);
    if (strcmp(cmbName, "cmbs4")==0)
       set_cmb_cmbs4();
    if (strcmp(cmbName, "so_Y1")==0)
@@ -654,10 +654,11 @@ void init_cmb(char * cmbName) {
       set_cmb_so_Y5();
 }
 
-void set_cmb_planck() {
+void set_cmb_planck(char * cmb_lens_noise_file) {
    sprintf(cmb.name, "planck");
-   cmb.pathLensRecNoise = "./cmblensrec/plancksmica/cmb_lmax3000.txt";
-  //cmb.pathLensRecNoise = "./cmblensrec/plancksmica/cmb_tSZ_deprojected_smoothed_7arcmin.txt";
+   //cmb.pathLensRecNoise = "./cmblensrec/plancksmica/cmb_lmax3000.txt";
+   //cmb.pathLensRecNoise = "./cmblensrec/plancksmica/cmb_tSZ_deprojected_smoothed_7arcmin.txt";
+   cmb.pathLensRecNoise = cmb_lens_noise_file;
    cmb.fsky = 0.6706296;
    cmb.fwhm = 7.0 * constants.arcmin;
    like.lmax_kappacmb = 2999.;

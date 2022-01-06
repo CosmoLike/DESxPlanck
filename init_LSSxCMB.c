@@ -19,8 +19,8 @@ void init_source_sample_mpp(char *multihisto_file, int Ntomo);
 void init_lens_sample_mpp(char *multihisto_file, int Ntomo, double *b1, double *b2, double ggl_cut);
 void init_IA_mpp(int N);
 
-void init_cmb(char * cmbName);
-void set_cmb_planck();
+void init_cmb(char * cmbName, char * cmb_lens_noise_file);
+void set_cmb_planck(char * cmb_lens_noise_file);
 void set_cmb_cmbs4();
 void set_cmb_so_Y5();
 void set_cmb_so_Y1();
@@ -232,28 +232,29 @@ double mask(int ci) // For fourier space
       }
      fclose(F);
      printf("%d bins within angular mask\n",N);
-     printf("like.pos_pos = %d, like.shear_pos = %d,like.shear_shear = %d, like.ks = %d, like.gk = %d\n\n",like.pos_pos,like.shear_pos,like.shear_shear,like.ks,like.gk); 
+     printf("like.pos_pos = %d, like.shear_pos = %d,like.shear_shear = %d, like.ks = %d, like.gk = %d, like.kk = %d\n\n",
+		like.pos_pos,like.shear_pos,like.shear_shear,like.ks,like.gk, like.kk); 
     }
      int N3x2pt, N5x2pt, N6x2pt;
-     N3x2pt = like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra+tomo.clustering_Npowerspectra);    
-     N5x2pt = like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra+tomo.clustering_Npowerspectra+tomo.shear_Nbin+tomo.clustering_Nbin);
-     N6x2pt = like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra+tomo.clustering_Npowerspectra+tomo.shear_Nbin+tomo.clustering_Nbin+1);
+     N3x2pt = like.Ntheta*(tomo.shear_Npowerspectra*2 + tomo.ggl_Npowerspectra + tomo.clustering_Npowerspectra);    
+     N5x2pt = N3x2pt + like.Ntheta*(tomo.shear_Nbin + tomo.clustering_Nbin);
+     N6x2pt = N5x2pt + like.Ncl;
     //test whether Ndata assumes 3x2pt or 5x2pt format
     //if so, mask out probes excluded from the analysis
      if (N == N3x2pt || N== N5x2pt || N == N6x2pt){
       if(like.shear_shear==0){
         printf("masking out shear-shear bins\n");
-       for (i = 0; i< like.Ncl*tomo.shear_Npowerspectra;i++){mask[i] = 0.;}
+       for (i = 0; i< like.Ntheta*tomo.shear_Npowerspectra*2;i++){mask[i] = 0.;}
       }
       if(like.pos_pos==0){
-        N = like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra);
+        N = like.Ntheta*(tomo.shear_Npowerspectra*2+tomo.ggl_Npowerspectra);
         printf("masking out clustering bins\n");
-        for (i = N; i< N+like.Ncl*tomo.clustering_Npowerspectra;i++){mask[i] = 0.;}
+        for (i = N; i< N+like.Ntheta*tomo.clustering_Npowerspectra;i++){mask[i] = 0.;}
       }
       if(like.shear_pos==0){
-        N = like.Ncl*tomo.shear_Npowerspectra;
+        N = like.Ntheta*tomo.shear_Npowerspectra*2;
         printf("masking out ggl bins\n");
-        for (i = N; i <N+like.Ncl*tomo.ggl_Npowerspectra; i++){mask[i] = 0.;}
+        for (i = N; i <N+like.Ntheta*tomo.ggl_Npowerspectra; i++){mask[i] = 0.;}
       }
     }
     //test whether Ndata 5x2pt format
@@ -261,13 +262,13 @@ double mask(int ci) // For fourier space
     if (like.Ndata == N5x2pt){
       if(like.ks==0){
         printf("masking out shear x kappa bins\n");
-        N = like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra+tomo.clustering_Npowerspectra);
-        for (i = N; i <N+like.Ncl*tomo.shear_Nbin; i++){mask[i] = 0.;}
+        N = like.Ntheta*(tomo.shear_Npowerspectra*2 + tomo.ggl_Npowerspectra + tomo.clustering_Npowerspectra);
+        for (i = N; i <N+like.Ntheta*tomo.shear_Nbin; i++){mask[i] = 0.;}
       }
       if(like.gk==0){
         printf("masking out galaxies x kappa bins\n");
-        N = like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra+tomo.clustering_Npowerspectra+tomo.shear_Nbin);
-        for (i = N; i < N+like.Ncl*tomo.clustering_Nbin; i++){mask[i] = 0.;}
+        N = like.Ntheta*(tomo.shear_Npowerspectra*2 + tomo.ggl_Npowerspectra + tomo.clustering_Npowerspectra + tomo.shear_Nbin);
+        for (i = N; i < N+like.Ntheta*tomo.clustering_Nbin; i++){mask[i] = 0.;}
       }
     }
     N = 0;
@@ -439,7 +440,7 @@ void init_binning_fourier(int Ncl, double lmin, double lmax)
   printf("number of ell bins Ncl: %d\n",like.Ncl);
   printf("minimum ell: %le\n",like.lmin);
   printf("maximum ell: %le\n",like.lmax);
-  printf("init_binning_mpp complete\n");
+  printf("init_binning_fourier complete\n");
 }
 
 void init_priors(double M_Prior, double SigZ_source, double DeltaZ_source_Prior, double SigZ_source_Prior, double SigZ_lens, double DeltaZ_lens_Prior, double SigZ_lens_Prior, double A_ia_Prior, double beta_ia_Prior, double eta_ia_Prior, double etaZ_ia_Prior, double Q1_Prior, double Q2_Prior, double Q3_Prior)
@@ -566,70 +567,73 @@ void init_probes(char *probes)
   printf("------------------------------\n");
   printf("Initializing Probes\n");
   printf("------------------------------\n"); 
+  printf("\nWARNING: PLEASE MAKE SURE THAT THE PROBES ARE SET IN THE CORRECT SPACE!!!\n\n");
+  printf("------------------------------\n");
   printf("like.Ncl=%d\n",like.Ncl);
+  printf("like.Ntheta=%d\n", like.Ntheta);
   printf("tomo.shear_Npowerspectra=%d\n",tomo.shear_Npowerspectra);
   printf("tomo.ggl_Npowerspectra=%d\n",tomo.ggl_Npowerspectra);
   printf("tomo.clustering_Npowerspectra=%d\n",tomo.clustering_Npowerspectra);
 
   sprintf(like.probes,"%s",probes);
   if(strcmp(probes,"shear_shear")==0){
-    like.Ndata=like.Ncl*tomo.shear_Npowerspectra;
+    like.Ndata=like.Ntheta*tomo.shear_Npowerspectra*2;
     like.shear_shear=1;
-    printf("Shear-Shear computation initialized\n");
+    printf("[REAL SPACE] Shear-Shear computation initialized\n");
   }
   if(strcmp(probes,"pos_pos")==0){
-    like.Ndata= like.Ncl*tomo.clustering_Npowerspectra;
+    like.Ndata= like.Ntheta*tomo.clustering_Npowerspectra;
     like.pos_pos=1;
-    printf("Position-Position computation initialized\n");
+    printf("[REAL SPACE] Position-Position computation initialized\n");
   }
   if(strcmp(probes,"ggl_cl")==0){
-    like.Ndata=like.Ncl*(tomo.ggl_Npowerspectra+tomo.clustering_Npowerspectra);
+    like.Ndata=like.Ntheta*(tomo.ggl_Npowerspectra + tomo.clustering_Npowerspectra);
     like.shear_pos=1;
     like.pos_pos=1;
-    printf("Shear-Position computation initialized\n");
-    printf("Position-Position computation initialized\n");
+    printf("[REAL SPACE] Shear-Position computation initialized\n");
+    printf("[REAL SPACE] Position-Position computation initialized\n");
   }
   if(strcmp(probes,"3x2pt")==0){
-    like.Ndata=like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra+tomo.clustering_Npowerspectra);
+    like.Ndata=like.Ntheta*(tomo.shear_Npowerspectra*2 + tomo.ggl_Npowerspectra + tomo.clustering_Npowerspectra);
     like.shear_shear=1;
     like.shear_pos=1;
     like.pos_pos=1;
-    printf("Shear-Shear computation initialized\n");
-    printf("Shear-Position computation initialized\n");
-    printf("Position-Position computation initialized\n");
+    printf("[REAL SPACE] Shear-Shear computation initialized\n");
+    printf("[REAL SPACE] Shear-Position computation initialized\n");
+    printf("[REAL SPACE] Position-Position computation initialized\n");
   } 
   if(strcmp(probes,"6x2pt")==0) {
-    like.Ndata = like.Ncl * (2*tomo.clustering_Nbin+tomo.ggl_Npowerspectra+1+tomo.shear_Nbin+tomo.shear_Npowerspectra);
+    like.Ndata = like.Ntheta*(2*tomo.clustering_Nbin + tomo.ggl_Npowerspectra + tomo.shear_Nbin + tomo.shear_Npowerspectra*2) + like.Ncl;
     like.pos_pos = 1;
     like.gk = 1;
     like.shear_pos = 1;
     like.kk = 1;
     like.ks = 1;
     like.shear_shear = 1;
-    printf("Shear-Shear computation initialized\n");
-    printf("Shear-Position computation initialized\n");
-    printf("Position-Position computation initialized\n");
-    printf("CMBkappa-Shear computation initialized\n");
-    printf("CMBkappa-Position computation initialized\n");
-    printf("CMBkappa-CMBkappa computation initialized\n");
+    printf("[REAL SPACE] Shear-Shear computation initialized\n");
+    printf("[REAL SPACE] Shear-Position computation initialized\n");
+    printf("[REAL SPACE] Position-Position computation initialized\n");
+    printf("[REAL SPACE] CMBkappa-Shear computation initialized\n");
+    printf("[REAL SPACE] CMBkappa-Position computation initialized\n");
+    printf("[FOURIER SPACE] CMBkappa-CMBkappa computation initialized\n");
   }
   if(strcmp(probes,"gg_gk_gs")==0) {
-    like.Ndata = like.Ncl * (2*tomo.clustering_Nbin+tomo.ggl_Npowerspectra);
+    like.Ndata = like.Ntheta*(2*tomo.clustering_Nbin + tomo.ggl_Npowerspectra);
     like.pos_pos = 1;
     like.gk = 1;
     like.shear_pos = 1;
-    printf("Position-Position computation initialized\n");
-    printf("Position-Shear computation initialized\n");
-    printf("Position-CMBkappa computation initialized\n");
+    printf("[REAL SPACE] Position-Position computation initialized\n");
+    printf("[REAL SPACE] Position-Shear computation initialized\n");
+    printf("[REAL SPACE] Position-CMBkappa computation initialized\n");
   }
   if(strcmp(probes,"kk_ks_ss")==0) {
-    like.Ndata = like.Ncl * (1+tomo.shear_Nbin+tomo.shear_Npowerspectra);
+    like.Ndata = like.Ntheta*(tomo.shear_Nbin + tomo.shear_Npowerspectra) + like.Ncl;
     like.kk = 1;
     like.ks = 1;
     like.shear_shear = 1;
-    printf("Shear-Shear computation initialized\n");
-    printf("CMBkappa-Shear computation initialized\n");
-    printf("CMBkappa-CMBkappa computation initialized\n");
+    printf("[REAL SPACE] Shear-Shear computation initialized\n");
+    printf("[REAL SPACE] CMBkappa-Shear computation initialized\n");
+    printf("[FOURIER SPACE] CMBkappa-CMBkappa computation initialized\n");
   }
   printf("Total number of data points like.Ndata=%d\n",like.Ndata);
 }
@@ -637,7 +641,7 @@ void init_probes(char *probes)
 
 
 /************ CMB Settings ***********/
-void init_cmb(char * cmbName) {
+void init_cmb(char * cmbName, char *cmb_lens_noise_file) {
    printf("\n");
    printf("-----------------------------------\n");
    printf("Initializing CMB\n");
@@ -645,7 +649,7 @@ void init_cmb(char * cmbName) {
    
    printf("CMB survey: %s\n", cmbName);
    if (strcmp(cmbName, "planck")==0)
-      set_cmb_planck();
+      set_cmb_planck(cmb_lens_noise_file);
    if (strcmp(cmbName, "cmbs4")==0)
       set_cmb_cmbs4();
    if (strcmp(cmbName, "so_Y1")==0)
@@ -654,14 +658,18 @@ void init_cmb(char * cmbName) {
       set_cmb_so_Y5();
 }
 
-void set_cmb_planck() {
+void set_cmb_planck(char * cmb_lens_noise_file) {
    sprintf(cmb.name, "planck");
-   cmb.pathLensRecNoise = "./cmblensrec/plancksmica/cmb_lmax3000.txt";
-  //cmb.pathLensRecNoise = "./cmblensrec/plancksmica/cmb_tSZ_deprojected_smoothed_7arcmin.txt";
+   //cmb.pathLensRecNoise = "./cmblensrec/plancksmica/cmb_lmax3000.txt";
+   //cmb.pathLensRecNoise = "./cmblensrec/plancksmica/cmb_tSZ_deprojected_smoothed_7arcmin.txt";
+   cmb.pathLensRecNoise = cmb_lens_noise_file;
    cmb.fsky = 0.6706296;
    cmb.fwhm = 7.0 * constants.arcmin;
    like.lmax_kappacmb = 2999.;
    printf("path for CMB lens noise: %s\n", cmb.pathLensRecNoise);
+   printf("CMB fsky = %e\n", cmb.fsky);
+   printf("CMB beam FWHM = %e rad\n", cmb.fwhm);
+   printf("CMB lmax = %e\n", like.lmax_kappacmb);
 }
 
 void set_cmb_cmbs4() {
@@ -693,10 +701,10 @@ void set_cmb_so_Y1() {
 
 void init_ggl_tomo(){
   if (tomo.clustering_Nbin ==0){
-    printf("WARNING! init_mpp.c: init_ggl_tomo called while tomo.clustering_Nbin =0\n");
+    printf("WARNING! init_ggl_tomo.c: init_ggl_tomo called while tomo.clustering_Nbin =0\n");
   }
   if (tomo.shear_Nbin ==0){
-    printf("WARNING! init_mpp.c: init_ggl_tomo called while tomo.shear_Nbin =0\n");
+    printf("WARNING! init_ggl_tomo.c: init_ggl_tomo called while tomo.shear_Nbin =0\n");
   }
   int n = 0;
   for (int i = 0; i < tomo.clustering_Nbin; i++){

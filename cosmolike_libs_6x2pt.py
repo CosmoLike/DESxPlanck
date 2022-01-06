@@ -346,7 +346,7 @@ class LikelihoodFunctionWrapper(object):
         #    print "outside flat prior range"
             return -np.inf,-1.
         like = lib.log_like_wrapper(icp, inp)
-        print like
+        print(like)
         # print inp.p_ia[0], inp.p_ia[1], '<-- p_ia'
         # print inp.bias[0], inp.bias[1], inp.bias[2], inp.bias[3], inp.bias[4], '<-- bias'
         # print inp.b_mag[0], inp.b_mag[1], inp.b_mag[2], inp.b_mag[3], inp.b_mag[4], '<-- bmag'
@@ -425,6 +425,14 @@ def sample_main(varied_parameters, iterations, nwalker, nthreads,
     #dtype = [("h", float), ("sigma_8", float)]
     sampler = emcee.EnsembleSampler(nwalker, ndim, likelihood, #blobs_dtype=dtype,
         threads=nthreads, pool=pool)
+    ### try to write to multiple files
+    try:
+        from mpi4py import MPI
+        pid = MPI.COMM_WORLD.rank
+        psize = MPI.COMM_WORLD.size
+        filename = filename+"_%d-%d"%(pid, psize)
+    except ImportError:
+        print("mpi4py not found\n Write chains into single file\n")
     f = open(filename, 'w')
 
     #write header here

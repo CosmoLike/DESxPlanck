@@ -51,7 +51,8 @@
 #include "../cosmolike_core/theory/run_covariances_real_fullsky_6x2pt.c"
 #include "init_LSSxCMB.c"
 
-
+// Usage example
+// compute_covariances_real_6x2pt $PBS_ARRAY_INDEX ini_files/cov_y1_mcal_mix.ini >&/home/u1/xfang/output/job_output_$PBS_ARRAY_INDEX.log
 int main(int argc, char** argv)
 {
   int hit=atoi(argv[1]);
@@ -60,7 +61,7 @@ int main(int argc, char** argv)
   double ktmp;
   char OUTFILE[400],filename[400];
   Ntable.N_a=100;
-  set_cov_parameters_to_(argv[2],1);
+  set_cov_parameters_to_(argv[2],1);// ini_files -> covparams
   //here: setting values internally
 
   // set this to zero to quickly run Gaussian-only covariances for testing
@@ -76,9 +77,9 @@ int main(int argc, char** argv)
   FILE *F;
   printf("running multi_covariance_real with NG = %d\n",NG);
   
-  set_cosmological_parameters_to_(argv[2],1);
+  set_cosmological_parameters_to_(argv[2],1);// ini_files -> cosmoparams?
 
-  set_survey_parameters_to_(argv[2],1);
+  set_survey_parameters_to_(argv[2],1);// ini_files -> surveyparams?
   //init_clusters();
   //init_IA("none", "GAMA");
   //printf("test values: %d, %d, %s",redshift.clustering_photoz,tomo.clustering_Nbin,redshift.clustering_REDSHIFT_FILE);
@@ -129,7 +130,9 @@ int main(int argc, char** argv)
 
   init_probes("6x2pt");
   init_cmb("planck");
-
+  //cmb.pathLensRecNoise="./cmblensrec/plancksmica/cmb_tSZ_contaminated_smoothed_7arcmin.txt";
+  // cmb.pathLensRecNoise = "./cmblensrec/plancksmica/cmb_lmax3000.txt";
+  //cmb.pathLensRecNoise = argv[3];
   /* pre-Calculate galaxy bias for src (5 bins) and lens (5 bins) galaxies */
   // double zbins[10] = {0.318457,0.518719,0.724785,0.993135,1.595836,0.320976,0.508596,0.686747,0.882423,1.131005};
   // double grow_z;

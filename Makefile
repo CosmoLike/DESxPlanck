@@ -21,7 +21,7 @@ cfftlog := $(cfftlog_dir)cfftlog.c $(cfftlog_dir)utils.c $(cfftlog_dir)utils_com
 
 home: 
 	make home_lib
-	make home_datavs
+	#make home_datavs
 	make home_cov_real
 
 home_datavs:

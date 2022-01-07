@@ -260,15 +260,15 @@ double mask(int ci) // For fourier space
     //test whether Ndata 5x2pt format
     //if so, mask out probes excluded from the analysis
     if (like.Ndata == N5x2pt){
-      if(like.ks==0){
-        printf("masking out shear x kappa bins\n");
-        N = like.Ntheta*(tomo.shear_Npowerspectra*2 + tomo.ggl_Npowerspectra + tomo.clustering_Npowerspectra);
-        for (i = N; i <N+like.Ntheta*tomo.shear_Nbin; i++){mask[i] = 0.;}
-      }
       if(like.gk==0){
         printf("masking out galaxies x kappa bins\n");
-        N = like.Ntheta*(tomo.shear_Npowerspectra*2 + tomo.ggl_Npowerspectra + tomo.clustering_Npowerspectra + tomo.shear_Nbin);
+        N = N3x2pt;
         for (i = N; i < N+like.Ntheta*tomo.clustering_Nbin; i++){mask[i] = 0.;}
+      }
+      if(like.ks==0){
+        printf("masking out shear x kappa bins\n");
+        N = N3x2pt + like.Ntheta * tomo.clustering_Nbin;
+        for (i = N; i <N+like.Ntheta*tomo.shear_Nbin; i++){mask[i] = 0.;}
       }
     }
     N = 0;
@@ -603,13 +603,14 @@ void init_probes(char *probes)
     printf("[REAL SPACE] Position-Position computation initialized\n");
   } 
   if(strcmp(probes,"6x2pt")==0) {
-    like.Ndata = like.Ntheta*(2*tomo.clustering_Nbin + tomo.ggl_Npowerspectra + tomo.shear_Nbin + tomo.shear_Npowerspectra*2) + like.Ncl;
+    like.Ndata=like.Ntheta*(tomo.shear_Npowerspectra*2 + tomo.ggl_Npowerspectra + tomo.clustering_Npowerspectra + 
+      tomo.clustering_Nbin + tomo.shear_Nbin) + like.Ncl;
+    like.shear_shear = 1;
+    like.shear_pos = 1;
     like.pos_pos = 1;
     like.gk = 1;
-    like.shear_pos = 1;
-    like.kk = 1;
     like.ks = 1;
-    like.shear_shear = 1;
+    like.kk = 1;
     printf("[REAL SPACE] Shear-Shear computation initialized\n");
     printf("[REAL SPACE] Shear-Position computation initialized\n");
     printf("[REAL SPACE] Position-Position computation initialized\n");
@@ -618,7 +619,7 @@ void init_probes(char *probes)
     printf("[FOURIER SPACE] CMBkappa-CMBkappa computation initialized\n");
   }
   if(strcmp(probes,"gg_gk_gs")==0) {
-    like.Ndata = like.Ntheta*(2*tomo.clustering_Nbin + tomo.ggl_Npowerspectra);
+    like.Ndata = like.Ntheta*(tomo.clustering_Npowerspectra + tomo.clustering_Nbin + tomo.ggl_Npowerspectra);
     like.pos_pos = 1;
     like.gk = 1;
     like.shear_pos = 1;
@@ -627,7 +628,7 @@ void init_probes(char *probes)
     printf("[REAL SPACE] Position-CMBkappa computation initialized\n");
   }
   if(strcmp(probes,"kk_ks_ss")==0) {
-    like.Ndata = like.Ntheta*(tomo.shear_Nbin + tomo.shear_Npowerspectra) + like.Ncl;
+    like.Ndata = like.Ntheta*(tomo.shear_Nbin + 2*tomo.shear_Npowerspectra) + like.Ncl;
     like.kk = 1;
     like.ks = 1;
     like.shear_shear = 1;

@@ -666,8 +666,8 @@ void set_cmb_planck(char * cmb_lens_noise_file) {
    cmb.pathLensRecNoise = cmb_lens_noise_file;
    cmb.fsky = 0.6706296;
    // turn on/off gaussian smoothing
-   //cmb.fwhm = 7.0 * constants.arcmin;
-   cmb.fwhm = -7.0 * constants.arcmin;
+   cmb.fwhm = 7.0 * constants.arcmin;
+   //cmb.fwhm = -7.0 * constants.arcmin;
    like.lmax_kappacmb = 2999.;
    printf("path for CMB lens noise: %s\n", cmb.pathLensRecNoise);
    printf("CMB fsky = %e\n", cmb.fsky);

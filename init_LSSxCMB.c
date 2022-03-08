@@ -7,6 +7,7 @@ void init_survey(char *surveyname, double nsource, double nlens, double area);
 // void init_galaxies(char *SOURCE_ZFILE, char *LENS_ZFILE, char *lensphotoz, char *sourcephotoz, char *tomo_binning_source, char *tomo_binning_lens);
 void init_cosmo_runmode(char *runmode);
 void init_binning_fourier(int Ncl, double lmin, double lmax);
+void init_binning_real(int Ntheta, double theta_min, double theta_max);
 void init_scalecuts(double Rmin_bias, double lmax_shear);
 
 void init_probes(char *probes);
@@ -430,7 +431,7 @@ void init_cosmo_runmode(char *runmode)
 void init_binning_fourier(int Ncl, double lmin, double lmax)
 {
   printf("-------------------------------------------\n");
-  printf("Initializing Binning\n");
+  printf("Initializing Fourier-space Binning\n");
   printf("-------------------------------------------\n");
   
   like.Ncl=Ncl;
@@ -441,6 +442,22 @@ void init_binning_fourier(int Ncl, double lmin, double lmax)
   printf("minimum ell: %le\n",like.lmin);
   printf("maximum ell: %le\n",like.lmax);
   printf("init_binning_fourier complete\n");
+}
+
+void init_binning_real(int Ntheta, double theta_min, double theta_max)
+{
+  printf("-------------------------------------------\n");
+  printf("Initializing Real-space Binning\n");
+  printf("-------------------------------------------\n");
+  
+  like.Ntheta=Ntheta;
+  like.vtmin= theta_min * constants.arcmin; //std=20
+  like.vtmax= theta_max * constants.arcmin; //15,000
+  
+  printf("number of theta bins Ntheta: %d\n",like.Ntheta);
+  printf("minimum theta: %le\n",like.vtmin);
+  printf("maximum theta: %le\n",like.vtmax);
+  printf("init_binning_real complete\n");
 }
 
 void init_priors(double M_Prior, double SigZ_source, double DeltaZ_source_Prior, double SigZ_source_Prior, double SigZ_lens, double DeltaZ_lens_Prior, double SigZ_lens_Prior, double A_ia_Prior, double beta_ia_Prior, double eta_ia_Prior, double etaZ_ia_Prior, double Q1_Prior, double Q2_Prior, double Q3_Prior)
@@ -669,10 +686,12 @@ void set_cmb_planck(char * cmb_lens_noise_file) {
    cmb.fwhm = 7.0 * constants.arcmin;
    //cmb.fwhm = -7.0 * constants.arcmin;
    like.lmax_kappacmb = 2999.;
+   like.lmin_kappacmb = 40.;
    printf("path for CMB lens noise: %s\n", cmb.pathLensRecNoise);
    printf("CMB fsky = %e\n", cmb.fsky);
    printf("CMB beam FWHM = %e rad\n", cmb.fwhm);
    printf("CMB lmax = %e\n", like.lmax_kappacmb);
+   printf("CMB lmin = %e\n", like.lmin_kappacmb);
 }
 
 void set_cmb_cmbs4() {

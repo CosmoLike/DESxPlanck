@@ -1,4 +1,4 @@
-from cosmolike_libs_6x2pt import *
+from cosmolike_libs_6x2pt_mix import *
 
 import os
 import numpy as np

@@ -262,13 +262,13 @@ int set_cosmology_params(double OMM, double NORM, double NS, double W0,double WA
   cosmology.MGSigma =  MGSigma;
   cosmology.MGmu =  MGmu;
 
-  // if (cosmology.Omega_m < 0.05 || cosmology.Omega_m > 0.6) return 0;
-  // if (cosmology.omb < 0.04 || cosmology.omb > 0.055) return 0;
-  // if (cosmology.sigma_8 < 0.5 || cosmology.sigma_8 > 1.1) return 0;
-  // if (cosmology.n_spec < 0.84 || cosmology.n_spec > 1.06) return 0;
-  // if (cosmology.w0 < -2.1 || cosmology.w0 > -0.0) return 0;
-  // if (cosmology.wa < -2.6 || cosmology.wa > 2.6) return 0;
-  // if (cosmology.h0 < 0.4 || cosmology.h0 > 0.9) return 0;
+   if (cosmology.Omega_m < 0.05 || cosmology.Omega_m > 0.6) return 0;
+   if (cosmology.omb < 0.04 || cosmology.omb > 0.055) return 0;
+   if (cosmology.sigma_8 < 0.5 || cosmology.sigma_8 > 1.1) return 0;
+   if (cosmology.n_spec < 0.84 || cosmology.n_spec > 1.06) return 0;
+   if (cosmology.w0 < -2.1 || cosmology.w0 > -0.0) return 0;
+   if (cosmology.wa < -2.6 || cosmology.wa > 2.6) return 0;
+   if (cosmology.h0 < 0.4 || cosmology.h0 > 0.9) return 0;
   return 1;
 }
 
@@ -516,46 +516,107 @@ void compute_data_vector(char *filename, double OMM, double NORM, double NS, dou
       theta[l]=exp(log(like.vtmin)+(l+0.5)*dt);
     }
   }
-// for (l=0;l<like.Ncl;l++){
-//   printf("%d %le\n",i,ell[l]);
-// }
+  //for (l=0;l<like.Ntheta;l++){
+  //  printf("%d %le\n",l,theta[l]);
+  //}
 
-  set_cosmology_params(OMM,NORM,NS,W0,WA,OMB,OMNUh2,H0, MGSigma, MGmu, THETA_S);
+  if(set_cosmology_params(OMM,NORM,NS,W0,WA,OMB,OMNUh2,H0, MGSigma, MGmu, THETA_S)){printf("set cosmo params success\n");}
+  else{printf("set cosmo params failed\n");exit(1);}
   set_nuisance_shear_calib(M);
   set_nuisance_shear_photoz(SP);
   set_nuisance_clustering_photoz(CP);
   set_nuisance_ia(p_ia);
   set_nuisance_gbias(B);
   set_nuisance_bmag(b_mag);
-
+  printf("Setting model vector\n");
   int start=0;  
   if(like.shear_shear==1) {
+    printf("Start with shear-shear\n");
     set_data_shear(theta, pred, start);
-    start=start+2*like.Ntheta*tomo.shear_Npowerspectra; 
+    start=start+2*like.Ntheta*tomo.shear_Npowerspectra;
+    printf("Done with shear-shear\n");
   }
   if(like.shear_pos==1){
+    printf("Start with galaxy-galaxy lensing\n");
     set_data_ggl(theta, pred, start);
     start=start+like.Ntheta*tomo.ggl_Npowerspectra;
+    printf("Done with galaxy-galaxy lensing\n");
   } 
   if(like.pos_pos==1){
+    printf("Start with clustering\n");
     set_data_clustering(theta, pred, start);
     start=start+like.Ntheta*tomo.clustering_Npowerspectra;
+    printf("Done with clustering\n");
   }
   if(like.gk==1) {
+    printf("Start with galaxy-kappa\n");
     set_data_gk(theta, pred, start);
     start += like.Ntheta*tomo.clustering_Nbin;
+    printf("Done with galaxy-kappa\n");
   }
   if(like.ks==1) {
+    printf("Start with shear-kappa\n");
     set_data_ks(theta, pred, start);
     start += like.Ntheta*tomo.shear_Nbin;
+    printf("Done with shear-kappa\n");
   } 
   if(like.kk==1) {
+    printf("Start with kappa-kappa\n");
     set_data_kk(ell, pred, start);
     start += like.Ncl;
+    printf("Done with kappa-kappa\n");
   }
 
+/*   Debug
+  double test_ary[2] = {1000, 0};
+  double test_int = 0;
+  test_int =  int_for_C_kk(0.3, (void *)test_ary);
+  printf("Try int_for_C_kk(a = 0.3, ell=1000) = %e\n", test_int );
+
+  // test chi integration
+  int Nz_tfi = 10000;
+  double zmin_tfi = 1e-5, zmax_tfi = 1090.0;
+  double dz_tfi = log(zmax_tfi/zmin_tfi) / Nz_tfi;
+  double z_tfi = 0.0, chi_tfi=0.0, a_tfi=0.0;
+  double chi_int_tfi_medium = 0.0, chi_int_tfi_high = 0.0;
+  double array_tfi[1];
+
+  char tfi_filename[500];
+  sprintf(tfi_filename, "/Users/jiachuanxu/Workspace/CosmoLike/DESxPlanck/test_chi_precision_cosmolike_core.dat");
+  FILE *tfi_file;
+  tfi_file = fopen(tfi_filename, "w");
+  if(tfi_file == NULL){
+    printf("\x1b[90m{%s}\x1b[0m: Can not open file {%s}!",
+            "compute_data_vector", tfi_filename);
+    exit(-1);
+  }
+  fprintf(tfi_file, "# z chi_interp chi_int_medium chi_int_high \n");
+
+  for(int i_tfi=0; i_tfi<Nz_tfi; i_tfi ++)
+  {
+    z_tfi = exp( log(zmin_tfi) + (i_tfi+0.5)*dz_tfi );
+    a_tfi = 1.0/(1.0+z_tfi);
+    
+    chi_int_tfi_medium = int_gsl_integrate_medium_precision(
+      int_for_chi, (void*)array_tfi , a_tfi, 1., NULL, 2000);
+    
+    chi_int_tfi_high = int_gsl_integrate_high_precision(
+      int_for_chi, (void*)array_tfi , a_tfi, 1., NULL, 4000);
+
+    chi_tfi = chi( 1.0/(1.0+z_tfi) );
+    fprintf(tfi_file, "%le\t%le\t%le\t%le\n", z_tfi, chi_tfi, 
+      chi_int_tfi_medium, chi_int_tfi_high);
+  }
+  fclose(tfi_file);
+
+  // test chi integration end
+*/
   FILE *F;
   F=fopen(filename,"w");
+  if(F==NULL){
+    printf("ERORR: Can not open file %s\nAborting...\n", filename);
+    exit(1);
+  }
   for (i=0;i<like.Ndata; i++){  
     fprintf(F,"%d %le\n",i,pred[i]);
     //printf("%d %le\n",i,pred[i]);
@@ -582,7 +643,9 @@ void write_datavector_wrapper(char *filename, input_cosmo_params_y3 ic, input_nu
     printf("write_datavector_wrapper called with A_s = %e, sigma_8 =%e\nEXIT\n",ic.A_s,ic.sigma_8);
     exit(1);
   }
-  compute_data_vector(filename, ic.omega_m, ic.sigma_8, ic.n_s, ic.w0, ic.wa, ic.omega_b,ic.omega_nuh2, ic.h0, ic.MGSigma, ic.MGmu, ic.theta_s,
+  compute_data_vector(filename, 
+    ic.omega_m, NORM, ic.n_s, ic.w0, ic.wa, ic.omega_b, ic.omega_nuh2, 
+    ic.h0, ic.MGSigma, ic.MGmu, ic.theta_s,
     in.bias, in.b_mag,
     in.source_z_bias, in.lens_z_bias, in.shear_m, 
     in.p_ia);

@@ -41,6 +41,7 @@
 #include "../cosmolike_core/theory/IA.c"
 #include "../cosmolike_core/theory/cosmo2D_exact.c"
 #include "../cosmolike_core/theory/cosmo2D_real.c"
+#include "../cosmolike_core/theory/cosmo2D_fullsky.c"
 #include "../cosmolike_core/theory/cluster.c"
 #include "../cosmolike_core/theory/BAO.c"
 #include "../cosmolike_core/theory/external_prior.c"
@@ -138,7 +139,10 @@ double xi_gamma_t_tomo_sys(double theta, int nt, int zl, int zs)
 {
   double xi;
  // if(like.IA==0 || like.IA ==3 || like.IA==4) xi= w_gamma_t_nonLimber(nt,zl,zs); //cosmo2D_real now includes NLA IA terms
-  if(like.IA==0 || like.IA ==3 || like.IA==4) xi= w_gamma_t_tomo(theta,zl,zs); //cosmo2D_real now includes NLA IA terms
+  if(like.IA==0 || like.IA ==3 || like.IA==4) 
+  {
+    xi= w_gamma_t_tomo(theta,zl,zs); //cosmo2D_real now includes NLA IA terms
+  }
 //  if(like.IA==0 || like.IA ==3 || like.IA==4) xi= w_gamma_t_reduced_shear_tomo(theta,zl,zs); //cosmo2D_real now includes NLA IA terms
   if(like.shearcalib==1) xi *=(1.0+nuisance.shear_calibration_m[zs]);
   return xi;
@@ -151,10 +155,18 @@ void set_data_shear(double *theta, double *data, int start)
     z1 = Z1(nz); z2 = Z2(nz);
     for (i = 0; i < like.Ntheta; i++){
       if (mask(like.Ntheta*nz+i)){
-        data[like.Ntheta*nz+i] = xi_shear_tomo_sys(1,theta[i],i,z1,z2);
+        //data[like.Ntheta*nz+i] = xi_shear_tomo_sys(1,theta[i],i,z1,z2);
+        data[like.Ntheta*nz+i] = 
+          xi_pm_fullsky(1, i, z1,z2)
+          //xi_pm_tomo(1, theta[i],z1, z2)
+          *(1.0+nuisance.shear_calibration_m[z1])*(1.0+nuisance.shear_calibration_m[z2]);
       }
       if (mask(like.Ntheta*(tomo.shear_Npowerspectra+nz)+i)){
-        data[like.Ntheta*(tomo.shear_Npowerspectra+nz)+i] = xi_shear_tomo_sys(-1,theta[i],i,z1,z2);
+        //data[like.Ntheta*(tomo.shear_Npowerspectra+nz)+i] = xi_shear_tomo_sys(-1,theta[i],i,z1,z2);
+        data[like.Ntheta*(tomo.shear_Npowerspectra+nz)+i] = 
+          xi_pm_fullsky(-1, i, z1,z2)
+          //xi_pm_tomo(-1, theta[i],z1, z2)
+          *(1.0+nuisance.shear_calibration_m[z1])*(1.0+nuisance.shear_calibration_m[z2]);
       }
     }
   }
@@ -168,7 +180,11 @@ void set_data_ggl(double *theta, double *data, int start)
     //printf("ggl bin combos %d %d\n",zl,zs);
     for (i = 0; i < like.Ntheta; i++){
       if (mask(start+(like.Ntheta*nz)+i)){
-        data[start+(like.Ntheta*nz)+i] = xi_gamma_t_tomo_sys(theta[i],i,zl,zs);
+        data[start+(like.Ntheta*nz)+i] = 
+          //xi_gamma_t_tomo_sys(theta[i],i,zl,zs)
+          w_gamma_t_fullsky(i,zl,zs)
+          //w_gamma_t_tomo(theta[i], zl, zs)
+          *(1.0+nuisance.shear_calibration_m[zs]);
       }
     }
   }
@@ -264,11 +280,22 @@ int set_cosmology_params(double OMM, double NORM, double NS, double W0,double WA
 
    if (cosmology.Omega_m < 0.05 || cosmology.Omega_m > 0.6) return 0;
    if (cosmology.omb < 0.04 || cosmology.omb > 0.055) return 0;
-   if (cosmology.sigma_8 < 0.5 || cosmology.sigma_8 > 1.1) return 0;
+   //if (cosmology.sigma_8 < 0.5 || cosmology.sigma_8 > 1.1) return 0;
    if (cosmology.n_spec < 0.84 || cosmology.n_spec > 1.06) return 0;
    if (cosmology.w0 < -2.1 || cosmology.w0 > -0.0) return 0;
    if (cosmology.wa < -2.6 || cosmology.wa > 2.6) return 0;
    if (cosmology.h0 < 0.4 || cosmology.h0 > 0.9) return 0;
+  
+  printf("cosmology.theta_s = %le \n", cosmology.theta_s);
+  printf("cosmology.A_s = %le \n", cosmology.A_s);
+  printf("cosmology.w0 = %le \n", cosmology.w0);
+  printf("cosmology.wa = %le \n", cosmology.wa);
+
+  printf("cosmology.h0= %le \n", cosmology.h0);
+  printf("cosmology.omb = %le \n", cosmology.omb);
+  printf("cosmology.Omega_m = %le \n", cosmology.Omega_m);
+  printf("cosmology.Omega_nu = %le \n", cosmology.Omega_nu);
+
   return 1;
 }
 
@@ -502,18 +529,30 @@ void compute_data_vector(char *filename, double OMM, double NORM, double NS, dou
   static double darg, dt;
   double chisqr,a,log_L_prior=0.0;
   
-  if(ell==0){
+  if(ell==0)
+  {
     pred= create_double_vector(0, like.Ndata-1);
     ell= create_double_vector(0, like.Ncl-1);
     darg=(log(like.lmax)-log(like.lmin))/like.Ncl;
-    for (l=0;l<like.Ncl;l++){
+    for (l=0;l<like.Ncl;l++)
+    {
       ell[l]=exp(log(like.lmin)+(l+0.5)*darg);
     }
 
     theta= create_double_vector(0, like.Ntheta-1);
     dt=(log(like.vtmax)-log(like.vtmin))/like.Ntheta;
-    for (l=0;l<like.Ntheta;l++){
+    for (l=0;l<like.Ntheta;l++)
+    {
       theta[l]=exp(log(like.vtmin)+(l+0.5)*dt);
+
+      //VM BEGINS
+      const double logdt = (log(like.vtmax)-log(like.vtmin))/like.Ntheta;
+      const double x = 2./ 3.;
+      const double thetamin = exp(log(like.vtmin) + (l + 0.0) * logdt);
+      const double thetamax = exp(log(like.vtmin) + (l + 1.0) * logdt);
+      theta[l] = x * (pow(thetamax, 3) - pow(thetamin, 3))/(thetamax*thetamax - thetamin*thetamin);
+      //VM ENDS
+      printf("%le %le \n\n", exp(log(like.vtmin)+(l+0.5)*dt), theta[l]);
     }
   }
   //for (l=0;l<like.Ntheta;l++){

@@ -79,7 +79,7 @@ puma_mix:
 
 
 puma_datavs:
-	gcc like_fourier_6x2pt.c -o ./like_fourier_6x2pt $(opt_puma)
+	gcc like_test_6x2pt_mix.c -o ./like_test_6x2pt_mix $(opt_puma)
 
 puma_cov:
 	gcc compute_covariances_fourier.c -o ./compute_covariances_fourier $(opt_puma)

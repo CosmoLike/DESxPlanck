@@ -199,9 +199,9 @@ void init_data_fourier(char *COV_FILE, char *MASK_FILE, char *DATA_FILE)
   printf("PATH TO COV: %s\n",like.COV_FILE);
   init=invcov_mask(0,1,1);
 
-  sprintf(like.DATA_FILE,"%s",DATA_FILE);
-  printf("PATH TO DATA: %s\n",like.DATA_FILE);
-  init=data_read(0,1);
+  //sprintf(like.DATA_FILE,"%s",DATA_FILE);
+  //printf("PATH TO DATA: %s\n",like.DATA_FILE);
+  //init=data_read(0,1);
 }
 
 double mask(int ci) // For fourier space

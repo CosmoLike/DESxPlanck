@@ -229,12 +229,17 @@ void set_data_gk(double *theta, double *data, int start)
 
 void set_data_ks(double *theta, double *data, int start)
 {
-   for (int nz=0; nz<tomo.shear_Nbin; nz++){
+   for (int nz=0; nz<tomo.shear_Nbin; nz++)
+   {
       for (int i=0; i<like.Ntheta; i++){
-         if (mask(start+(like.Ntheta*nz)+i)){
-            data[start+(like.Ntheta*nz)+i] = w_ks_sys(i,nz);
+         if (mask(start+(like.Ntheta*nz)+i))
+         {
+            //VM BEGINs
+            data[start+(like.Ntheta*nz)+i] = w_ks_fullsky(i,nz)*(1.0+nuisance.shear_calibration_m[nz]);
+            //VM ENDS
          }
-         else{
+         else
+         {
             data[start+(like.Ntheta*nz)+i] = 0.;
          }
       }

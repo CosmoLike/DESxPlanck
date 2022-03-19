@@ -7,6 +7,8 @@ void test_mix_desy1_planck()
 	double theta_min = 2.5, theta_max = 250.0;
 	int Ntheta = 20;
 	double l_min = 40.0, l_max = 3000.0;
+	covparams.lmin = l_min; // see beam_planck() function
+	covparams.lmax = l_max; // see beam_planck()
 	int Ncl = 15;
 	double Rmin_bias = 20.0;
 	double lmax_shear = 3000.0;

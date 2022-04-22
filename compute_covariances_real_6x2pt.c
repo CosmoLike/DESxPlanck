@@ -42,12 +42,15 @@
 #include "../cosmolike_core/theory/cluster.c"
 #include "../cosmolike_core/theory/BAO.c"
 #include "../cosmolike_core/theory/external_prior.c"
+
 #include "../cosmolike_core/theory/covariances_3D.c"
 #include "../cosmolike_core/theory/covariances_fourier.c"
 #include "../cosmolike_core/theory/covariances_CMBxLSS_fourier.c"
 // #include "../cosmolike_core/theory/covariances_real_binned.c"
 #include "../cosmolike_core/theory/covariances_binned_simple.c"
 // #include "../cosmolike_core/theory/run_covariances_real.c"
+
+// covariance matrix calculation wrapper
 #include "../cosmolike_core/theory/run_covariances_real_fullsky.c"
 #include "../cosmolike_core/theory/run_covariances_real_fullsky_6x2pt.c"
 #include "init_LSSxCMB.c"
@@ -57,7 +60,7 @@
 int main(int argc, char** argv)
 {
   int hit=atoi(argv[1]);
-  FILE *F1,*F2;
+  FILE *F1,*F2,*F3;
   int i,l,m,n,o,s,p,output;
   double ktmp;
   char OUTFILE[400],filename[400];
@@ -86,6 +89,7 @@ int main(int argc, char** argv)
   //printf("test values: %d, %d, %s",redshift.clustering_photoz,tomo.clustering_Nbin,redshift.clustering_REDSHIFT_FILE);
   // printf("end of setup in main\n");
 
+  // Set theta bins
   double theta_min=covparams.tmin;
   double theta_max=covparams.tmax;
   int Ntheta=covparams.ntheta; 
@@ -106,10 +110,13 @@ int main(int argc, char** argv)
   thetamin[Ntheta] = thetamax[Ntheta-1];
   like.theta=theta; // like.theta ponts to memory of theta
   like.Ntheta = Ntheta;
+  like.vtmax = theta_max;
+  like.vtmin = theta_min;
 
+  // Set ell bins
   double lmin=covparams.lmin;
   double lmax=covparams.lmax;
-  int Nell=covparams.ncl; 
+  int Nell=covparams.ncl;
   double logdl=(log(lmax)-log(lmin))/Nell;
   double *ellmin, *dell;
   ellmin=create_double_vector(0,Nell);
@@ -124,6 +131,33 @@ int main(int argc, char** argv)
   like.Ncl = Nell;
   like.lmin = covparams.lmin;
   like.lmax = covparams.lmax;
+
+  // Set band power bins
+  int Nbp=covparams.nbp;
+  double **bindef;
+  bindef=create_double_matrix(0,Nbp-1, 0, 1); // binning definition
+  F3 = fopen(covparams.BINDEF_FILE,"r");
+  if (F3 != NULL) {
+    fclose(F3);
+    int _nbp = line_count(covparams.BINDEF_FILE);
+    if(_nbp!=Nbp){
+      printf("ERROR: Inconsistent band power bins number! %d / %d\n",
+        _nbp, Nbp);
+      exit(-1);
+    }
+    F3=fopen(covparams.BINDEF_FILE, "r");
+    for (int i = 0; i < Nbp; i++){
+      double _ell_min, _ell_max;
+      fscanf(F1, "%d %d\n", &_ell_min, &_ell_max);
+      bindef[i][0] = _ell_min;
+      bindef[i][1] = _ell_max;
+    }
+    fclose(F1);
+  }
+  like.bindef_bp = bindef;
+  like.Nbp = nbp;
+  like.lmin_bp = bindef[0][0];
+  like.lmax_bp = bindef[Nbp-1][1];
 
 
   init_source_sample_();
@@ -580,8 +614,10 @@ int main(int argc, char** argv)
       k=k+1;
     }
   }
-  // fourier kkkk
+  // Fourier kkkk
   // This does not include CMB smoothing.
+  // In principle, we should use the public matrix, but it's good to compare
+  // between the public one and the theoretical one
   if (strcmp(covparams.kk,"true")==0)
   {
     sprintf(OUTFILE,"%s_kkkk_cov_Ntheta%d_Ntomo%d",covparams.filename,Ntheta,tomo.shear_Nbin);

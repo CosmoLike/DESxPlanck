@@ -1,2 +1,11 @@
 out_cov*
 chains/*
+submit_scripts/*
+*.so
+compute_covariances_real_6x2pt
+like_test_3x2pt
+like_test_3x2pt_mix
+notebooks/*
+cmblensrec/plancksmica/cmb_tSZ*
+covs/*
+datav/*

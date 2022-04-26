@@ -39,6 +39,7 @@
 #include "../cosmolike_core/theory/pt.c"
 #include "../cosmolike_core/theory/cosmo2D_fourier.c"
 #include "../cosmolike_core/theory/IA.c"
+#include "../cosmolike_core/theory/CMBxLSS_fourier.c"
 #include "../cosmolike_core/theory/cosmo2D_exact.c"
 #include "../cosmolike_core/theory/cosmo2D_real.c"
 #include "../cosmolike_core/theory/cosmo2D_fullsky.c"
@@ -58,7 +59,6 @@
 typedef double (*C_tomo_pointer)(double l, int n1, int n2);
 void twopoint_via_hankel(double **xi, double *logthetamin, double *logthetamax, C_tomo_pointer C_tomo, int ni, int nj, int N_Bessel);
 
-#include "../cosmolike_core/theory/CMBxLSS_fourier.c"
 #include "../cosmolike_core/theory/CMBxLSS_real_fullsky.c"
 
 typedef struct input_nuisance_params_y3 {

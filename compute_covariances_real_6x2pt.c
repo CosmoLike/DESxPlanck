@@ -24,6 +24,7 @@
 
 #include <fftw3.h>
 
+// CosmoLike basic routines
 #include "../cosmolike_core/theory/baryons.h"
 #include "../cosmolike_core/theory/basics.c"
 #include "../cosmolike_core/theory/structs.c"
@@ -32,7 +33,6 @@
 #include "../cosmolike_core/theory/recompute.c"
 #include "../cosmolike_core/theory/cosmo3D.c"
 #include "../cosmolike_core/theory/redshift_spline.c"
-//#include "../cosmolike_core/theory/halo.c"
 #include "../cosmolike_core/theory/halo_fast.c"
 #include "../cosmolike_core/theory/HOD.c"
 #include "../cosmolike_core/theory/pt.c"
@@ -42,14 +42,11 @@
 #include "../cosmolike_core/theory/cluster.c"
 #include "../cosmolike_core/theory/BAO.c"
 #include "../cosmolike_core/theory/external_prior.c"
-
+// 6x2pt mix-space covariance 
 #include "../cosmolike_core/theory/covariances_3D.c"
 #include "../cosmolike_core/theory/covariances_fourier.c"
 #include "../cosmolike_core/theory/covariances_CMBxLSS_fourier.c"
-// #include "../cosmolike_core/theory/covariances_real_binned.c"
-#include "../cosmolike_core/theory/covariances_binned_simple.c"
-// #include "../cosmolike_core/theory/run_covariances_real.c"
-
+#include "../cosmolike_core/theory/covariances_binned_simple.h"
 // covariance matrix calculation wrapper
 #include "../cosmolike_core/theory/run_covariances_real_fullsky.c"
 #include "../cosmolike_core/theory/run_covariances_real_fullsky_6x2pt.c"
@@ -134,8 +131,8 @@ int main(int argc, char** argv)
 
   // Set band power bins
   int Nbp=covparams.nbp;
-  double **bindef;
-  bindef=create_double_matrix(0,Nbp-1, 0, 1); // binning definition
+  int **bindef;
+  bindef=create_int_matrix(0,Nbp-1, 0, 1); // binning definition
   F3 = fopen(covparams.BINDEF_FILE,"r");
   if (F3 != NULL) {
     fclose(F3);
@@ -147,7 +144,7 @@ int main(int argc, char** argv)
     }
     F3=fopen(covparams.BINDEF_FILE, "r");
     for (int i = 0; i < Nbp; i++){
-      double _ell_min, _ell_max;
+      int _ell_min, _ell_max;
       fscanf(F1, "%d %d\n", &_ell_min, &_ell_max);
       bindef[i][0] = _ell_min;
       bindef[i][1] = _ell_max;
@@ -179,6 +176,10 @@ int main(int argc, char** argv)
   // }
   // printf("\ngalaxy bias computed!\n");
   // exit(0);
+
+  /****** =================== ******/
+  /****** configuration space ******/
+  /****** =================== ******/
 
   int k=1;
   if (strcmp(covparams.ss,"true")==0)
@@ -459,92 +460,11 @@ int main(int argc, char** argv)
       }
     }
   }
-  ////////
+  
+  /****** ========= ******/
+  /****** mix space ******/
+  /****** ========= ******/
 
-  // if (strcmp(covparams.kk,"true")==0 && strcmp(covparams.ss,"true")==0)
-  // {
-  //   sprintf(OUTFILE,"%s_kkss_+_cov_Ntheta%d_Ntomo%d",covparams.filename,Ntheta,tomo.shear_Nbin);
-  //   for (m=0;m<tomo.shear_Npowerspectra; m++){
-  //     if(k==hit) {
-  //       sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
-  //       // if (fopen(filename, "r") != NULL){exit(1);}
-  //       run_cov_kk_shear_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,m,1,k);  
-  //     } 
-  //     k=k+1;
-  //   }
-  //   sprintf(OUTFILE,"%s_kkss_-_cov_Ntheta%d_Ntomo%d",covparams.filename,Ntheta,tomo.shear_Nbin);
-  //   for (m=0;m<tomo.shear_Npowerspectra; m++){
-  //     if(k==hit) {
-  //       sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
-  //       // if (fopen(filename, "r") != NULL){exit(1);}
-  //       run_cov_kk_shear_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,m,0,k);  
-  //     } 
-  //     k=k+1;
-  //   }
-  // }
-  // if (strcmp(covparams.kk,"true")==0 && strcmp(covparams.ls,"true")==0)
-  // {
-  //   sprintf(OUTFILE,"%s_kkls_cov_Ntheta%d_Ntomo%d",covparams.filename,Ntheta,tomo.shear_Nbin);
-  //   for (m=0;m<tomo.ggl_Npowerspectra; m++){
-  //     if(k==hit) {
-  //       sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
-  //       // if (fopen(filename, "r") != NULL){exit(1);}
-  //       run_cov_kk_ggl_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,m,k);  
-  //     }
-  //     k=k+1;
-  //   }
-  // }
-  // if (strcmp(covparams.kk,"true")==0 && strcmp(covparams.ll,"true")==0)
-  // {
-  //   sprintf(OUTFILE,"%s_kkll_cov_Ntheta%d_Ntomo%d",covparams.filename,Ntheta,tomo.shear_Nbin);
-  //   for (m=0;m<tomo.clustering_Npowerspectra; m++){
-  //     if(k==hit) {
-  //       sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
-  //       // if (fopen(filename, "r") != NULL){exit(1);}
-  //       run_cov_kk_clustering_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,m,k);  
-  //     }
-  //     k=k+1;
-  //   }
-  // }
-  // if (strcmp(covparams.kk,"true")==0 && strcmp(covparams.lk,"true")==0)
-  // {
-  //   sprintf(OUTFILE,"%s_kklk_cov_Ntheta%d_Ntomo%d",covparams.filename,Ntheta,tomo.shear_Nbin);
-  //   for (m=0;m<tomo.clustering_Nbin; m++){
-  //     if(k==hit) {
-  //       sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
-  //       // if (fopen(filename, "r") != NULL){exit(1);}
-  //       run_cov_kk_gk_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,m,k);  
-  //     }
-  //     k=k+1;
-  //   }
-  // }
-  // if (strcmp(covparams.kk,"true")==0 && strcmp(covparams.ks,"true")==0)
-  // {
-  //   sprintf(OUTFILE,"%s_kkks_cov_Ntheta%d_Ntomo%d",covparams.filename,Ntheta,tomo.shear_Nbin);
-  //   for (m=0;m<tomo.shear_Nbin; m++){
-  //     if(k==hit) {
-  //       sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
-  //       // if (fopen(filename, "r") != NULL){exit(1);}
-  //       run_cov_kk_ks_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,m,k);  
-  //     }
-  //     k=k+1;
-  //   }
-  // }
-  // // real kkkk
-  // if (strcmp(covparams.kk,"true")==0)
-  // {
-  //   sprintf(OUTFILE,"%s_kkkk_cov_Ntheta%d_Ntomo%d",covparams.filename,Ntheta,tomo.shear_Nbin);
-  //   if(k==hit) {
-  //     sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
-  //     // if (fopen(filename, "r") != NULL){exit(1);}
-  //     run_cov_kk_kk_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,k);  
-  //   }
-  //   k=k+1;
-  // }
-
-
-
-  // Mixed covs
   if (strcmp(covparams.kk,"true")==0 && strcmp(covparams.ss,"true")==0)
   {
     sprintf(OUTFILE,"%s_kkss_+_cov_Ntheta%d_Ntomo%d",covparams.filename,Ntheta,tomo.shear_Nbin);
@@ -614,7 +534,10 @@ int main(int argc, char** argv)
       k=k+1;
     }
   }
-  // Fourier kkkk
+  /****** ============= ******/
+  /****** Fourier space ******/
+  /****** ============= ******/
+  
   // This does not include CMB smoothing.
   // In principle, we should use the public matrix, but it's good to compare
   // between the public one and the theoretical one
@@ -624,7 +547,8 @@ int main(int argc, char** argv)
     if(k==hit) {
       sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
       // if (fopen(filename, "r") != NULL){exit(1);}
-      run_cov_kk_kk(OUTFILE,covparams.outdir,ellmin, dell,k);  
+      //run_cov_kk_kk(OUTFILE,covparams.outdir,ellmin, dell,k);
+      run_cov_kk_kk_fourier_band(OUTFILE,covparams.outdir,ellmin,bindef,Nbp,k); 
     }
     k=k+1;
   }
@@ -640,6 +564,7 @@ int main(int argc, char** argv)
     fclose(F1);
   }
 
+  free_int_matrix(bindef, 0,Nbp-1, 0, 1);
   printf("number of cov blocks for parallelization: %d\n",k-1); 
   printf("-----------------\n");
   printf("PROGRAM EXECUTED\n");

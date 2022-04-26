@@ -1,2 +1,12 @@
 out_cov*
 chains/*
+*.dSYM
+.DS_Store
+__pycache__
+*.so
+notebooks
+slides
+Notes
+cls2/*
+
+compute_covariances_real_6x2pt

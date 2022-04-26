@@ -11,7 +11,7 @@ opt_puma := -std=c11 -Wno-missing-braces -Wno-missing-field-initializers \
 -ffast-math -funroll-loops -std=gnu99 -L../cosmolike_core/class -lclass
 cfftlog_dir := ../cosmolike_core/cfftlog/
 cfftlog := $(cfftlog_dir)cfftlog.c $(cfftlog_dir)utils.c $(cfftlog_dir)utils_complex.c
-
+COV_BIN_SIMPLE := ../cosmolike_core/theory/covariances_binned_simple.c
 # puma_lib_mix:
 #	gcc -shared -o like_mix_6x2pt.so -fPIC like_mix_6x2pt.c -DSAMPLING $(opt_puma) $(cfftlog) $(cfastpt)
 
@@ -94,7 +94,7 @@ puma_lib_mix:
 	gcc -shared -o like_mix_6x2pt.so -fPIC like_mix_6x2pt.c -DSAMPLING $(opt_puma) $(cfftlog) $(cfastpt)
 
 puma_cov_real:
-	gcc compute_covariances_real_6x2pt.c -o ./compute_covariances_real_6x2pt $(opt_puma)
+	gcc compute_covariances_real_6x2pt.c $(COV_BIN_SIMPLE) -o ./compute_covariances_real_6x2pt $(opt_puma)
 
 puma_mix_clean:
 	rm like_mix_6x2pt.so ./compute_covariances_real_6x2pt

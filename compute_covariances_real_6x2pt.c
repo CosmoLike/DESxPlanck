@@ -152,7 +152,7 @@ int main(int argc, char** argv)
     fclose(F1);
   }
   like.bindef_bp = bindef;
-  like.Nbp = nbp;
+  like.Nbp = Nbp;
   like.lmin_bp = bindef[0][0];
   like.lmax_bp = bindef[Nbp-1][1];
 

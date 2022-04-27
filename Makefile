@@ -94,7 +94,7 @@ puma_lib_mix:
 	gcc -shared -o like_mix_6x2pt.so -fPIC like_mix_6x2pt.c -DSAMPLING $(opt_puma) $(cfftlog) $(cfastpt)
 
 puma_cov_real:
-	gcc compute_covariances_real_6x2pt.c $(COV_BIN_SIMPLE) -o ./compute_covariances_real_6x2pt $(opt_puma)
+	gcc compute_covariances_real_6x2pt.c  -o ./compute_covariances_real_6x2pt $(opt_puma)
 
 puma_mix_clean:
 	rm like_mix_6x2pt.so ./compute_covariances_real_6x2pt

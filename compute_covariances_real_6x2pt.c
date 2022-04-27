@@ -87,6 +87,7 @@ int main(int argc, char** argv)
   // printf("end of setup in main\n");
 
   // Set theta bins
+  printf("Setting theta bins...\n");
   double theta_min=covparams.tmin;
   double theta_max=covparams.tmax;
   int Ntheta=covparams.ntheta; 
@@ -111,6 +112,7 @@ int main(int argc, char** argv)
   like.vtmin = theta_min;
 
   // Set ell bins
+  printf("Setting ell bins...\n");
   double lmin=covparams.lmin;
   double lmax=covparams.lmax;
   int Nell=covparams.ncl;
@@ -130,6 +132,7 @@ int main(int argc, char** argv)
   like.lmax = covparams.lmax;
 
   // Set band power bins
+  printf("Setting band power bins...\n");
   int Nbp=covparams.nbp;
   int **bindef;
   bindef=create_int_matrix(0,Nbp-1, 0, 1); // binning definition
@@ -156,7 +159,7 @@ int main(int argc, char** argv)
   like.lmin_bp = bindef[0][0];
   like.lmax_bp = bindef[Nbp-1][1];
 
-
+  printf("Init galaxy samples ...\n");
   init_source_sample_();
   init_lens_sample_();
 

@@ -135,7 +135,9 @@ int main(int argc, char** argv)
   printf("Setting band power bins...\n");
   int Nbp=covparams.nbp;
   int **bindef;
-  bindef=create_int_matrix(0,Nbp-1, 0, 1); // binning definition
+  bindef=create_int_matrix(0, Nbp-1, 0, 1); // binning definition
+  //bindef = create_double_matrix(0, Nbp -1, 0, 10);
+  printf("Reading band definition file %s\n", covparams.BINDEF_FILE);
   F3 = fopen(covparams.BINDEF_FILE,"r");
   if (F3 != NULL) {
     fclose(F3);
@@ -144,15 +146,19 @@ int main(int argc, char** argv)
       printf("ERROR: Inconsistent band power bins number! %d / %d\n",
         _nbp, Nbp);
       exit(-1);
-    }
+    }else{printf("Band def has %d lines\n", _nbp);}
     F3=fopen(covparams.BINDEF_FILE, "r");
     for (int i = 0; i < Nbp; i++){
       int _ell_min, _ell_max;
-      fscanf(F1, "%d %d\n", &_ell_min, &_ell_max);
+      fscanf(F3, "%d %d\n", &_ell_min, &_ell_max);
       bindef[i][0] = _ell_min;
       bindef[i][1] = _ell_max;
+      printf("band %2d: L in [%4d, %4d]\n", i+1, _ell_min, _ell_max);
     }
-    fclose(F1);
+    fclose(F3);
+  }
+  else{
+    printf("Can not open file %s\n", covparams.BINDEF_FILE);
   }
   like.bindef_bp = bindef;
   like.Nbp = Nbp;

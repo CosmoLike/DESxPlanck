@@ -37,7 +37,7 @@
 #SBATCH --mem=16gb
 
 ###--- REQUIRED. Specify the walltime required for this job, hhh:mm:ss
-#SBATCH --time=10:00:00
+#SBATCH --time=20:00:00
 
 
 # --------------------------------------------------------------

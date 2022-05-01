@@ -171,9 +171,6 @@ int main(int argc, char** argv)
 
   init_probes("6x2pt");
   init_cmb("planck", argv[3]);
-  //cmb.pathLensRecNoise="./cmblensrec/plancksmica/cmb_tSZ_contaminated_smoothed_7arcmin.txt";
-  // cmb.pathLensRecNoise = "./cmblensrec/plancksmica/cmb_lmax3000.txt";
-  //cmb.pathLensRecNoise = argv[3];
   
   /* pre-Calculate galaxy bias for src (5 bins) and lens (5 bins) galaxies */
   // double zbins[10] = {0.318457,0.518719,0.724785,0.993135,1.595836,0.320976,0.508596,0.686747,0.882423,1.131005};
@@ -476,69 +473,81 @@ int main(int argc, char** argv)
 
   if (strcmp(covparams.kk,"true")==0 && strcmp(covparams.ss,"true")==0)
   {
-    sprintf(OUTFILE,"%s_kkss_+_cov_Ntheta%d_Ntomo%d",covparams.filename,Ntheta,tomo.shear_Nbin);
+    sprintf(OUTFILE,"%s_kkss_+_cov_Ntheta%d_Ntomo%d",
+      covparams.filename,Ntheta,tomo.shear_Nbin);
     for (m=0;m<tomo.shear_Npowerspectra; m++){
       if(k==hit) {
         sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
         // if (fopen(filename, "r") != NULL){exit(1);}
-        run_cov_kk_shear_mix_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta, ellmin,Nell,m,1,k);  
+        run_cov_kk_shear_mix_band(OUTFILE, covparams.outdir,
+          thetamin, dtheta, Ntheta, bindef, Nbp, m, 1, k);
       } 
       k=k+1;
     }
-    sprintf(OUTFILE,"%s_kkss_-_cov_Ntheta%d_Ntomo%d",covparams.filename,Ntheta,tomo.shear_Nbin);
+    sprintf(OUTFILE,"%s_kkss_-_cov_Ntheta%d_Ntomo%d",
+      covparams.filename,Ntheta, tomo.shear_Nbin);
     for (m=0;m<tomo.shear_Npowerspectra; m++){
       if(k==hit) {
         sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
         // if (fopen(filename, "r") != NULL){exit(1);}
-        run_cov_kk_shear_mix_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta, ellmin,Nell,m,0,k);  
+        run_cov_kk_shear_mix_band(OUTFILE, covparams.outdir,
+          thetamin, dtheta, Ntheta, bindef, Nbp, m, 0, k);  
       } 
       k=k+1;
     }
   }
   if (strcmp(covparams.kk,"true")==0 && strcmp(covparams.ls,"true")==0)
   {
-    sprintf(OUTFILE,"%s_kkls_cov_Ntheta%d_Ntomo%d",covparams.filename,Ntheta,tomo.shear_Nbin);
+    sprintf(OUTFILE,"%s_kkls_cov_Ntheta%d_Ntomo%d",
+      covparams.filename, Ntheta,tomo.shear_Nbin);
     for (m=0;m<tomo.ggl_Npowerspectra; m++){
       if(k==hit) {
         sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
         // if (fopen(filename, "r") != NULL){exit(1);}
-        run_cov_kk_ggl_mix_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta, ellmin,Nell,m,k);  
+        run_cov_kk_ggl_mix_band(OUTFILE, covparams.outdir,
+          thetamin, dtheta, Ntheta, bindef, Nbp, m, k);  
       }
       k=k+1;
     }
   }
   if (strcmp(covparams.kk,"true")==0 && strcmp(covparams.ll,"true")==0)
   {
-    sprintf(OUTFILE,"%s_kkll_cov_Ntheta%d_Ntomo%d",covparams.filename,Ntheta,tomo.shear_Nbin);
+    sprintf(OUTFILE,"%s_kkll_cov_Ntheta%d_Ntomo%d",
+      covparams.filename, Ntheta, tomo.shear_Nbin);
     for (m=0;m<tomo.clustering_Npowerspectra; m++){
       if(k==hit) {
         sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
         // if (fopen(filename, "r") != NULL){exit(1);}
-        run_cov_kk_clustering_mix_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta, ellmin,Nell,m,k);  
+        run_cov_kk_clustering_mix_band(OUTFILE, covparams.outdir,
+          thetamin, dtheta, Ntheta, bindef, Nbp, m, k);  
       }
       k=k+1;
     }
   }
   if (strcmp(covparams.kk,"true")==0 && strcmp(covparams.lk,"true")==0)
   {
-    sprintf(OUTFILE,"%s_kklk_cov_Ntheta%d_Ntomo%d",covparams.filename,Ntheta,tomo.shear_Nbin);
+    sprintf(OUTFILE,"%s_kklk_cov_Ntheta%d_Ntomo%d",
+      covparams.filename, Ntheta, tomo.shear_Nbin);
     for (m=0;m<tomo.clustering_Nbin; m++){
       if(k==hit) {
         sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
         // if (fopen(filename, "r") != NULL){exit(1);}
-        run_cov_kk_gk_mix_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta, ellmin,Nell,m,k);  
+        run_cov_kk_gk_mix_band(OUTFILE, covparams.outdir, 
+          thetamin, dtheta, Ntheta, bindef, Nbp, m, k);  
       }
       k=k+1;
     }
   }
   if (strcmp(covparams.kk,"true")==0 && strcmp(covparams.ks,"true")==0)
   {
-    sprintf(OUTFILE,"%s_kkks_cov_Ntheta%d_Ntomo%d",covparams.filename,Ntheta,tomo.shear_Nbin);
+    sprintf(OUTFILE,"%s_kkks_cov_Ntheta%d_Ntomo%d",
+      covparams.filename, Ntheta, tomo.shear_Nbin);
     for (m=0;m<tomo.shear_Nbin; m++){
       if(k==hit) {
         sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
         // if (fopen(filename, "r") != NULL){exit(1);}
-        run_cov_kk_ks_mix_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta, ellmin,Nell,m,k);  
+        run_cov_kk_ks_mix_band(OUTFILE, covparams.outdir,
+          thetamin, dtheta, Ntheta, bindef, Nbp, m, k);  
       }
       k=k+1;
     }
@@ -552,12 +561,14 @@ int main(int argc, char** argv)
   // between the public one and the theoretical one
   if (strcmp(covparams.kk,"true")==0)
   {
-    sprintf(OUTFILE,"%s_kkkk_cov_Ntheta%d_Ntomo%d",covparams.filename,Ntheta,tomo.shear_Nbin);
+    sprintf(OUTFILE,"%s_kkkk_cov_Ntheta%d_Ntomo%d",
+      covparams.filename, Ntheta, tomo.shear_Nbin);
     if(k==hit) {
       sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
       // if (fopen(filename, "r") != NULL){exit(1);}
       //run_cov_kk_kk(OUTFILE,covparams.outdir,ellmin, dell,k);
-      run_cov_kk_kk_fourier_band(OUTFILE,covparams.outdir,ellmin,bindef,Nbp,k); 
+      run_cov_kk_kk_fourier_band(OUTFILE, covparams.outdir,
+        ellmin, bindef, Nbp, k); 
     }
     k=k+1;
   }

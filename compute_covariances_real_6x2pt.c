@@ -195,6 +195,7 @@ int main(int argc, char** argv)
     for (l=0;l<tomo.shear_Npowerspectra; l++){
       for (m=l;m<tomo.shear_Npowerspectra; m++){
         if(k==hit){
+          printf("\n[ss+_ss+] (bin 1 = %d, bin 2 = %d, k=%d)\n", l,m,k);
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
           // if (fopen(filename, "r") != NULL){exit(1);}
           run_cov_shear_shear_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,l,m,1,1,k);
@@ -207,6 +208,7 @@ int main(int argc, char** argv)
     for (l=0;l<tomo.shear_Npowerspectra; l++){
       for (m=l;m<tomo.shear_Npowerspectra; m++){
         if(k==hit){
+          printf("\n[ss-_ss-] (bin 1 = %d, bin 2 = %d, k=%d)\n", l,m,k);
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
           // if (fopen(filename, "r") != NULL){exit(1);}
           run_cov_shear_shear_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,l,m,0,0,k);
@@ -218,6 +220,7 @@ int main(int argc, char** argv)
     for (l=0;l<tomo.shear_Npowerspectra; l++){
       for (m=0;m<tomo.shear_Npowerspectra; m++){
         if(k==hit){
+          printf("\n[ss+_ss-] (bin 1 = %d, bin 2 = %d, k=%d)\n", l,m,k);
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
           // if (fopen(filename, "r") != NULL){exit(1);}
           run_cov_shear_shear_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,l,m,1,0,k);
@@ -232,6 +235,7 @@ int main(int argc, char** argv)
     for (l=0;l<tomo.clustering_Npowerspectra; l++){ 
       for (m=l;m<tomo.clustering_Npowerspectra; m++){
         if(k==hit){
+          printf("\n[ll_ll] (bin 1 = %d, bin 2 = %d, k=%d)\n", l,m,k);
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
           // if (fopen(filename, "r") != NULL){exit(1);}
           run_cov_clustering_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,l,m,k); 
@@ -246,6 +250,7 @@ int main(int argc, char** argv)
     for (l=0;l<tomo.ggl_Npowerspectra; l++){
       for (m=l;m<tomo.ggl_Npowerspectra; m++){
         if(k==hit) {
+          printf("\n[ls_ls] (bin 1 = %d, bin 2 = %d, k=%d)\n", l,m,k);
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
           // if (fopen(filename, "r") != NULL){exit(1);}
           run_cov_ggl_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,l,m,k);  
@@ -260,6 +265,7 @@ int main(int argc, char** argv)
     for (l=0;l<tomo.ggl_Npowerspectra; l++){
       for (m=0;m<tomo.shear_Npowerspectra; m++){
         if(k==hit) {
+          printf("\n[ls_ss+] (bin 1 = %d, bin 2 = %d, k=%d)\n", l,m,k);
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
           // if (fopen(filename, "r") != NULL){exit(1);}
           run_cov_ggl_shear_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,l,m,1,k);  
@@ -271,6 +277,7 @@ int main(int argc, char** argv)
     for (l=0;l<tomo.ggl_Npowerspectra; l++){
       for (m=0;m<tomo.shear_Npowerspectra; m++){
         if(k==hit) {
+          printf("\n[ls_ss-] (bin 1 = %d, bin 2 = %d, k=%d)\n", l,m,k);
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
           // if (fopen(filename, "r") != NULL){exit(1);}
           run_cov_ggl_shear_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,l,m,0,k);  
@@ -279,12 +286,14 @@ int main(int argc, char** argv)
       }
     }
   }
+
   if (strcmp(covparams.ll,"true")==0 && strcmp(covparams.ss,"true")==0)
   {
     sprintf(OUTFILE,"%s_llss_+_cov_Ntheta%d_Ntomo%d",covparams.filename,Ntheta,tomo.shear_Nbin);
     for (l=0;l<tomo.clustering_Npowerspectra; l++){
       for (m=0;m<tomo.shear_Npowerspectra; m++){
         if(k==hit) {
+          printf("\n[ll_ss+] (bin 1 = %d, bin 2 = %d, k=%d)\n", l,m,k);
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
           // if (fopen(filename, "r") != NULL){exit(1);}
           run_cov_clustering_shear_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,l,m,1,k);  
@@ -296,6 +305,7 @@ int main(int argc, char** argv)
     for (l=0;l<tomo.clustering_Npowerspectra; l++){
       for (m=0;m<tomo.shear_Npowerspectra; m++){
         if(k==hit) {
+          printf("\n[ll_ss-] (bin 1 = %d, bin 2 = %d, k=%d)\n", l,m,k);
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
           // if (fopen(filename, "r") != NULL){exit(1);}
           run_cov_clustering_shear_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,l,m,0,k);  
@@ -310,6 +320,7 @@ int main(int argc, char** argv)
     for (l=0;l<tomo.clustering_Npowerspectra; l++){
       for (m=0;m<tomo.ggl_Npowerspectra; m++){
         if(k==hit) {
+          printf("\n[ll_ls] (bin 1 = %d, bin 2 = %d, k=%d)\n", l,m,k);
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
           // if (fopen(filename, "r") != NULL){exit(1);}
           run_cov_clustering_ggl_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,l,m,k);  
@@ -324,6 +335,7 @@ int main(int argc, char** argv)
     for (l=0;l<tomo.clustering_Nbin; l++){
       for (m=0;m<tomo.shear_Npowerspectra; m++){
         if(k==hit) {
+          printf("\n[lk_ss+] (bin 1 = %d, bin 2 = %d, k=%d)\n", l,m,k);
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
           // if (fopen(filename, "r") != NULL){exit(1);}
           run_cov_gk_shear_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,l,m,1,k);  
@@ -335,6 +347,7 @@ int main(int argc, char** argv)
     for (l=0;l<tomo.clustering_Nbin; l++){
       for (m=0;m<tomo.shear_Npowerspectra; m++){
         if(k==hit) {
+          printf("\n[lk_ss-] (bin 1 = %d, bin 2 = %d, k=%d)\n", l,m,k);
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
           // if (fopen(filename, "r") != NULL){exit(1);}
           run_cov_gk_shear_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,l,m,0,k);  
@@ -349,6 +362,7 @@ int main(int argc, char** argv)
     for (l=0;l<tomo.shear_Nbin; l++){
       for (m=0;m<tomo.shear_Npowerspectra; m++){
         if(k==hit) {
+          printf("\n[ks_ss+] (bin 1 = %d, bin 2 = %d, k=%d)\n", l,m,k);
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
           // if (fopen(filename, "r") != NULL){exit(1);}
           run_cov_ks_shear_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,l,m,1,k);  
@@ -360,6 +374,7 @@ int main(int argc, char** argv)
     for (l=0;l<tomo.shear_Nbin; l++){
       for (m=0;m<tomo.shear_Npowerspectra; m++){
         if(k==hit) {
+          printf("\n[ks_ss-] (bin 1 = %d, bin 2 = %d, k=%d)\n", l,m,k);
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
           // if (fopen(filename, "r") != NULL){exit(1);}
           run_cov_ks_shear_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,l,m,0,k);  
@@ -374,6 +389,7 @@ int main(int argc, char** argv)
     for (l=0;l<tomo.clustering_Nbin; l++){
       for (m=0;m<tomo.ggl_Npowerspectra; m++){
         if(k==hit) {
+          printf("\n[lk_ls] (bin 1 = %d, bin 2 = %d, k=%d)\n", l,m,k);
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
           // if (fopen(filename, "r") != NULL){exit(1);}
           run_cov_gk_ggl_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,l,m,k);  
@@ -388,6 +404,7 @@ int main(int argc, char** argv)
     for (l=0;l<tomo.shear_Nbin; l++){
       for (m=0;m<tomo.ggl_Npowerspectra; m++){
         if(k==hit) {
+          printf("\n[ks_ls] (bin 1 = %d, bin 2 = %d, k=%d)\n", l,m,k);
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
           // if (fopen(filename, "r") != NULL){exit(1);}
           run_cov_ks_ggl_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,l,m,k);  
@@ -402,6 +419,7 @@ int main(int argc, char** argv)
     for (l=0;l<tomo.clustering_Nbin; l++){
       for (m=0;m<tomo.clustering_Npowerspectra; m++){
         if(k==hit) {
+          printf("\n[lk_ll] (bin 1 = %d, bin 2 = %d, k=%d)\n", l,m,k);
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
           // if (fopen(filename, "r") != NULL){exit(1);}
           run_cov_gk_clustering_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,l,m,k);  
@@ -416,6 +434,7 @@ int main(int argc, char** argv)
     for (l=0;l<tomo.shear_Nbin; l++){
       for (m=0;m<tomo.clustering_Npowerspectra; m++){
         if(k==hit) {
+          printf("\n[ks_ll] (bin 1 = %d, bin 2 = %d, k=%d)\n", l,m,k);
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
           // if (fopen(filename, "r") != NULL){exit(1);}
           run_cov_ks_clustering_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,l,m,k);  
@@ -430,6 +449,7 @@ int main(int argc, char** argv)
     for (l=0;l<tomo.clustering_Nbin; l++){
       for (m=l;m<tomo.clustering_Nbin; m++){
         if(k==hit) {
+          printf("\n[lk_lk] (bin 1 = %d, bin 2 = %d, k=%d)\n", l,m,k);
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
           // if (fopen(filename, "r") != NULL){exit(1);}
           run_cov_gk_gk_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,l,m,k);  
@@ -444,6 +464,7 @@ int main(int argc, char** argv)
     for (l=0;l<tomo.shear_Nbin; l++){
       for (m=0;m<tomo.clustering_Nbin; m++){
         if(k==hit) {
+          printf("\n[ks_lk] (bin 1 = %d, bin 2 = %d, k=%d)\n", l,m,k);
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
           // if (fopen(filename, "r") != NULL){exit(1);}
           run_cov_ks_gk_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,l,m,k);  
@@ -458,6 +479,7 @@ int main(int argc, char** argv)
     for (l=0;l<tomo.shear_Nbin; l++){
       for (m=l;m<tomo.shear_Nbin; m++){
         if(k==hit) {
+          printf("\n[ks_ks] (bin 1 = %d, bin 2 = %d, k=%d)\n", l,m,k);
           sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
           // if (fopen(filename, "r") != NULL){exit(1);}
           run_cov_ks_ks_real_bin(OUTFILE,covparams.outdir,thetamin,dtheta,Ntheta,l,m,k);  
@@ -477,6 +499,7 @@ int main(int argc, char** argv)
       covparams.filename,Ntheta,tomo.shear_Nbin);
     for (m=0;m<tomo.shear_Npowerspectra; m++){
       if(k==hit) {
+        printf("\n[kk_ss+] (bin 1 = %d, k=%d)\n",m,k);
         sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
         // if (fopen(filename, "r") != NULL){exit(1);}
         run_cov_kk_shear_mix_band(OUTFILE, covparams.outdir,
@@ -488,6 +511,7 @@ int main(int argc, char** argv)
       covparams.filename,Ntheta, tomo.shear_Nbin);
     for (m=0;m<tomo.shear_Npowerspectra; m++){
       if(k==hit) {
+        printf("\n[kk_ss-] (bin 1 = %d, k=%d)\n",m,k);
         sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
         // if (fopen(filename, "r") != NULL){exit(1);}
         run_cov_kk_shear_mix_band(OUTFILE, covparams.outdir,
@@ -502,6 +526,7 @@ int main(int argc, char** argv)
       covparams.filename, Ntheta,tomo.shear_Nbin);
     for (m=0;m<tomo.ggl_Npowerspectra; m++){
       if(k==hit) {
+        printf("\n[kk_ls] (bin 1 = %d, k=%d)\n",m,k);
         sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
         // if (fopen(filename, "r") != NULL){exit(1);}
         run_cov_kk_ggl_mix_band(OUTFILE, covparams.outdir,
@@ -516,6 +541,7 @@ int main(int argc, char** argv)
       covparams.filename, Ntheta, tomo.shear_Nbin);
     for (m=0;m<tomo.clustering_Npowerspectra; m++){
       if(k==hit) {
+        printf("\n[kk_ll] (bin 1 = %d, k=%d)\n", m,k);
         sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
         // if (fopen(filename, "r") != NULL){exit(1);}
         run_cov_kk_clustering_mix_band(OUTFILE, covparams.outdir,
@@ -530,6 +556,7 @@ int main(int argc, char** argv)
       covparams.filename, Ntheta, tomo.shear_Nbin);
     for (m=0;m<tomo.clustering_Nbin; m++){
       if(k==hit) {
+        printf("\n[kk_lk] (bin 1 = %d, k=%d)\n",m,k);
         sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
         // if (fopen(filename, "r") != NULL){exit(1);}
         run_cov_kk_gk_mix_band(OUTFILE, covparams.outdir, 
@@ -544,6 +571,7 @@ int main(int argc, char** argv)
       covparams.filename, Ntheta, tomo.shear_Nbin);
     for (m=0;m<tomo.shear_Nbin; m++){
       if(k==hit) {
+        printf("\n[kk_ks] (bin 1 = %d, k=%d)\n", m,k);
         sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
         // if (fopen(filename, "r") != NULL){exit(1);}
         run_cov_kk_ks_mix_band(OUTFILE, covparams.outdir,
@@ -564,6 +592,7 @@ int main(int argc, char** argv)
     sprintf(OUTFILE,"%s_kkkk_cov_Ntheta%d_Ntomo%d",
       covparams.filename, Ntheta, tomo.shear_Nbin);
     if(k==hit) {
+      printf("\n[kk_kk] (k=%d)\n",m,k);
       sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
       // if (fopen(filename, "r") != NULL){exit(1);}
       //run_cov_kk_kk(OUTFILE,covparams.outdir,ellmin, dell,k);

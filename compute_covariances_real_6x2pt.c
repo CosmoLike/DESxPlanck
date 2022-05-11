@@ -592,7 +592,7 @@ int main(int argc, char** argv)
     sprintf(OUTFILE,"%s_kkkk_cov_Ntheta%d_Ntomo%d",
       covparams.filename, Ntheta, tomo.shear_Nbin);
     if(k==hit) {
-      printf("\n[kk_kk] (k=%d)\n",m,k);
+      printf("\n[kk_kk] (k=%d)\n",k);
       sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
       // if (fopen(filename, "r") != NULL){exit(1);}
       //run_cov_kk_kk(OUTFILE,covparams.outdir,ellmin, dell,k);

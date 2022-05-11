@@ -32,7 +32,8 @@
 #include "../cosmolike_core/theory/recompute.c"
 #include "../cosmolike_core/theory/cosmo3D.c"
 #include "../cosmolike_core/theory/redshift_spline.c"
-#include "../cosmolike_core/theory/halo.c"
+//#include "../cosmolike_core/theory/halo.c"
+#include "../cosmolike_core/theory/halo_fast.c"
 #include "../cosmolike_core/theory/HOD.c"
 #include "../cosmolike_core/theory/pt.c"
 #include "../cosmolike_core/theory/cosmo2D_fourier.c"
@@ -276,6 +277,7 @@ int main(int argc, char** argv)
       }
     }
   }
+/*
   if (strcmp(covparams.lk,"true")==0 && strcmp(covparams.ss,"true")==0)
   {
     sprintf(OUTFILE,"%s_lkss_+_cov_Ntheta%d_Ntomo%d",covparams.filename,Ntheta,tomo.shear_Nbin);
@@ -424,6 +426,7 @@ int main(int argc, char** argv)
       }
     }
   }
+*/
   ////////
 
   // if (strcmp(covparams.kk,"true")==0 && strcmp(covparams.ss,"true")==0)
@@ -510,6 +513,7 @@ int main(int argc, char** argv)
 
 
   // Mixed covs
+  /*
   if (strcmp(covparams.kk,"true")==0 && strcmp(covparams.ss,"true")==0)
   {
     sprintf(OUTFILE,"%s_kkss_+_cov_Ntheta%d_Ntomo%d",covparams.filename,Ntheta,tomo.shear_Nbin);
@@ -591,7 +595,7 @@ int main(int argc, char** argv)
     }
     k=k+1;
   }
-
+*/
   if (hit==0)
   {
     sprintf(OUTFILE,"%s",covparams.filename);

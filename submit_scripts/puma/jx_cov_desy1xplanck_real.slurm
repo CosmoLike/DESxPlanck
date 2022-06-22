@@ -12,7 +12,7 @@
 #SBATCH --error=/home/u17/jiachuanxu/output/%x-%j.err
 
 ###--- Optionan. Array job submission
-#SBATCH --array=1-770
+###SBATCH --array=1-770
 
 ###--- REQUIRED. Specify the PI group for this job
 #SBATCH --account=timeifler
@@ -37,7 +37,7 @@
 #SBATCH --mem=16gb
 
 ###--- REQUIRED. Specify the walltime required for this job, hhh:mm:ss
-#SBATCH --time=20:00:00
+#SBATCH --time=60:00:00
 
 
 # --------------------------------------------------------------
@@ -58,22 +58,23 @@ cd $SLURM_SUBMIT_DIR
 
 ### If run full covariance matrix
 ### =============================
-for (( c=0; c<2; c++ ))
-do
-    hit=$(( ${SLURM_ARRAY_TASK_ID} + $c * 770 ))
-    ./compute_covariances_real_6x2pt $hit ini_files/cov_y1_mcal_mix.ini ./cmblensrec/plancksmica/cmb_lmax3000.txt >&/home/u17/jiachuanxu/output/job_output_${hit}.log
-done
+#for (( c=0; c<2; c++ ))
+#do
+#    hit=$(( ${SLURM_ARRAY_TASK_ID} + $c * 770 ))
+#    ./compute_covariances_real_6x2pt $hit ini_files/cov_y1_mcal_mix.ini ./cmblensrec/plancksmica/cmb_lmax3000.txt >&/home/u17/jiachuanxu/output/job_output_${hit}.log
+#done
 
 ### If only running gk and sk, hit = 1035-1539, which has 504 blocks
 ### ===============================================================
-#hit=$(( ${SLURM_ARRAY_TASK_ID} + 1035 ))
+#hit=$(( ${SLURM_ARRAY_TASK_ID} + 1034 ))
 #./compute_covariances_real_6x2pt $hit ini_files/cov_y1_mcal_mix.ini ./cmblensrec/plancksmica/cmb_lmax3000.txt >&/home/u17/jiachuanxu/output/job_output_${hit}.log
 
 ### In case some jobs failed, uncomment the following lines
 ### =======================================================
 #TODO_list=(1445)
 #hit=${TODO_list[${SLURM_ARRAY_TASK_ID}]}
-#hit=1445
-#echo ${hit}
-#./compute_covariances_real_6x2pt ${hit} ini_files/cov_y1_mcal_mix.ini ./cmblensrec/plancksmica/cmb_lmax3000.txt >&/home/u17/jiachuanxu/output/job_output_${hit}.log
+
+hit=1540
+echo ${hit}
+./compute_covariances_real_6x2pt ${hit} ini_files/cov_y1_mcal_mix.ini ./cmblensrec/plancksmica/cmb_lmax3000.txt >&/home/u17/jiachuanxu/output/job_output_${hit}.log
 

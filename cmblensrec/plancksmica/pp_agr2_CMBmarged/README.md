@@ -2,10 +2,10 @@ Data description
 
 The data files in this folder are extracted from the public Planck data release
 
-> smicadx12_Dec5_ftl_mv2_ndclpttptt_p_teb_agr2_CMBmarged.dataset
+> smicadx12_Dec5_ftl_mv2_ndclpp_p_teb_agr2_CMBmarged.dataset
 
 some keywords:
-- pttptt: Temperature-only estimated
+- pp: minimum-variance (MV) estimated
 - agr2: aggressive scale cuts, 8 <= L <= 2048
 - CMBmarged: marginalized over primary CMB
 

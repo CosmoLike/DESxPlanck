@@ -96,7 +96,8 @@ void set_data_ggl(double *theta, double *data, int start);
 void set_data_clustering(double *theta, double *data, int start);
 void set_data_gk(double *theta, double *data, int start);
 void set_data_ks(double *theta, double *data, int start);
-void set_data_kk(double *ell, double *data, int start);
+void set_data_kk_logbin(double *ell, double *data, int start);
+void set_data_kk_bandpower(double *data, int start);
 void compute_data_vector(char *filename, double OMM, double S8, double NS, double W0,double WA, double OMB, double OMNUh2, double H0, double MGSigma, double MGmu, double THETA_S, \
                       double *B, double *b_mag,\
                       double *SP, double *CP, double *M, \
@@ -241,7 +242,7 @@ void set_data_ks(double *theta, double *data, int start)
    }
 }
 
-void set_data_kk(double *ell, double *data, int start)
+void set_data_kk_logbin(double *ell, double *data, int start)
 {
    for (int i=0; i<like.Ncl; i++){
       if (mask(start+i)){
@@ -251,6 +252,28 @@ void set_data_kk(double *ell, double *data, int start)
          data[start+i] = 0.;
       }
    }
+}
+
+void set_data_kk_bandpower(double *data, int start)
+{
+  for(int L=like.lmin_bp_with_corr; L<like.lmax_bp_with_corr+1; L++)
+  {
+    double _C_kk_limber = C_kk((double)L);// use the interpolate version
+    for(int i=0; i<like.Nbp; i++)
+    {
+      if(mask(start+i))
+      {
+        data[start+i] += _C_kk_limber * binmat_read(1, i, L-like.lmin_bp_with_corr);
+      }
+    }
+  }
+  for(int i=0; i<like.Nbp; i++)
+  {
+    if(mask(start+i))
+    {
+      data[start+i] += ckk_offset_read(1, i);
+    }
+  }
 }
 
 int set_cosmology_params(double OMM, double NORM, double NS, double W0,double WA, double OMB, double OMNUh2, double H0, double MGSigma, double MGmu, double THETA_S)
@@ -391,21 +414,30 @@ double log_multi_like(double OMM, double NORM, double NS, double W0,double WA, d
   static double darg, dt;
   double chisqr,a,log_L_prior=0.0, log_L=0.0;;
   
-  if(ell==0){
-    pred= create_double_vector(0, like.Ndata-1);
-    ell= create_double_vector(0, like.Ncl-1);
-    darg=(log(like.lmax)-log(like.lmin))/like.Ncl;
-    for (l=0;l<like.Ncl;l++){
-      ell[l]=exp(log(like.lmin)+(l+0.5)*darg);
-    }
+  pred= create_double_vector(0, like.Ndata-1);
 
-    theta= create_double_vector(0, like.Ntheta-1);
-    dt=(log(like.vtmax)-log(like.vtmin))/like.Ntheta;
-    for (l=0;l<like.Ntheta;l++){
-      theta[l]=exp(log(like.vtmin)+(l+0.5)*dt);
-    }
-
+  theta= create_double_vector(0, like.Ntheta-1);
+  double logdt = (log(like.vtmax)-log(like.vtmin))/like.Ntheta;
+  double x = 2./ 3.;
+  for (l=0; l<like.Ntheta; l++)
+  {
+    double thetamin = exp(log(like.vtmin) + (l + 0.0) * logdt);
+    double thetamax = exp(log(like.vtmin) + (l + 1.0) * logdt);
+    theta[l] = x * (pow(thetamax, 3) - pow(thetamin, 3))/(thetamax*thetamax - thetamin*thetamin);
   }
+
+  if(like.Ncl > 0)
+  {
+    if(ell==0)
+    {
+      ell= create_double_vector(0, like.Ncl-1);
+      darg=(log(like.lmax)-log(like.lmin))/like.Ncl;
+      for (l=0;l<like.Ncl;l++){
+        ell[l]=exp(log(like.lmin)+(l+0.5)*darg);
+      }
+    }
+  }
+
   set_cosmology_params(OMM,NORM,NS,W0,WA,OMB,OMNUh2,H0, MGSigma, MGmu, THETA_S);
   if (strcmp(pdeltaparams.runmode,"class")==0||strcmp(pdeltaparams.runmode,"CLASS")==0) {
     int status = 0;
@@ -493,8 +525,14 @@ double log_multi_like(double OMM, double NORM, double NS, double W0,double WA, d
     start += like.Ntheta*tomo.shear_Nbin;
   } 
   if(like.kk==1) {
-    set_data_kk(ell, pred, start);
-    start += like.Ncl;
+    if(like.Ncl>0){
+      set_data_kk_logbin(ell, pred, start);
+      start += like.Ncl;
+    }
+    else{
+      set_data_kk_bandpower(pred, start);
+      start += like.Nbp;
+    }
   }
   
   chisqr=0.0;
@@ -529,32 +567,39 @@ void compute_data_vector(char *filename, double OMM, double NORM, double NS, dou
   static double darg, dt;
   double chisqr,a,log_L_prior=0.0;
   
-  if(ell==0)
+  pred= create_double_vector(0, like.Ndata-1);
+
+  theta= create_double_vector(0, like.Ntheta-1);
+  dt=(log(like.vtmax)-log(like.vtmin))/like.Ntheta;
+  for (l=0;l<like.Ntheta;l++)
   {
-    pred= create_double_vector(0, like.Ndata-1);
-    ell= create_double_vector(0, like.Ncl-1);
-    darg=(log(like.lmax)-log(like.lmin))/like.Ncl;
-    for (l=0;l<like.Ncl;l++)
-    {
-      ell[l]=exp(log(like.lmin)+(l+0.5)*darg);
-    }
+    theta[l]=exp(log(like.vtmin)+(l+0.5)*dt);
 
-    theta= create_double_vector(0, like.Ntheta-1);
-    dt=(log(like.vtmax)-log(like.vtmin))/like.Ntheta;
-    for (l=0;l<like.Ntheta;l++)
-    {
-      theta[l]=exp(log(like.vtmin)+(l+0.5)*dt);
+    //VM BEGINS
+    const double logdt = (log(like.vtmax)-log(like.vtmin))/like.Ntheta;
+    const double x = 2./ 3.;
+    const double thetamin = exp(log(like.vtmin) + (l + 0.0) * logdt);
+    const double thetamax = exp(log(like.vtmin) + (l + 1.0) * logdt);
+    theta[l] = x * (pow(thetamax, 3) - pow(thetamin, 3))/(thetamax*thetamax - thetamin*thetamin);
+    //VM ENDS
+    printf("%le %le \n\n", exp(log(like.vtmin)+(l+0.5)*dt), theta[l]);
+  }
 
-      //VM BEGINS
-      const double logdt = (log(like.vtmax)-log(like.vtmin))/like.Ntheta;
-      const double x = 2./ 3.;
-      const double thetamin = exp(log(like.vtmin) + (l + 0.0) * logdt);
-      const double thetamax = exp(log(like.vtmin) + (l + 1.0) * logdt);
-      theta[l] = x * (pow(thetamax, 3) - pow(thetamin, 3))/(thetamax*thetamax - thetamin*thetamin);
-      //VM ENDS
-      printf("%le %le \n\n", exp(log(like.vtmin)+(l+0.5)*dt), theta[l]);
+  // log-bin C_kk
+  if(like.Ncl>0)
+  {
+    printf("Calculating CMB lensing power spectrum as log-ell bins\n");
+    if(ell==0)
+    {
+      ell= create_double_vector(0, like.Ncl-1);
+      darg=(log(like.lmax)-log(like.lmin))/like.Ncl;
+      for (l=0;l<like.Ncl;l++)
+      {
+        ell[l]=exp(log(like.lmin)+(l+0.5)*darg);
+      }
     }
   }
+  else{printf("Calculating CMB lensing power spectrum as band-power\n");}
   //for (l=0;l<like.Ntheta;l++){
   //  printf("%d %le\n",l,theta[l]);
   //}
@@ -600,56 +645,22 @@ void compute_data_vector(char *filename, double OMM, double NORM, double NS, dou
     printf("Done with shear-kappa\n");
   } 
   if(like.kk==1) {
-    printf("Start with kappa-kappa\n");
-    set_data_kk(ell, pred, start);
-    start += like.Ncl;
-    printf("Done with kappa-kappa\n");
+    if(like.Ncl > 0)
+    {
+      printf("Start with kappa-kappa (log-bin)\n");
+      set_data_kk_logbin(ell, pred, start);
+      start += like.Ncl;
+      printf("Done with kappa-kappa (log-bin)\n");
+    }
+    else
+    {
+      printf("Start with kappa-kappa (band-power)\n");
+      set_data_kk_bandpower(pred, start);
+      start += like.Nbp;
+      printf("Done with kappa-kappa (band-power)\n");
+    }
   }
 
-/*   Debug
-  double test_ary[2] = {1000, 0};
-  double test_int = 0;
-  test_int =  int_for_C_kk(0.3, (void *)test_ary);
-  printf("Try int_for_C_kk(a = 0.3, ell=1000) = %e\n", test_int );
-
-  // test chi integration
-  int Nz_tfi = 10000;
-  double zmin_tfi = 1e-5, zmax_tfi = 1090.0;
-  double dz_tfi = log(zmax_tfi/zmin_tfi) / Nz_tfi;
-  double z_tfi = 0.0, chi_tfi=0.0, a_tfi=0.0;
-  double chi_int_tfi_medium = 0.0, chi_int_tfi_high = 0.0;
-  double array_tfi[1];
-
-  char tfi_filename[500];
-  sprintf(tfi_filename, "/Users/jiachuanxu/Workspace/CosmoLike/DESxPlanck/test_chi_precision_cosmolike_core.dat");
-  FILE *tfi_file;
-  tfi_file = fopen(tfi_filename, "w");
-  if(tfi_file == NULL){
-    printf("\x1b[90m{%s}\x1b[0m: Can not open file {%s}!",
-            "compute_data_vector", tfi_filename);
-    exit(-1);
-  }
-  fprintf(tfi_file, "# z chi_interp chi_int_medium chi_int_high \n");
-
-  for(int i_tfi=0; i_tfi<Nz_tfi; i_tfi ++)
-  {
-    z_tfi = exp( log(zmin_tfi) + (i_tfi+0.5)*dz_tfi );
-    a_tfi = 1.0/(1.0+z_tfi);
-    
-    chi_int_tfi_medium = int_gsl_integrate_medium_precision(
-      int_for_chi, (void*)array_tfi , a_tfi, 1., NULL, 2000);
-    
-    chi_int_tfi_high = int_gsl_integrate_high_precision(
-      int_for_chi, (void*)array_tfi , a_tfi, 1., NULL, 4000);
-
-    chi_tfi = chi( 1.0/(1.0+z_tfi) );
-    fprintf(tfi_file, "%le\t%le\t%le\t%le\n", z_tfi, chi_tfi, 
-      chi_int_tfi_medium, chi_int_tfi_high);
-  }
-  fclose(tfi_file);
-
-  // test chi integration end
-*/
   FILE *F;
   F=fopen(filename,"w");
   if(F==NULL){

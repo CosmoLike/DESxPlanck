@@ -1,6 +1,9 @@
 double invcov_mask(int READ, int ci, int cj);
 double data_read(int READ, int ci);
 double bary_read(int READ, int PC, int cj);
+double binmat_read(int READ, int ci, int cj);
+double ckk_offset_read(int READ, int ci);
+
 void init_data_inv_bary(char *INV_FILE, char *DATA_FILE, char *BARY_FILE);
 void init_priors(double M_Prior, double SigZ_source, double DeltaZ_source_Prior, double SigZ_source_Prior, double SigZ_lens, double DeltaZ_lens_Prior, double SigZ_lens_Prior, double A_IA_Prior, double betaIA_Prior, double etaIA_Prior, double etaZIA_Prior, double Q1_Prior, double Q2_Prior, double Q3_Prior);
 void init_survey(char *surveyname, double nsource, double nlens, double area);
@@ -8,11 +11,14 @@ void init_survey(char *surveyname, double nsource, double nlens, double area);
 void init_cosmo_runmode(char *runmode);
 void init_binning_fourier(int Ncl, double lmin, double lmax);
 void init_binning_real(int Ntheta, double theta_min, double theta_max);
+void init_binning_bandpower(int Nbp, int lmin, int lmax);
 void init_scalecuts(double Rmin_bias, double lmax_shear);
 
 void init_probes(char *probes);
 
 void init_data_fourier(char *COV_FILE, char *MASK_FILE, char *DATA_FILE);
+void init_data_bandpower(char *COV_FILE, char *MASK_FILE, char *DATA_FILE,
+  char *BINMAT_WITH_CORR_FILE, char *CKK_OFFSET_FILE);
 
 void init_sample_theta_s();
 
@@ -204,6 +210,36 @@ void init_data_fourier(char *COV_FILE, char *MASK_FILE, char *DATA_FILE)
   //init=data_read(0,1);
 }
 
+void init_data_bandpower(char *COV_FILE, char *MASK_FILE, char *DATA_FILE,
+  char *BINMAT_WITH_CORR_FILE, char *CKK_OFFSET_FILE)
+{
+  double init;
+  printf("\n");
+  printf("---------------------------------------\n");
+  printf("Initializing data vector and covariance\n");
+  printf("---------------------------------------\n");
+
+  sprintf(like.MASK_FILE,"%s",MASK_FILE);
+  printf("PATH TO MASK: %s\n",like.MASK_FILE);
+  init=mask(1);
+
+  sprintf(like.COV_FILE,"%s",COV_FILE);
+  printf("PATH TO COV: %s\n",like.COV_FILE);
+  init=invcov_mask(0,1,1);
+
+  //sprintf(like.DATA_FILE,"%s",DATA_FILE);
+  //printf("PATH TO DATA: %s\n",like.DATA_FILE);
+  //init=data_read(0,1);
+
+  sprintf(like.BINMAT_WITH_CORR_FILE,"%s",BINMAT_WITH_CORR_FILE);
+  printf("PATH TO BINMAT (w/ corr): %s\n",like.BINMAT_WITH_CORR_FILE);
+  init=binmat_read(0, 1, 1);
+
+  sprintf(like.CKK_OFFSET_FILE,"%s",CKK_OFFSET_FILE);
+  printf("PATH TO C_kk OFFSET: %s\n",like.CKK_OFFSET_FILE);
+  init=ckk_offset_read(0, 1);
+}
+
 double mask(int ci) // For fourier space
 {
   int i,intspace;
@@ -239,7 +275,10 @@ double mask(int ci) // For fourier space
      int N3x2pt, N5x2pt, N6x2pt;
      N3x2pt = like.Ntheta*(tomo.shear_Npowerspectra*2 + tomo.ggl_Npowerspectra + tomo.clustering_Npowerspectra);    
      N5x2pt = N3x2pt + like.Ntheta*(tomo.shear_Nbin + tomo.clustering_Nbin);
-     N6x2pt = N5x2pt + like.Ncl;
+     if((like.Ncl>0) && (like.Nbp<=0)){N6x2pt = N5x2pt + like.Ncl;}
+     else if((like.Ncl<=0) && (like.Nbp>0)){N6x2pt = N5x2pt + like.Nbp;}
+     else{printf("ERROR: Either Ncl or Nbp should be positive!\n");exit(-1);}
+     
     //test whether Ndata assumes 3x2pt or 5x2pt format
     //if so, mask out probes excluded from the analysis
      if (N == N3x2pt || N== N5x2pt || N == N6x2pt){
@@ -416,6 +455,74 @@ double bary_read(int READ, int PC, int cj)
   return bary[PC][cj];
 }
 
+double binmat_read(int READ, int ci, int cj)
+{
+  int i, j;
+  static double **BINMAT_WITH_CORR = 0;
+  
+  if(like.Nbp<=0)
+  {
+    printf("ERROR: like.Nbp not set before binmat_read!\n");
+    exit(-1);
+  }
+  int Num_of_L_modes = like.lmax_bp_with_corr - like.lmin_bp_with_corr + 1;
+
+  if(READ==0 || BINMAT_WITH_CORR == 0)
+  {
+    BINMAT_WITH_CORR = create_double_matrix(0, like.Nbp - 1, 0, 
+      Num_of_L_modes - 1);      
+    FILE *F;
+    F=fopen(like.BINMAT_WITH_CORR_FILE, "r");
+    for (i = 0; i < like.Nbp; i++)
+    {
+      for (j = 0; j < Num_of_L_modes; j++)
+      {
+        fscanf(F, "%le", &BINMAT_WITH_CORR[i][j]);
+      }  
+    }
+    fclose(F);
+    printf("FINISHED READING CMB BAND-POWER BINNING MATRIX\n");
+    printf("binning matrix: \n");
+    for(j=0; j<Num_of_L_modes; j++)
+    {
+      printf("L = %4d: ", j + like.lmin_bp_with_corr);
+      for(i=0; i<like.Nbp; i++)
+      {
+        printf("%.2e ", BINMAT_WITH_CORR[i][j]);
+      }
+      printf("\n");
+    }
+  }
+  return BINMAT_WITH_CORR[ci][cj];
+}
+
+double ckk_offset_read(int READ, int ci)
+{
+  int i;
+  static double *CKK_OFFSET = 0;
+  if(like.Nbp<=0)
+  {
+    printf("ERROR: like.Nbp not set before binmat_read!\n");
+    exit(-1);
+  }
+  
+  if(READ==0 || CKK_OFFSET == 0)
+  {
+    CKK_OFFSET = create_double_vector(0, like.Nbp - 1);
+    FILE *F;
+    F=fopen(like.CKK_OFFSET_FILE, "r");
+    for (i = 0; i < like.Nbp; i++){fscanf(F, "%le", &CKK_OFFSET[i]);}
+    fclose(F);
+    printf("FINISHED READING CMB BAND-POWER OFFSET VECTOR\n");
+    printf("C_kk offset: \n");
+    for(i=0; i<like.Nbp; i++)
+    {
+      printf("%le ", CKK_OFFSET[i]);
+    }
+  }
+  return CKK_OFFSET[ci];
+}
+
 
 void init_cosmo_runmode(char *runmode)
 {
@@ -458,6 +565,25 @@ void init_binning_real(int Ntheta, double theta_min, double theta_max)
   printf("minimum theta: %le\n",like.vtmin);
   printf("maximum theta: %le\n",like.vtmax);
   printf("init_binning_real complete\n");
+}
+
+void init_binning_bandpower(int Nbp, int lmin, int lmax)
+{
+  printf("-------------------------------------------\n");
+  printf("Initializing CMB Band-power Binning\n");
+  printf("-------------------------------------------\n");
+  
+  like.Nbp=Nbp;
+  like.lmin_bp_with_corr = lmin;
+  like.lmax_bp_with_corr = lmax;
+  int Num_of_L_modes = lmax - lmin + 1;
+  
+  printf("number of band-power bins Nbp: %d\n",like.Nbp);
+  printf("minimum L: %d\n",like.lmin_bp_with_corr);
+  printf("maximum L: %d\n",like.lmax_bp_with_corr);
+  printf("total L modes: %d\n", Num_of_L_modes);
+  
+  printf("init_binning_bandpower complete\n");
 }
 
 void init_priors(double M_Prior, double SigZ_source, double DeltaZ_source_Prior, double SigZ_source_Prior, double SigZ_lens, double DeltaZ_lens_Prior, double SigZ_lens_Prior, double A_ia_Prior, double beta_ia_Prior, double eta_ia_Prior, double etaZ_ia_Prior, double Q1_Prior, double Q2_Prior, double Q3_Prior)
@@ -621,8 +747,13 @@ void init_probes(char *probes)
     printf("[REAL SPACE] Position-Position computation initialized\n");
   } 
   if(strcmp(probes,"6x2pt")==0) {
-    like.Ndata=like.Ntheta*(tomo.shear_Npowerspectra*2 + tomo.ggl_Npowerspectra + tomo.clustering_Npowerspectra + 
-      tomo.clustering_Nbin + tomo.shear_Nbin) + like.Nbp;
+    like.Ndata = like.Ntheta*(tomo.shear_Npowerspectra*2 + tomo.ggl_Npowerspectra + tomo.clustering_Npowerspectra + 
+      tomo.clustering_Nbin + tomo.shear_Nbin);
+    
+    if((like.Ncl>0) && (like.Nbp<=0)){like.Ndata += like.Ncl;}
+    else if((like.Ncl<=0) && (like.Nbp>0)){like.Ndata += like.Nbp;}
+    else{printf("ERROR: Either Ncl or Nbp should be positive!\n");exit(-1);}
+
     like.shear_shear = 1;
     like.shear_pos = 1;
     like.pos_pos = 1;
@@ -634,7 +765,12 @@ void init_probes(char *probes)
     printf("[REAL SPACE] Position-Position computation initialized\n");
     printf("[REAL SPACE] CMBkappa-Shear computation initialized\n");
     printf("[REAL SPACE] CMBkappa-Position computation initialized\n");
-    printf("[FOURIER SPACE] CMBkappa-CMBkappa computation initialized\n");
+    if(like.Ncl>0){
+      printf("[FOURIER SPACE] CMBkappa-CMBkappa computation initialized\n");
+    }
+    else{
+      printf("[BAND-POWER] CMBkappa-CMBkappa computation initialized\n");
+    }
   }
   if(strcmp(probes,"gg_gk_gs")==0) {
     like.Ndata = like.Ntheta*(tomo.clustering_Npowerspectra + tomo.clustering_Nbin + tomo.ggl_Npowerspectra);
@@ -646,13 +782,23 @@ void init_probes(char *probes)
     printf("[REAL SPACE] Position-CMBkappa computation initialized\n");
   }
   if(strcmp(probes,"kk_ks_ss")==0) {
-    like.Ndata = like.Ntheta*(tomo.shear_Nbin + 2*tomo.shear_Npowerspectra) + like.Nbp;
+    like.Ndata = like.Ntheta*(tomo.shear_Nbin + 2*tomo.shear_Npowerspectra);
+
+    if((like.Ncl>0) && (like.Nbp<=0)){like.Ndata += like.Ncl;}
+    else if((like.Ncl<=0) && (like.Nbp>0)){like.Ndata += like.Nbp;}
+    else{printf("ERROR: Either Ncl or Nbp should be positive!\n");exit(-1);}
+
     like.kk = 1;
     like.ks = 1;
     like.shear_shear = 1;
     printf("[REAL SPACE] Shear-Shear computation initialized\n");
     printf("[REAL SPACE] CMBkappa-Shear computation initialized\n");
-    printf("[FOURIER SPACE] CMBkappa-CMBkappa computation initialized\n");
+    if(like.Ncl>0){
+      printf("[FOURIER SPACE] CMBkappa-CMBkappa computation initialized\n");  
+    }
+    else{
+      printf("[BAND-POWER] CMBkappa-CMBkappa computation initialized\n");
+    }
   }
   printf("Total number of data points like.Ndata=%d\n",like.Ndata);
 }

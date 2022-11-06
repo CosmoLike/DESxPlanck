@@ -74,7 +74,7 @@ puma_fourier:
 
 puma_mix:
 	make puma_lib_mix
-	#make puma_datavs
+	make puma_datavs
 	make puma_cov_real
 
 

@@ -271,7 +271,7 @@ void set_data_kk_bandpower(double *data, int start)
   {
     if(mask(start+i))
     {
-      data[start+i] += ckk_offset_read(1, i);
+      data[start+i] -= ckk_offset_read(1, i);
     }
   }
 }

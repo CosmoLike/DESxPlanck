@@ -12,9 +12,9 @@ void test_mix_desy1_planck()
 
 	// CMB band-power binning
 	int l_min = 2, l_max = 2500;
-	int Nbp = 14;
-	char binmat_with_corr_file[500] = "./cmblensrec/plancksmica/pp_agr2_CMBmarged/binning_matrix_with_correction_table.txt";
-	char ckk_offset_file[500] = "./cmblensrec/plancksmica/pp_agr2_CMBmarged/Ckk_bandpower_offset.txt";
+	int Nbp = 9;
+	char binmat_with_corr_file[500] = "./cmblensrec/plancksmica/dr4_consext8_CMBmarged/binning_matrix_with_correction_table.txt";
+	char ckk_offset_file[500] = "./cmblensrec/plancksmica/dr4_consext8_CMBmarged/Ckk_bandpower_offset.txt";
 
 	// CMB setting
 	// NOTE: the scale-cuts and FWHM of Planck beam size is hard-coded
@@ -38,10 +38,10 @@ void test_mix_desy1_planck()
 	int IA_model = 4; // 4 = NLA
 	
 	// data vector, mask, and covariance matrix
-	char cov_file[500] = "./covs/cov_y1xplanck_mix6x2pt_pp_p18cosmo_kkkkFFP10";
-	char data_file[500] = "./datav/xi_desy1xplanck_6x2pt_realdata_pp_agr2_CMBmarged";
-	char mask_file[500] = "./yaml/xi_desy1xplanck_6x2pt_realdata_pp_agr2_CMBmarged.mask";
-	char test_model_file[500] = "./datav/xi_desy1xplanck_6x2pt_simudata_pp_agr2_CMBmarged_cosmolike";
+	char cov_file[500] = "./covs/cov_y1xplanck_mix6x2pt_dr4_consext8_p18cosmo_CMBmarg_kkkkSimDR4";
+	char data_file[500] = "./datav/xi_desy1xplanck_6x2pt_simudata_dr4_consext8_CMBmarged_cocoa";
+	char mask_file[500] = "./yaml/xi_desy1xplanck_6x2pt_realdata_dr4_consext8_CMBmarged.mask";
+	char test_model_file[500] = "./datav/xi_desy1xplanck_6x2pt_simudata_dr4_consext8_CMBmarged_cosmolike";
 
 	// cosmological parameters
 	input_cosmo_params_y3 ic = {
@@ -112,3 +112,4 @@ int main(void)
 	test_mix_desy1_planck();
 	return 0;
 }
+

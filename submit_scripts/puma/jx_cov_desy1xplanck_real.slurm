@@ -28,7 +28,7 @@
 ###SBATCH --qos=user_qos_timeifler
 
 ###--- REQUIRED. Set the number of cores that will be used for this job.
-#SBATCH --ntasks-per-node=2
+#SBATCH --ntasks-per-node=4
 
 ###--- REQUIRED. Set the number of nodes
 #SBATCH --nodes=1
@@ -56,12 +56,16 @@ cd $SLURM_SUBMIT_DIR
 ### Run your work
 ### run your executable program with begin and end date and time output
 
+#INI_FILE=ini_files/cov_y1_mcal_mix_planck_DR4.ini
+INI_FILE=ini_files/cov_y1_mcal_mix_TEST.ini
+CMB_LENSING_NOISE_FILE=./cmblensrec/plancksmica/cmb_lmax3000.txt
+
 ### If run full covariance matrix
 ### =============================
 for (( c=0; c<2; c++ ))
 do
     hit=$(( ${SLURM_ARRAY_TASK_ID} + $c * 770 ))
-    ./compute_covariances_real_6x2pt $hit ini_files/cov_y1_mcal_mix_planck_DR4.ini ./cmblensrec/plancksmica/cmb_lmax3000.txt >&/home/u17/jiachuanxu/output/job_output_${hit}.log
+    ./compute_covariances_real_6x2pt $hit ${INI_FILE} ${CMB_LENSING_NOISE_FILE} >&/home/u17/jiachuanxu/output/job_output_${hit}.log
 done
 
 ### If only running gk and sk, hit = 1035-1539, which has 504 blocks
@@ -71,10 +75,10 @@ done
 
 ### In case some jobs failed, uncomment the following lines
 ### =======================================================
-#TODO_list=(1445)
+#TODO_list=(1450)
 #hit=${TODO_list[${SLURM_ARRAY_TASK_ID}]}
 
-#hit=1540
+#hit=1450
 #echo ${hit}
-#./compute_covariances_real_6x2pt ${hit} ini_files/cov_y1_mcal_mix.ini ./cmblensrec/plancksmica/cmb_lmax3000.txt >&/home/u17/jiachuanxu/output/job_output_${hit}.log
+#./compute_covariances_real_6x2pt ${hit} ${INI_FILE} ${CMB_LENSING_NOISE_FILE} >&/home/u17/jiachuanxu/output/job_output_${hit}.log
 

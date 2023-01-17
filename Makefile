@@ -96,5 +96,8 @@ puma_lib_mix:
 puma_cov_real:
 	gcc compute_covariances_real_6x2pt.c  -o ./compute_covariances_real_6x2pt $(opt_puma)
 
+puma_test:
+	gcc test_io.c -o ./test_io $(opt_puma)
+
 puma_mix_clean:
 	rm like_mix_6x2pt.so ./compute_covariances_real_6x2pt

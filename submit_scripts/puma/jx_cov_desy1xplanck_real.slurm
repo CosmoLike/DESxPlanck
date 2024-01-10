@@ -12,7 +12,8 @@
 #SBATCH --error=/home/u17/jiachuanxu/output/%x-%j.err
 
 ###--- Optionan. Array job submission
-#SBATCH --array=1-770
+#SBATCH --array=1-505
+###SBATCH --array=1-770
 
 ###--- REQUIRED. Specify the PI group for this job
 #SBATCH --account=timeifler
@@ -25,7 +26,7 @@
 
 ###--- REQUIRED. Set the partition for your job.
 #SBATCH --partition=standard
-###SBATCH --qos=user_qos_timeifler
+#SBATCH --qos=qual_qos_timeifler
 
 ###--- REQUIRED. Set the number of cores that will be used for this job.
 #SBATCH --ntasks-per-node=4
@@ -37,7 +38,7 @@
 #SBATCH --mem=16gb
 
 ###--- REQUIRED. Specify the walltime required for this job, hhh:mm:ss
-#SBATCH --time=60:00:00
+#SBATCH --time=168:00:00
 
 
 # --------------------------------------------------------------
@@ -62,9 +63,9 @@ CMB_LENSING_NOISE_FILE=./cmblensrec/plancksmica/cmb_lmax3000.txt
 
 ### If run full covariance matrix
 ### =============================
-for (( c=0; c<2; c++ ))
+for (( c=0; c<1; c++ ))
 do
-    hit=$(( ${SLURM_ARRAY_TASK_ID} + $c * 770 ))
+    hit=$(( ${SLURM_ARRAY_TASK_ID} + 1035 ))
     ./compute_covariances_real_6x2pt $hit ${INI_FILE} ${CMB_LENSING_NOISE_FILE} >&/home/u17/jiachuanxu/output/job_output_${hit}.log
 done
 

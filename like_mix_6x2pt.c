@@ -69,7 +69,9 @@ typedef struct input_nuisance_params_y3 {
     double source_z_bias[10];
     double shear_m[10];
     double p_ia[10];
-    // double bary[3];
+    double Q1;
+    double Q2;
+    double Q3;
 } input_nuisance_params_y3;
 
 typedef struct input_cosmo_params_y3 {
@@ -105,7 +107,7 @@ void compute_data_vector(char *filename, double OMM, double S8, double NS, doubl
 double log_multi_like(double OMM, double S8, double NS, double W0,double WA, double OMB, double OMNUh2, double H0, double MGSigma, double MGmu, double THETA_S, \
                       double *B, double *b_mag,\
                       double *SP, double *CP, double *M, \
-                      double *p_ia);
+                      double *p_ia, double Q1, double Q2, double Q3);
 void write_datavector_wrapper(char *filename, input_cosmo_params_y3 ic, input_nuisance_params_y3 in);
 double log_like_wrapper(input_cosmo_params_y3 ic, input_nuisance_params_y3 in);
 
@@ -182,7 +184,6 @@ void set_data_ggl(double *theta, double *data, int start)
     for (i = 0; i < like.Ntheta; i++){
       if (mask(start+(like.Ntheta*nz)+i)){
         data[start+(like.Ntheta*nz)+i] = 
-          //xi_gamma_t_tomo_sys(theta[i],i,zl,zs)
           w_gamma_t_fullsky(i,zl,zs)
           //w_gamma_t_tomo(theta[i], zl, zs)
           *(1.0+nuisance.shear_calibration_m[zs]);
@@ -385,7 +386,7 @@ int set_nuisance_bmag(double *b_mag)
 double log_multi_like(double OMM, double NORM, double NS, double W0,double WA, double OMB, double OMNUh2, double H0, double MGSigma, double MGmu, double THETA_S, \
                       double *B, double *b_mag,\
                       double *SP, double *CP, double *M, \
-                      double *p_ia)
+                      double *p_ia, double Q1, double Q2, double Q3)
 {
   int i,j,k,m=0,l;
   // printf("%lg, %lg, %lg, %lg, %lg, %lg, %lg, %lg, %lg, %lg, %lg, \n", OMM,NORM,NS,W0,WA,OMB,OMNUh2,H0, MGSigma, MGmu, THETA_S);
@@ -479,11 +480,13 @@ double log_multi_like(double OMM, double NORM, double NS, double W0,double WA, d
   // if(like.Planck==1) log_L_prior+=log_L_Planck();
   // if(like.Planck15_BAO_w0wa==1) log_L_prior+=log_L_Planck15_BAO_w0wa();//CH
   //if(like.Planck15_BAO_H070p6_JLA_w0wa==1) log_L_prior+=log_L_Planck15_BAO_H070p6_JLA_w0wa();//CH
+  // Flat priors are implemented in python wrapper
   // if(like.IA!=0) log_L_prior+=log_L_ia();
   // if(like.IA!=0) log_L_prior+=log_like_f_red();
   if(like.wlphotoz!=0) log_L_prior+=log_L_wlphotoz();
   if(like.clphotoz!=0) log_L_prior+=log_L_clphotoz();
   if(like.shearcalib==1) log_L_prior+=log_L_shear_calib();
+  // Flat priors are implemented in python wrapper
   // if(like.IA!=0) {
   //   log_L = 0.0;
   //   log_L -= pow((nuisance.A_ia - prior.A_ia[0])/prior.A_ia[1],2.0);
@@ -538,8 +541,8 @@ double log_multi_like(double OMM, double NORM, double NS, double W0,double WA, d
   chisqr=0.0;
   for (i=0; i<like.Ndata; i++){
     for (j=0; j<like.Ndata; j++){
-      // a=(pred[i]-data_read(1,i)+Q1*bary_read(1,0,i)+Q2*bary_read(1,1,i)+Q3*bary_read(1,2,i))*invcov_read(1,i,j)*(pred[j]-data_read(1,j)+Q1*bary_read(1,0,j)+Q2*bary_read(1,1,j)+Q3*bary_read(1,2,j));
-      a=(pred[i]-data_read(1,i))*invcov_mask(1,i,j)*(pred[j]-data_read(1,j));
+      a=(pred[i]-data_read(1,i)+Q1*bary_read(1,0,i)+Q2*bary_read(1,1,i)+Q3*bary_read(1,2,i))*invcov_read(1,i,j)*(pred[j]-data_read(1,j)+Q1*bary_read(1,0,j)+Q2*bary_read(1,1,j)+Q3*bary_read(1,2,j));
+      //a=(pred[i]-data_read(1,i))*invcov_mask(1,i,j)*(pred[j]-data_read(1,j));
       chisqr=chisqr+a;
     }
     // if (fabs(data_read(1,i)) < 1.e-25){
@@ -713,7 +716,7 @@ double log_like_wrapper(input_cosmo_params_y3 ic, input_nuisance_params_y3 in)
   double like = log_multi_like(ic.omega_m, ic.sigma_8, ic.n_s, ic.w0, ic.wa, ic.omega_b,ic.omega_nuh2, ic.h0, ic.MGSigma, ic.MGmu,ic.theta_s, 
     in.bias, in.b_mag,
     in.source_z_bias,in.lens_z_bias,in.shear_m, 
-    in.p_ia);
+    in.p_ia, in.Q1, in.Q2, in.Q3);
   return like;
 }
 

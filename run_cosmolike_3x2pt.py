@@ -135,8 +135,8 @@ def parse_priors_and_ranges(params):
     cosmo_max = InputCosmologyParams()
     cosmo_names = InputCosmologyParams().names()
 
-    #Loop through the cosmological parameters
-    #picking
+    # Loop through the cosmological parameters
+    # Flat priors are applied in `LikelihoodFunctionWrapper`
     varied_params = []
     norm, scale = check_cosmo_duplicates(params)
     for p in cosmo_names:
@@ -177,6 +177,8 @@ def parse_priors_and_ranges(params):
     parse_nuisance_flat_prior(params, "bias", ntomo_lens, nuisance_min, nuisance_fid, nuisance_max, varied_params)
     # parse_nuisance_flat_prior(params, "bias2", ntomo_lens, nuisance_min, nuisance_fid, nuisance_max, varied_params)
     parse_nuisance_flat_prior(params, "b_mag", ntomo_lens, nuisance_min, nuisance_fid, nuisance_max, varied_params)
+
+    # Parse photo-z priors
     is_var = parse_nuisance_gaussian_prior(params, "lens_z_bias", ntomo_lens, nuisance_fid, lens_z_bias_mean, lens_z_bias_sigma, varied_params)
     if is_var:
         setprior_clusteringphotoz(lens_z_bias_mean, lens_z_bias_sigma)
@@ -186,9 +188,12 @@ def parse_priors_and_ranges(params):
     is_var = parse_nuisance_gaussian_prior(params, "source_z_bias", ntomo_source, nuisance_fid, source_z_bias_mean, source_z_bias_sigma, varied_params)
     if is_var:
         setprior_wlphotoz(source_z_bias_mean, source_z_bias_sigma)
+
+    # Parse shear calibration bias priors
     is_var = parse_nuisance_gaussian_prior(params, "shear_m", ntomo_source, nuisance_fid, shear_m_mean, shear_m_sigma, varied_params)
     if is_var:
         setprior_m(shear_m_mean,shear_m_sigma)
+
     #test which IA model
     #power-law redshift parameterization
     # is_var = parse_IA_TATT_power_law_flat_prior(params, nuisance_min, nuisance_fid, nuisance_max, varied_params)
@@ -204,6 +209,11 @@ def parse_priors_and_ranges(params):
     #     is_var_TT = parse_nuisance_flat_prior(params, "A2_z", ntomo_source, nuisance_min, nuisance_fid, nuisance_max, varied_params)
     #     if is_var_TT:
     #         initia(5)
+
+    # Parse baryon PCs priors
+    parse_nuisance_flat_prior(params, "Q1", 0, nuisance_min, nuisance_fid, nuisance_max, varied_params)
+    parse_nuisance_flat_prior(params, "Q2", 0, nuisance_min, nuisance_fid, nuisance_max, varied_params)
+    parse_nuisance_flat_prior(params, "Q3", 0, nuisance_min, nuisance_fid, nuisance_max, varied_params)
 
     return (varied_params,
             cosmo_min, cosmo_fid, cosmo_max,
@@ -268,17 +278,28 @@ def parse_nuisance_flat_prior(params, p, nbin, nuisance_min, nuisance_fid, nuisa
         set = 1
         p_range = params[p+"_range"]
         min_val, fid_val, max_val, is_var = parse_range(p_range)
-        for i in range(nbin):
-            getattr(nuisance_min, p)[i] = min_val
-            getattr(nuisance_fid, p)[i] = fid_val
-            getattr(nuisance_max, p)[i] = max_val
+        if nbin>0:
+            for i in range(nbin):
+                getattr(nuisance_min, p)[i] = min_val
+                getattr(nuisance_fid, p)[i] = fid_val
+                getattr(nuisance_max, p)[i] = max_val
+                if is_var:
+                    varied_params.append("{}_{}".format(p,i))
+        else:
+            getattr(nuisance_min, p) = min_val
+            getattr(nuisance_fid, p) = fid_val
+            getattr(nuisance_max, p) = max_val
             if is_var:
-                varied_params.append("{}_{}".format(p,i))
+                varied_params.append("{}".format(p))
     if p+"_fiducial" in params:
         set = 1
         values = params[p+"_fiducial"]
-        for i in range(nbin):
-            getattr(nuisance_fid, p)[i] = values[i]
+        if nbin>0:
+            for i in range(nbin):
+                getattr(nuisance_fid, p)[i] = values[i]
+        else:
+            getattr(nuisance_fid, p) = values
+        is_var = False
     if (set == 0):
         print ("run_cosmolike_mpp.py: %s not found in yaml file, use cosmolike_libs_y3 default value" %(p))
         for i in range(nbin):

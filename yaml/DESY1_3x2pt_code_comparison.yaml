@@ -77,15 +77,15 @@ tbounds     : [2.5, 250]
 # CMB bandpower binning related
 bbins       : 14
 bbounds     : [2, 2500]
-bmat        : xxx
-boffset     : xxx
+bmat        : cmblensrec/plancksmica/pp_agr2_CMBmarged/binning_matrix_with_correction_table.txt
+boffset     : cmblensrec/plancksmica/pp_agr2_CMBmarged/Ckk_bandpower_offset.txt
 bcov_sim    : 1
 bhartlap    : 240
 CMB_name    : planck
-noise_Nkk   : xxx
+noise_Nkk   : cmblensrec/plancksmica/cmb_lmax3000.txt
 
 # baryon PCAs
-baryon_pca  : xxx
+baryon_pca  : datav/cosmic_shear_9sim.pca
 
 
 # galaxy bias scale cuts [Mpc/h]

@@ -45,59 +45,20 @@ home_lib:
 	gcc -shared -o like_mix_6x2pt.so -fPIC like_mix_6x2pt.c -DSAMPLING $(opt_home) $(cfftlog) $(cfastpt)
 
 ################################################
-ocelote:
-	make ocelote_lib
-	make ocelote_datavs
-	make ocelote_cov
-
-ocelote_datavs:
-	gcc like_fourier_6x2pt.c -o ./like_fourier_6x2pt $(opt_ocelote)
-
-ocelote_cov:
-	gcc compute_covariances_fourier.c -o ./compute_covariances_fourier $(opt_ocelote)
-
-ocelote_cov_planck:
-	gcc compute_covariances_fourier_planck.c -o ./compute_covariances_fourier_planck $(opt_ocelote)
-
-ocelote_lib:
-	gcc -shared -o like_fourier_6x2pt.so -fPIC like_fourier_6x2pt.c -DSAMPLING $(opt_ocelote) $(cfftlog) $(cfastpt)
+hpc_mix:
+	make hpc_lib_mix
+	make hpc_datavs_mix
+	make hpc_cov_mix
 
 
-ocelote_cov_real:
-	gcc compute_covariances_real_6x2pt.c -o ./compute_covariances_real_6x2pt $(opt_ocelote)
-
-##########################################
-puma_fourier:
-	make puma_lib
-	#make puma_datavs
-	make puma_cov
-
-puma_mix:
-	make puma_lib_mix
-	make puma_datavs
-	make puma_cov_real
-
-
-puma_datavs:
+hpc_datavs_mix:
 	gcc like_test_6x2pt_mix.c -o ./like_test_6x2pt_mix $(opt_puma)
 
-puma_cov:
-	gcc compute_covariances_fourier.c -o ./compute_covariances_fourier $(opt_puma)
-
-puma_cov_planck:
-	gcc compute_covariances_fourier_planck.c -o ./compute_covariances_fourier_planck $(opt_puma)
-
-puma_lib:
-	gcc -shared -o like_fourier_6x2pt.so -fPIC like_fourier_6x2pt.c -DSAMPLING $(opt_puma) $(cfftlog) $(cfastpt)
-
-puma_lib_mix:
+hpc_lib_mix:
 	gcc -shared -o like_mix_6x2pt.so -fPIC like_mix_6x2pt.c -DSAMPLING $(opt_puma) $(cfftlog) $(cfastpt)
 
-puma_cov_real:
+hpc_cov_mix:
 	gcc compute_covariances_real_6x2pt.c  -o ./compute_covariances_real_6x2pt $(opt_puma)
 
-puma_test:
-	gcc test_io.c -o ./test_io $(opt_puma)
-
-puma_mix_clean:
+hpc_mix_clean:
 	rm like_mix_6x2pt.so ./compute_covariances_real_6x2pt

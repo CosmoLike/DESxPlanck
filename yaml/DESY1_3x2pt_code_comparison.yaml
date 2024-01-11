@@ -47,6 +47,11 @@ eta_ia_range: [-5.,0.,5.]
 # magnification bias
 #b_mag_range: [-3.,0.,3.]
 b_mag_range: 0.0
+
+# baryon PCs
+Q1_range : [-3.0, 0.0, 12.0]
+Q2_range : 0.0
+Q3_range : 0.0
 ######################################
 #COSMOLOGY PARAMETERS -   FLAT PRIORS
 ######################################

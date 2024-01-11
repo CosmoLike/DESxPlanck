@@ -12,9 +12,9 @@ void test_mix_desy1_planck()
 
 	// CMB band-power binning
 	int l_min = 2, l_max = 2500;
-	int Nbp = 9;
-	char binmat_with_corr_file[500] = "./cmblensrec/plancksmica/dr4_consext8_CMBmarged/binning_matrix_with_correction_table.txt";
-	char ckk_offset_file[500] = "./cmblensrec/plancksmica/dr4_consext8_CMBmarged/Ckk_bandpower_offset.txt";
+	int Nbp = 14;
+	char binmat_with_corr_file[500] = "./cmblensrec/plancksmica/pp_agr2_CMBmarged/binning_matrix_with_correction_table.txt";
+	char ckk_offset_file[500] = "./cmblensrec/plancksmica/pp_agr2_CMBmarged/Ckk_bandpower_offset.txt";
 
 	// CMB setting
 	// NOTE: the scale-cuts and FWHM of Planck beam size is hard-coded
@@ -33,16 +33,16 @@ void test_mix_desy1_planck()
 	char lens_nz[500] = "./zdistris/mcal_1101_lens.nz";
 
 	// misc
-	char runmode[50] = "class";
+	char runmode[50] = "halofit";
 	char probes[50] = "6x2pt";
-	int IA_model = 4; // 4 = NLA
+	int IA_model = 4; // 4 = NLA, power-law redshift evolution
 	
 	// data vector, mask, and covariance matrix
-	char cov_file[500] = "./covs/cov_y1xplanck_mix6x2pt_dr4_consext8_p18cosmo_CMBmarg_kkkkSimDR4";
-	char data_file[500] = "./datav/xi_desy1xplanck_6x2pt_simudata_dr4_consext8_CMBmarged_cocoa";
-	char mask_file[500] = "./yaml/xi_desy1xplanck_6x2pt_realdata_dr4_consext8_CMBmarged.mask";
-	char test_model_file[500] = "./datav/xi_desy1xplanck_6x2pt_simudata_dr4_consext8_CMBmarged_cosmolike";
-	char baryon_pca_file[500] = "./datav/xxx";
+	char cov_file[500] = "./covs/cov_y1xplanck_mix6x2pt_pp_p18cosmo_agr2_withAnnulus_kkkkSimDR3";
+	char data_file[500] = "./datav/xi_desy1xplanck_6x2pt_realdata_20_wA_ref_pp_agr2";
+	char mask_file[500] = "./yaml/xi_desy1xplanck_6x2pt_realdata_pp_agr2_CMBmarged.mask";
+	char test_model_file[500] = "./datav/xi_desy1xplanck_6x2pt_test";
+	char baryon_pca_file[500] = "./datav/cosmic_shear_9sim.pca";
 
 	// cosmological parameters
 	input_cosmo_params_y3 ic = {
@@ -74,6 +74,7 @@ void test_mix_desy1_planck()
 		.shear_m = {0.0191832, -0.0431752, -0.034961, -0.0158096, 
 			0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
 		.p_ia = {0.6061028, -1.51541, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+		.Q1 = 0.0, .Q2 = 0.0, .Q3 = 0.0,
 	};
 	/********* parameter setting end *********/
 

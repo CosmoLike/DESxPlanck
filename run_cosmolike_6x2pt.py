@@ -262,6 +262,7 @@ def parse_nuisance_flat_prior(params, p, nbin, nuisance_min, nuisance_fid, nuisa
         values = params[p+"_fiducial"]
         for i in range(nbin):
             getattr(nuisance_fid, p)[i] = values[i]
+        is_var = False
     if (set == 0):
         print ("run_cosmolike_mpp.py: %s not found in yaml file, use cosmolike_libs_y3 default value" %(p))
         for i in range(nbin):

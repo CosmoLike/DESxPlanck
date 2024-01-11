@@ -245,7 +245,10 @@ class InputNuisanceParams(IterableStruct):
         ("lens_z_bias", double*10),
         ("source_z_bias", double*10),
         ("shear_m", double*10),
-        ("p_ia", double*10)
+        ("p_ia", double*10),
+        ("Q1", double),
+        ("Q2", double),
+        ("Q3", double),
     ]
     @classmethod
     def fiducial(cls):
@@ -256,6 +259,9 @@ class InputNuisanceParams(IterableStruct):
         c.source_z_bias[:] = [0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]
         c.shear_m[:] = [0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]
         c.p_ia[:] = [0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]
+        c.Q1 = 0.0
+        c.Q2 = 0.0
+        c.Q3 = 0.0
         return c
 
     @classmethod
@@ -269,6 +275,9 @@ class InputNuisanceParams(IterableStruct):
         c.source_z_bias[:] = np.repeat(0.002, 10)
         c.shear_m[:] = np.repeat(0.002, 10)
         c.p_ia[:] = np.repeat(0.1, 10)
+        c.Q1 = 0.1
+        c.Q2 = 0.1
+        c.Q3 = 0.1
         return c
 
 write_cosmolike_datavector.argtypes = [ctypes.c_char_p,InputCosmologyParams, InputNuisanceParams]
@@ -335,6 +344,13 @@ class LikelihoodFunctionWrapper(object):
                     if value<min_val or value>max_val:
                      #   print "Nuisance parameter {}[{}] out of bounds {}  [{},{}]".format(p,i,value,min_val, max_val)
                         good=False
+        for p in ["Q1", "Q2", "Q3"]:
+            if p in self.varied_parameters:
+                min_val = getattr(self.nuisance_min,p)
+                max_val = getattr(self.nuisance_max,p)
+                value = getattr(InputNuisanceParams,p)
+                if value<min_val or value>max_val:
+                    good=False
         if good:
             return 0.0
         else:

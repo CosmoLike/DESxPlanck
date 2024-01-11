@@ -18,8 +18,14 @@ write_cosmolike_datavector = lib.write_datavector_wrapper
 initcosmo=lib.init_cosmo_runmode
 initcosmo.argtypes=[ctypes.c_char_p]
 
-initbins=lib.init_binning_fourier
-initbins.argtypes=[ctypes.c_int,ctypes.c_double,ctypes.c_double]
+initbins_fourier=lib.init_binning_fourier
+initbins_fourier.argtypes=[ctypes.c_int,ctypes.c_double,ctypes.c_double]
+
+initbins_real=lib.init_binning_real
+initbins_real.argtypes=[ctypes.c_int,ctypes.c_double,ctypes.c_double]
+
+initbins_bandpower=lib.init_binning_bandpower
+initbins_bandpower.argtypes=[ctypes.c_int,ctypes.c_int,ctypes.c_int]
 
 initscalecuts=lib.init_scalecuts
 initscalecuts.argtypes=[ctypes.c_double,ctypes.c_double]
@@ -43,6 +49,9 @@ initdata_fourier=lib.init_data_fourier
 initdata_fourier.argtypes=[ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
 #init_filenames=lib.init_filenames
 #init_filenames.argtypes=[ctypes.c_char_p, ctypes.c_char_p]
+
+initdata_bandpower=lib.init_data_bandpower
+initdata_bandpower.argtypes=[ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
 
 setprior_m=lib.set_shear_priors_mpp
 setprior_m.argtypes =[Double10,Double10]
@@ -75,7 +84,7 @@ get_N_ggl.argtypes = []
 get_N_ggl.restype = ctypes.c_int
 
 initcmb = lib.init_cmb
-initcmb.argtypes = [ctypes.c_char_p]
+initcmb.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
 
 class IterableStruct(ctypes.Structure):
     def names(self):

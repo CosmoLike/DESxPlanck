@@ -18,7 +18,7 @@ void init_probes(char *probes);
 
 void init_data_fourier(char *COV_FILE, char *MASK_FILE, char *DATA_FILE);
 void init_data_bandpower(char *COV_FILE, char *MASK_FILE, char *DATA_FILE,
-  char *BINMAT_WITH_CORR_FILE, char *CKK_OFFSET_FILE);
+  char *BINMAT_WITH_CORR_FILE, char *CKK_OFFSET_FILE, char *BARY_FILE);
 
 void init_sample_theta_s();
 
@@ -205,19 +205,19 @@ void init_data_fourier(char *COV_FILE, char *MASK_FILE, char *DATA_FILE)
   printf("PATH TO COV: %s\n",like.COV_FILE);
   init=invcov_mask(0,1,1);
 
-  //sprintf(like.DATA_FILE,"%s",DATA_FILE);
-  //printf("PATH TO DATA: %s\n",like.DATA_FILE);
-  //init=data_read(0,1);
+  sprintf(like.DATA_FILE,"%s",DATA_FILE);
+  printf("PATH TO DATA: %s\n",like.DATA_FILE);
+  init=data_read(0,1);
 }
 
 void init_data_bandpower(char *COV_FILE, char *MASK_FILE, char *DATA_FILE,
-  char *BINMAT_WITH_CORR_FILE, char *CKK_OFFSET_FILE)
+  char *BINMAT_WITH_CORR_FILE, char *CKK_OFFSET_FILE, char *BARY_FILE)
 {
   double init;
   printf("\n");
-  printf("---------------------------------------\n");
-  printf("Initializing data vector and covariance\n");
-  printf("---------------------------------------\n");
+  printf("-------------------------------------------------------------------------\n");
+  printf("Initializing data vector, covariance, mask, baryon PCs, CMB bandpower binning\n");
+  printf("-------------------------------------------------------------------------\n");
 
   sprintf(like.MASK_FILE,"%s",MASK_FILE);
   printf("PATH TO MASK: %s\n",like.MASK_FILE);
@@ -227,9 +227,13 @@ void init_data_bandpower(char *COV_FILE, char *MASK_FILE, char *DATA_FILE,
   printf("PATH TO COV: %s\n",like.COV_FILE);
   init=invcov_mask(0,1,1);
 
-  //sprintf(like.DATA_FILE,"%s",DATA_FILE);
-  //printf("PATH TO DATA: %s\n",like.DATA_FILE);
-  //init=data_read(0,1);
+  sprintf(like.DATA_FILE,"%s",DATA_FILE);
+  printf("PATH TO DATA: %s\n",like.DATA_FILE);
+  init=data_read(0,1);
+
+  sprintf(like.BARY_FILE,"%s",BARY_FILE);
+  printf("PATH TO BARYONS: %s\n",like.BARY_FILE);
+  init=bary_read(0,1,1);
 
   sprintf(like.BINMAT_WITH_CORR_FILE,"%s",BINMAT_WITH_CORR_FILE);
   printf("PATH TO BINMAT (w/ corr): %s\n",like.BINMAT_WITH_CORR_FILE);
@@ -558,8 +562,8 @@ void init_binning_real(int Ntheta, double theta_min, double theta_max)
   printf("-------------------------------------------\n");
   
   like.Ntheta=Ntheta;
-  like.vtmin= theta_min * constants.arcmin; //std=20
-  like.vtmax= theta_max * constants.arcmin; //15,000
+  like.vtmin= theta_min * constants.arcmin; // std=2.5
+  like.vtmax= theta_max * constants.arcmin; // 250
   
   printf("number of theta bins Ntheta: %d\n",like.Ntheta);
   printf("minimum theta: %le\n",like.vtmin);

@@ -24,9 +24,24 @@ def run_cosmolike(params, pool=None):
 
     ntomo_source = params['ntomo_source']
     ntomo_lens = params['ntomo_lens']
-    nl = params['lbins']
-    l_min = params['lbounds'][0]
-    l_max = params['lbounds'][1]
+    # nl = params['lbins']
+    # l_min = params['lbounds'][0]
+    # l_max = params['lbounds'][1]
+    ntheta = params['tbins']
+    theta_min = params['tbounds'][0]
+    theta_max = params['tbounds'][1]
+
+    Nbp = params['bbins']
+    bp_lmin = params['bbounds'][0]
+    bp_lmax = params['bbounds'][1]
+    bp_binmat = path + params['bmat']
+    bp_offset = path + params['boffset']
+    bp_cov_from_sim = params['bcov_sim']
+    bp_cov_hartlap = params['bhartlap']
+    cmbname = params['CMB_name']
+    CMB_noise_Nkk = path + params['noise_Nkk']
+
+    baryon_PCA = path + params['baryon_pca']
 
     Rmin_bias = params['Rmin_bias']
     lmax_shear= params['lmax_shear']
@@ -42,11 +57,15 @@ def run_cosmolike(params, pool=None):
     initcosmo(runmode.encode('utf-8'))
     initsources(source_nz.encode('utf-8'), ntomo_source)
     initlenses(lens_nz.encode('utf-8'), ntomo_lens, Double10(), Double10(),ggl_cut)
-    initbins(nl, l_min, l_max)
+    initbins_real(ntheta, theta_min, theta_max)
+    initbins_bandpower(Nbp, bp_lmin, bp_lmax)
     initscalecuts(Rmin_bias, lmax_shear)
     initprobes(probes.encode('utf-8'))
-    # initcmb(cmbname.encode('utf-8'))
-    initdata_fourier(cov_file.encode('utf-8'), mask_file.encode('utf-8'), data_file.encode('utf-8'))
+    initcmb(cmbname.encode('utf-8'), CMB_noise_Nkk.encode('utf-8'))
+    #initdata_fourier(cov_file.encode('utf-8'), mask_file.encode('utf-8'), data_file.encode('utf-8'))
+    initdata_bandpower(cov_file.encode('utf-8'), mask_file.encode('utf-8'), 
+        data_file.encode('utf-8'), bp_binmat.encode('utf-8'), 
+        bp_offset.encode('utf-8'), baryon_PCA.encode('utf-8'))
 
     (varied_params,
         cosmo_min, cosmo_fid, cosmo_max,

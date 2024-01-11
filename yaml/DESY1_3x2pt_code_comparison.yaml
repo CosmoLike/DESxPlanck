@@ -1,20 +1,20 @@
 # output file
 ######## specify base_dir only if absolute path required. chain_file will use base_dir as prefix
-base_dir : ./
-chain_file : ../../../../../groups/timeifler/jiachuanxu/temp/DESY1_3x2_public_test
+base_dir : /xdisk/timeifler/jiachuanxu/cosmolike_chains/desy1
+chain_file : DESY1_3x2_code_comparison
 
 n_threads  : 1
-iterations : 2000
+iterations : 5000
 nwalkers : 192
 
 # 2pt files
-cov_file    : covs/invcov_y1_3x2pt_public
+cov_file    : covs/cov_y1xplanck_mix6x2pt_pp_p18cosmo_agr2_withAnnulus_kkkkSimDR3
 # homebrew datavec
-data_file   : datav/xi_Y1_3x2pt_public
+data_file   : datav/xi_desy1xplanck_6x2pt_realdata_20_wA_ref_pp_agr2
 
 # if no mask_file specified,
 # then generate mask from scale cuts specified below
-mask_file   : yaml/xi_desy1_3x2pt_treecorr_test.mask
+mask_file   : yaml/xi_desy1xplanck_6x2pt_realdata_pp_agr2_CMBmarged.mask
 # need to change, but just have a look
 source_nz   : zdistris/mcal_1101_source.nz
 lens_nz     : zdistris/mcal_1101_lens.nz
@@ -28,12 +28,12 @@ run_mode    : Halofit
 # The mean parameter vectors must always be specified:
 # sigma vectors are optional - if not set the parameter is fixed to the
 # mean value above.
-shear_m_mean : [0.0, 0.0, 0.0, 0.0]
-source_z_bias_mean: [0.0, 0.0, 0.0, 0.0]
-lens_z_bias_mean: [0.0, 0.0, 0.0, 0.0, 0.0]
-shear_m_sigma: [0.005,0.005,0.005,0.005]
-source_z_bias_sigma: [0.002,0.002,0.002,0.002]
-lens_z_bias_sigma: [0.005,0.005,0.005,0.005,0.005]
+shear_m_mean : [0.012, 0.012, 0.012, 0.012]
+source_z_bias_mean: [-0.001, -0.019, 0.009, -0.018]
+lens_z_bias_mean: [0.008, -0.005, 0.006, 0.0, 0.0]
+shear_m_sigma: [0.023,0.023,0.023,0.023]
+source_z_bias_sigma: [0.018, 0.015, 0.011, 0.017]
+lens_z_bias_sigma: [0.007, 0.007, 0.006, 0.01, 0.01]
 
 ######################################
 #NUISANCE PARAMETERS -     FLAT PRIORS
@@ -51,15 +51,15 @@ b_mag_range: 0.0
 #COSMOLOGY PARAMETERS -   FLAT PRIORS
 ######################################
 omega_m_range : [0.1, 0.3, 0.9]
-#A_s_range : [5.e-10,2.3e-9,5.e-9]
-sigma_8_range : [0.4,0.82355,1.2]
+#A_s_range : [5.e-10, 2.3e-9, 5.e-9]
+sigma_8_range : [0.4, 0.82355, 1.2]
 n_s_range : [0.87, 0.97, 1.07]
 w0_range : -1.0
 wa_range : 0.0
 omega_b_range : [0.03, 0.048, 0.07]
 #omega_nuh2_range : [0.0006,0.0006155,0.01]
-# omega_nuh2_range : 0.00083
-omega_nuh2_range : 0.0
+omega_nuh2_range : 0.0006442
+#omega_nuh2_range : 0.0
 h0_range : [0.55, 0.69, 0.91]
 MGSigma_range : 0.0
 MGmu_range : 0.0
@@ -73,6 +73,20 @@ lbins       : 20
 lbounds     : [30.,3000.]
 tbins       : 20
 tbounds     : [2.5, 250]
+
+# CMB bandpower binning related
+bbins       : 14
+bbounds     : [2, 2500]
+bmat        : xxx
+boffset     : xxx
+bcov_sim    : 1
+bhartlap    : 240
+CMB_name    : planck
+noise_Nkk   : xxx
+
+# baryon PCAs
+baryon_pca  : xxx
+
 
 # galaxy bias scale cuts [Mpc/h]
 Rmin_bias   : 20

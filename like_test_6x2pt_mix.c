@@ -42,6 +42,7 @@ void test_mix_desy1_planck()
 	char data_file[500] = "./datav/xi_desy1xplanck_6x2pt_simudata_dr4_consext8_CMBmarged_cocoa";
 	char mask_file[500] = "./yaml/xi_desy1xplanck_6x2pt_realdata_dr4_consext8_CMBmarged.mask";
 	char test_model_file[500] = "./datav/xi_desy1xplanck_6x2pt_simudata_dr4_consext8_CMBmarged_cosmolike";
+	char baryon_pca_file[500] = "./datav/xxx";
 
 	// cosmological parameters
 	input_cosmo_params_y3 ic = {
@@ -93,7 +94,7 @@ void test_mix_desy1_planck()
 	init_cmb(cmbName, cmb_lens_noise_file);
 	//init_data_fourier(cov_file, mask_file, data_file);
 	init_data_bandpower(cov_file, mask_file, data_file, binmat_with_corr_file, 
-		ckk_offset_file);
+		ckk_offset_file, baryon_pca_file);
 	init_IA_mpp(IA_model);
 	sprintf(survey.name,"%s","DESY1xplanck");
 

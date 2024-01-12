@@ -41,7 +41,7 @@ void test_mix_desy1_planck()
 	char cov_file[500] = "./covs/cov_y1xplanck_mix6x2pt_pp_p18cosmo_agr2_withAnnulus_kkkkSimDR3";
 	char data_file[500] = "./datav/xi_desy1xplanck_6x2pt_realdata_20_wA_ref_pp_agr2";
 	char mask_file[500] = "./yaml/xi_desy1xplanck_6x2pt_realdata_pp_agr2_CMBmarged.mask";
-	char test_model_file[500] = "./datav/xi_desy1xplanck_6x2pt_test";
+	char test_model_file[500] = "./datav/xi_desy1xplanck_6x2pt_test_fullsky";
 	char baryon_pca_file[500] = "./datav/cosmic_shear_9sim.pca";
 
 	// cosmological parameters
@@ -57,7 +57,7 @@ void test_mix_desy1_planck()
 		.h0 = 0.6732,
 		.MGSigma = 0.0,
 		.MGmu = 0.0,
-		//.theta_s = 0.0104854,
+		.theta_s = 0.0104854,
 	};
 
 	// nuisance parameters

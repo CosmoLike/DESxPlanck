@@ -199,8 +199,8 @@ void set_data_clustering(double *theta, double *data, int start)
   for (nz = 0; nz < tomo.clustering_Npowerspectra; nz++){
     for (i = 0; i < like.Ntheta; i++){
       if (mask(start+(like.Ntheta*nz)+i)){
-        // data[start+(like.Ntheta*nz)+i] = w_tomo_exact(i,nz,nz); //curved sky legendre, std for Y1
-        data[start+(like.Ntheta*nz)+i] = w_tomo_nonLimber(i, nz, nz); //nonLimber+RSD
+        data[start+(like.Ntheta*nz)+i] = w_tomo_exact(i,nz,nz); //curved sky legendre, std for Y1
+        //data[start+(like.Ntheta*nz)+i] = w_tomo_nonLimber(i, nz, nz); //nonLimber+RSD
       }
     }
   }

@@ -159,10 +159,10 @@ void set_data_shear(double *theta, double *data, int start)
     for (i = 0; i < like.Ntheta; i++){
       if (mask(like.Ntheta*nz+i)){
         //data[like.Ntheta*nz+i] = xi_shear_tomo_sys(1,theta[i],i,z1,z2);
-        data[like.Ntheta*nz+i] = 
-          xi_pm_fullsky(1, i, z1,z2)
+        data[like.Ntheta*nz+i] = xi_pm_fullsky(1, i, z1,z2)
           //xi_pm_tomo(1, theta[i],z1, z2)
           *(1.0+nuisance.shear_calibration_m[z1])*(1.0+nuisance.shear_calibration_m[z2]);
+        printf("- %le\n", data[like.Ntheta*nz+i]);
       }
       if (mask(like.Ntheta*(tomo.shear_Npowerspectra+nz)+i)){
         //data[like.Ntheta*(tomo.shear_Npowerspectra+nz)+i] = xi_shear_tomo_sys(-1,theta[i],i,z1,z2);
@@ -170,6 +170,7 @@ void set_data_shear(double *theta, double *data, int start)
           xi_pm_fullsky(-1, i, z1,z2)
           //xi_pm_tomo(-1, theta[i],z1, z2)
           *(1.0+nuisance.shear_calibration_m[z1])*(1.0+nuisance.shear_calibration_m[z2]);
+        printf("- %le\n", data[like.Ntheta*(tomo.shear_Npowerspectra+nz)+i]);
       }
     }
   }

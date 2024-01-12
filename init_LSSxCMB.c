@@ -263,7 +263,7 @@ double mask(int ci) // For fourier space
     else{
       F=fopen(like.MASK_FILE,"r");
       if (!F){
-        printf("init.c: invcov_mask: like.MASK_FILE = %s not found!\nEXIT!\n",like.MASK_FILE);
+        printf("init_LSSxCMB.c: mask: like.MASK_FILE = %s not found!\nEXIT!\n",like.MASK_FILE);
         exit(1);
       }
       for (i=0;i<like.Ndata; i++){
@@ -486,16 +486,16 @@ double binmat_read(int READ, int ci, int cj)
     }
     fclose(F);
     printf("FINISHED READING CMB BAND-POWER BINNING MATRIX\n");
-    printf("binning matrix: \n");
-    for(j=0; j<Num_of_L_modes; j++)
-    {
-      printf("L = %4d: ", j + like.lmin_bp_with_corr);
-      for(i=0; i<like.Nbp; i++)
-      {
-        printf("%.2e ", BINMAT_WITH_CORR[i][j]);
-      }
-      printf("\n");
-    }
+    // printf("binning matrix: \n");
+    // for(j=0; j<Num_of_L_modes; j++)
+    // {
+    //   printf("L = %4d: ", j + like.lmin_bp_with_corr);
+    //   for(i=0; i<like.Nbp; i++)
+    //   {
+    //     printf("%.2e ", BINMAT_WITH_CORR[i][j]);
+    //   }
+    //   printf("\n");
+    // }
   }
   return BINMAT_WITH_CORR[ci][cj];
 }

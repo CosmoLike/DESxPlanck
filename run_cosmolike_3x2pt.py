@@ -194,21 +194,20 @@ def parse_priors_and_ranges(params):
     if is_var:
         setprior_m(shear_m_mean,shear_m_sigma)
 
-    #test which IA model
-    #power-law redshift parameterization
-    # is_var = parse_IA_TATT_power_law_flat_prior(params, nuisance_min, nuisance_fid, nuisance_max, varied_params)
-    is_var = parse_IA_mpp_flat_prior(params, nuisance_min, nuisance_fid, nuisance_max, varied_params)
-    #if not, per-bin redshift parameterization
-    # if is_var is None:
+    # Parse IA modeling
+    # power-law redshift parameterization
+    is_var = parse_IA_TATT_power_law_flat_prior(params, nuisance_min, nuisance_fid, nuisance_max, varied_params)
+    # is_var = parse_IA_mpp_flat_prior(params, nuisance_min, nuisance_fid, nuisance_max, varied_params)
+    # if not, per-bin redshift parameterization
+    # if not is_var:
     #     is_var_NLA = parse_nuisance_flat_prior(params, "A_z", ntomo_source, nuisance_min, nuisance_fid, nuisance_max, varied_params)
-    #     if is_var_NLA:
-    #         initia(3)
-    #         is_var_b_ta = parse_nuisance_flat_prior(params, "b_ta", ntomo_source, nuisance_min, nuisance_fid, nuisance_max, varied_params)
-    #         if is_var_b_ta:
-    #             initia(5)
+    #     is_var_b_ta = parse_nuisance_flat_prior(params, "b_ta", ntomo_source, nuisance_min, nuisance_fid, nuisance_max, varied_params)
     #     is_var_TT = parse_nuisance_flat_prior(params, "A2_z", ntomo_source, nuisance_min, nuisance_fid, nuisance_max, varied_params)
-    #     if is_var_TT:
-    #         initia(5)
+    #     if is_var_NLA:
+    #         if is_var_b_ta or is_var_TT:
+    #             initia(5)
+    #         else:
+    #             initia(3)
 
     # Parse baryon PCs priors
     parse_nuisance_flat_prior(params, "Q1", 0, nuisance_min, nuisance_fid, nuisance_max, varied_params)
@@ -274,9 +273,9 @@ def parse_nuisance_gaussian_prior(params, p, nbin, nuisance_fid, mean_ptr, sigma
 
 
 def parse_nuisance_flat_prior(params, p, nbin, nuisance_min, nuisance_fid, nuisance_max, varied_params):
-    set = 0
+    _set_ = 0
     if p+"_range" in params:
-        set = 1
+        _set_ = 1
         p_range = params[p+"_range"]
         min_val, fid_val, max_val, is_var = parse_range(p_range)
         if nbin>0:
@@ -296,7 +295,7 @@ def parse_nuisance_flat_prior(params, p, nbin, nuisance_min, nuisance_fid, nuisa
             if is_var:
                 varied_params.append("{}".format(p))
     if p+"_fiducial" in params:
-        set = 1
+        _set_ = 1
         values = params[p+"_fiducial"]
         if nbin>0:
             for i in range(nbin):
@@ -305,11 +304,11 @@ def parse_nuisance_flat_prior(params, p, nbin, nuisance_min, nuisance_fid, nuisa
         else:
             setattr(nuisance_fid, p, values)
         is_var = False
-    if (set == 0):
-        print ("run_cosmolike_mpp.py: %s not found in yaml file, use cosmolike_libs_y3 default value" %(p))
+    if (_set_ == 0):
+        print (f'{__file__}: {p} not found in YAML file, use cosmolike_libs_y3 default value')
         for i in range(nbin):
-            print ("cosmolike_libs_real_mpp.py: %s[%d] =%e" %(p,i,getattr(nuisance_fid,p)[i]))
-        is_var = 0
+            print ("%s: %s[%d] =%e"%(__file__, p,i,getattr(nuisance_fid,p)[i]))
+        is_var = False
     return is_var
 
 def parse_IA_mpp_flat_prior(params, nuisance_min, nuisance_fid, nuisance_max, varied_params):
@@ -331,7 +330,7 @@ def parse_IA_mpp_flat_prior(params, nuisance_min, nuisance_fid, nuisance_max, va
             var = 1
     else:
         if "A_z_range" not in params:
-            print ("run_cosmolike_mpp.py: A_ia not found in yaml file, use cosmolike_libs_real_mpp.py default value")
+            print ('{__file__}: A_ia not found in yaml file, use cosmolike_libs_real_mpp.py default value')
 
     if "eta_ia_range" in params:
         initia(4)
@@ -349,96 +348,99 @@ def parse_IA_mpp_flat_prior(params, nuisance_min, nuisance_fid, nuisance_max, va
             var +=1
     else:
         if "eta_ia_range" not in params:
-            print ("run_cosmolike_mpp.py: eta_ia not found in yaml file, use cosmolike_libs_real_mpp.py default value")
+            print (f'{__file__}: eta_ia not found in yaml file, use cosmolike_libs_real_mpp.py default value')
     if (var == 0):
-        is_var = 0
+        is_var = False
     return is_var
 
-# def parse_IA_TATT_power_law_flat_prior(params, nuisance_min, nuisance_fid, nuisance_max, varied_params):
-#     if (("A_ia_range" in params) & ("A2_z_range" in params)):
-#         print("run_cosmolike_y3.py:parse_IA_TATT_power_law_flat_prior: mix of power-law NLA-IA and per-bin TT-IA z-dependence not supported")
-#         exit(1)
-#     if (("A_z_range" in params) & ("A2_ia_range" in params)):
-#         print("run_cosmolike_y3.py:parse_IA_TATT_power_law_flat_prior: mix of power-law TT-IA and per-bin NLA-IA z-dependence not supported")
-#         exit(1)
-#     var = 0
-# #### NLA/TA parameters
-#     p ="A_z"
-#     if "A_ia_range" in params:
-#         print("Power-law NLA/TA-IA parameterization")
-#         initia(6)
-#         p_range = params["A_ia_range"]
-#         min_val, fid_val, max_val, is_var = parse_range(p_range)
-#         i = 0
-#         getattr(nuisance_min, p)[i] = min_val
-#         getattr(nuisance_fid, p)[i] = fid_val
-#         getattr(nuisance_max, p)[i] = max_val
-#         if is_var:
-#             varied_params.append("{}_{}".format(p,i))
-#             var = 1
-#     ### only check for eta_ia if A_ia is set, as default A_ia = 0.
-#         if "eta_ia_range" in params:
-#             p_range = params["eta_ia_range"]
-#             min_val, fid_val, max_val, is_var = parse_range(p_range)
-#             i = 1
-#             getattr(nuisance_min, p)[i] = min_val
-#             getattr(nuisance_fid, p)[i] = fid_val
-#             getattr(nuisance_max, p)[i] = max_val
-#             if is_var:
-#                 varied_params.append("{}_{}".format(p,i))
-#                 var +=1
-#         else:
-#             print ("run_cosmolike_y3.py: eta_ia not found in yaml file, use cosmolike_libs_y3 defauly value")
-#     #### TA bias parameter
-#         p ="b_ta"
-#         if "b_ta_noz_range" in params:
-#             p_range = params["b_ta_noz_range"]
-#             min_val, fid_val, max_val, is_var = parse_range(p_range)
-#             i = 0
-#             getattr(nuisance_min, p)[i] = min_val
-#             getattr(nuisance_fid, p)[i] = fid_val
-#             getattr(nuisance_max, p)[i] = max_val
-#             if is_var:
-#                 varied_params.append("{}_{}".format(p,i))
-#                 var +=1
-#         else:
-#             print ("run_cosmolike_y3.py: b_ta not found in yaml file, use cosmolike_libs_y3 defauly value")
+def parse_IA_TATT_power_law_flat_prior(params, nuisance_min, nuisance_fid, nuisance_max, varied_params):
+    if (("A_ia_range" in params) & ("A2_z_range" in params)):
+        print(f'{__file__}:parse_IA_TATT_power_law_flat_prior: mix of power-law NLA-IA and per-bin TT-IA z-dependence not supported')
+        exit(1)
+    if (("A_z_range" in params) & ("A2_ia_range" in params)):
+        print(f'{__file__}:parse_IA_TATT_power_law_flat_prior: mix of power-law TT-IA and per-bin NLA-IA z-dependence not supported')
+        exit(1)
+    var, _IA_ = 0, 0
+    #### NLA/TA parameters
+    p ="p_ia"
+    if "A_ia_range" in params:
+        print("Power-law NLA/TA-IA parameterization")
+        _IA_ = 4
+        p_range = params["A_ia_range"]
+        min_val, fid_val, max_val, is_var = parse_range(p_range)
+        i = 0
+        for _nui, _val in zip([nuisance_min, nuisance_fid, nuisance_max],
+                              [min_val, fid_val, max_val]):
+            _l = getattr(_nui, p)
+            _l[i] = _val
+        if is_var:
+            varied_params.append("{}_{}".format(p,i))
+            var += 1
+        ### only check for eta_ia if A_ia is set, as default A_ia = 0.
+        if "eta_ia_range" in params:
+            p_range = params["eta_ia_range"]
+            min_val, fid_val, max_val, is_var = parse_range(p_range)
+            i = 1
+            for _nui, _val in zip([nuisance_min, nuisance_fid, nuisance_max],
+                              [min_val, fid_val, max_val]):
+                _l = getattr(_nui, p)
+                _l[i] = _val
+            if is_var:
+                varied_params.append("{}_{}".format(p,i))
+                var +=1
+        else:
+            print ("%s: eta_ia not found in YAML file, use default value"%__file__)
+        #### TA bias parameter
+        if "b_ta_noz_range" in params:
+            p_range = params["b_ta_noz_range"]
+            min_val, fid_val, max_val, is_var = parse_range(p_range)
+            i = 2
+            for _nui, _val in zip([nuisance_min, nuisance_fid, nuisance_max],
+                              [min_val, fid_val, max_val]):
+                _l = getattr(_nui, p)
+                _l[i] = _val
+            if is_var:
+                varied_params.append("{}_{}".format(p,i))
+                var +=1
+        else:
+            print (f'{__file__}: b_ta not found in YAML file, use default value')
 
-#     else:
-#         if "A_z_range" not in params:
-#             print ("run_cosmolike_y3.py: NLA-IA amplitude not found in yaml file, use cosmolike_libs_y3 default value")
-# ### TT parameters
-#     p ="A2_z"
-#     if "A2_ia_range" in params:
-#         print("Power-law TT-IA parameterization")
-#         initia(6)
-#         p_range = params["A2_ia_range"]
-#         min_val, fid_val, max_val, is_var = parse_range(p_range)
-#         i = 0
-#         getattr(nuisance_min, p)[i] = min_val
-#         getattr(nuisance_fid, p)[i] = fid_val
-#         getattr(nuisance_max, p)[i] = max_val
-#         if is_var:
-#             varied_params.append("{}_{}".format(p,i))
-#             var = 1
-#     ### only check for eta_ia if A_ia is set, as default A_ia = 0.
-#         if "eta_ia_tt_range" in params:
-#             p_range = params["eta_ia_tt_range"]
-#             min_val, fid_val, max_val, is_var = parse_range(p_range)
-#             i = 1
-#             getattr(nuisance_min, p)[i] = min_val
-#             getattr(nuisance_fid, p)[i] = fid_val
-#             getattr(nuisance_max, p)[i] = max_val
-#             if is_var:
-#                 varied_params.append("{}_{}".format(p,i))
-#                 var +=1
-#         else:
-#             print ("run_cosmolike_y3.py: eta_ia_tt not found in yaml file, use cosmolike_libs_y3 defauly value")
+    else:
+        if "A_z_range" not in params:
+            print (f'{__file__}: NLA-IA amplitude not found in YAML file, use default value')
+    ### TT parameters
+    if "A2_ia_range" in params:
+        print("Power-law TT-IA parameterization")
+        _IA_ = 6
+        p_range = params["A2_ia_range"]
+        min_val, fid_val, max_val, is_var = parse_range(p_range)
+        i = 3
+        for _nui, _val in zip([nuisance_min, nuisance_fid, nuisance_max],
+                              [min_val, fid_val, max_val]):
+            _l = getattr(_nui, p)
+            _l[i] = _val
+        if is_var:
+            varied_params.append("{}_{}".format(p,i))
+            var += 1
+    ### only check for eta_ia_tt if A2_ia is set, as default A2_ia = 0.
+        if "eta_ia_tt_range" in params:
+            p_range = params["eta_ia_tt_range"]
+            min_val, fid_val, max_val, is_var = parse_range(p_range)
+            i = 4
+            for _nui, _val in zip([nuisance_min, nuisance_fid, nuisance_max],
+                              [min_val, fid_val, max_val]):
+                _l = getattr(_nui, p)
+                _l[i] = _val
+            if is_var:
+                varied_params.append("{}_{}".format(p,i))
+                var +=1
+        else:
+            print ('{__file__}: eta_ia_tt not found in YAML file, use cosmolike_libs_y3 default value')
+    initia(_IA_)
 
-
-#     if (var == 0):
-#         is_var = 0
-#     return is_var
+    if (var == 0):
+        is_var = False
+    return is_var
 
 def parse_range(p_range):
     "return min, fid, max, is_varied"

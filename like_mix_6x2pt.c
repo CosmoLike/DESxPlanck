@@ -362,12 +362,28 @@ int set_nuisance_clustering_photoz(double *CP)
 
 int set_nuisance_ia(double *p_ia)
 {
-  nuisance.A_ia=p_ia[0];
-  nuisance.eta_ia=p_ia[1];
-  nuisance.oneplusz0_ia = 1.62;
+  switch like.IA
+  {
+    case 4: // NLA power-law
+      nuisance.A_ia=p_ia[0];
+      nuisance.eta_ia=p_ia[1];
+      nuisance.oneplusz0_ia = 1.62;
+      break;
+    case 6: // TATT power-law
+      nuisance.A_ia = p_ia[0];
+      nuisance.eta_ia = p_ia[1];
+      nuisance.b_ta_z[0] = p_ia[2];
+      nuisance.A2_ia = p_ia[3];
+      nuisance.eta_ia_tt = p_ia[4];
+      nuisance.oneplusz0_ia = 1.62;
+      break;
+    default:
+      printf("ERROR: like.IA can not be %d! Only support 4,6\n", like.IA);
+      exit(-1);
+  }
   // if (nuisance.A_ia < 0.0 || nuisance.A_ia > 10.0) return 0;
   // if (nuisance.eta_ia < -10.0 || nuisance.eta_ia> 10.0) return 0;
-return 1;
+  return 1;
 }
 
 int set_nuisance_gbias(double *B)

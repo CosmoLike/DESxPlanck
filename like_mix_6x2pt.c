@@ -159,20 +159,26 @@ void set_data_shear(double *theta, double *data, int start)
     z1 = Z1(nz); z2 = Z2(nz);
     for (i = 0; i < like.Ntheta; i++){
       if (mask(like.Ntheta*nz+i)){
-        //data[like.Ntheta*nz+i] = xi_shear_tomo_sys(1,theta[i],i,z1,z2);
-        data[like.Ntheta*nz+i] = 
-          //xi_pm_fullsky(1, i, z1,z2)
-			xi_pm_TATT(1, i, z1, z3)  
-		//xi_pm_tomo(1, theta[i],z1, z2)
-          *(1.0+nuisance.shear_calibration_m[z1])*(1.0+nuisance.shear_calibration_m[z2]);
+        //xi_pm_tomo(1, theta[i],z1, z2)
+        if((like.IA==3)||(like.IA==4))
+        {
+          data[like.Ntheta*nz+i] = xi_pm_fullsky(1, i, z1,z2)*(1.0+nuisance.shear_calibration_m[z1])*(1.0+nuisance.shear_calibration_m[z2]);
+        }
+        else if ((like.IA==5)||(like.IA==6))
+        {
+          data[like.Ntheta*nz+i] = xi_pm_TATT(1, i, z1, z3)*(1.0+nuisance.shear_calibration_m[z1])*(1.0+nuisance.shear_calibration_m[z2]);
+        }
       }
       if (mask(like.Ntheta*(tomo.shear_Npowerspectra+nz)+i)){
-        //data[like.Ntheta*(tomo.shear_Npowerspectra+nz)+i] = xi_shear_tomo_sys(-1,theta[i],i,z1,z2);
-        data[like.Ntheta*(tomo.shear_Npowerspectra+nz)+i] = 
-          //xi_pm_fullsky(-1, i, z1,z2)
-			xi_pm_TATT(-1, i, z1, z2)
-          //xi_pm_tomo(-1, theta[i],z1, z2)
-          *(1.0+nuisance.shear_calibration_m[z1])*(1.0+nuisance.shear_calibration_m[z2]);
+        //xi_pm_tomo(-1, theta[i],z1, z2)
+        if((like.IA==3)||(like.IA==4))
+        {
+          data[like.Ntheta*(tomo.shear_Npowerspectra+nz)+i] = xi_pm_fullsky(-1, i, z1,z2)*(1.0+nuisance.shear_calibration_m[z1])*(1.0+nuisance.shear_calibration_m[z2]);
+        }
+        else if ((like.IA==5)||(like.IA==6))
+        {
+          data[like.Ntheta*(tomo.shear_Npowerspectra+nz)+i] = xi_pm_TATT(-1, i, z1, z2)*(1.0+nuisance.shear_calibration_m[z1])*(1.0+nuisance.shear_calibration_m[z2]);
+        }
       }
     }
   }
@@ -186,11 +192,15 @@ void set_data_ggl(double *theta, double *data, int start)
     //printf("ggl bin combos %d %d\n",zl,zs);
     for (i = 0; i < like.Ntheta; i++){
       if (mask(start+(like.Ntheta*nz)+i)){
-        data[start+(like.Ntheta*nz)+i] = 
-          //w_gamma_t_fullsky(i,zl,zs)
-			w_gamma_t_TATT(i, zl, zs)
-          //w_gamma_t_tomo(theta[i], zl, zs)
-          *(1.0+nuisance.shear_calibration_m[zs]);
+        //w_gamma_t_tomo(theta[i], zl, zs)
+        if((like.IA==3)||(like.IA==4))
+        {
+          data[start+(like.Ntheta*nz)+i] = w_gamma_t_fullsky(i,zl,zs)*(1.0+nuisance.shear_calibration_m[zs]);
+        }
+        else if ((like.IA==5)||(like.IA==6))
+        {
+           data[start+(like.Ntheta*nz)+i] = w_gamma_t_TATT(i, zl, zs)*(1.0+nuisance.shear_calibration_m[zs]);
+        }
       }
     }
   }

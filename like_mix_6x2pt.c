@@ -43,6 +43,7 @@
 #include "../cosmolike_core/theory/cosmo2D_exact.c"
 #include "../cosmolike_core/theory/cosmo2D_real.c"
 #include "../cosmolike_core/theory/cosmo2D_fullsky.c"
+#include "../cosmolike_core/theory/cosmo2D_fullsky_TATT.c"
 #include "../cosmolike_core/theory/cluster.c"
 #include "../cosmolike_core/theory/BAO.c"
 #include "../cosmolike_core/theory/external_prior.c"
@@ -159,18 +160,19 @@ void set_data_shear(double *theta, double *data, int start)
     for (i = 0; i < like.Ntheta; i++){
       if (mask(like.Ntheta*nz+i)){
         //data[like.Ntheta*nz+i] = xi_shear_tomo_sys(1,theta[i],i,z1,z2);
-        data[like.Ntheta*nz+i] = xi_pm_fullsky(1, i, z1,z2)
-          //xi_pm_tomo(1, theta[i],z1, z2)
+        data[like.Ntheta*nz+i] = 
+          //xi_pm_fullsky(1, i, z1,z2)
+			xi_pm_TATT(1, i, z1, z3)  
+		//xi_pm_tomo(1, theta[i],z1, z2)
           *(1.0+nuisance.shear_calibration_m[z1])*(1.0+nuisance.shear_calibration_m[z2]);
-        printf("- %le\n", data[like.Ntheta*nz+i]);
       }
       if (mask(like.Ntheta*(tomo.shear_Npowerspectra+nz)+i)){
         //data[like.Ntheta*(tomo.shear_Npowerspectra+nz)+i] = xi_shear_tomo_sys(-1,theta[i],i,z1,z2);
         data[like.Ntheta*(tomo.shear_Npowerspectra+nz)+i] = 
-          xi_pm_fullsky(-1, i, z1,z2)
+          //xi_pm_fullsky(-1, i, z1,z2)
+			xi_pm_TATT(-1, i, z1, z2)
           //xi_pm_tomo(-1, theta[i],z1, z2)
           *(1.0+nuisance.shear_calibration_m[z1])*(1.0+nuisance.shear_calibration_m[z2]);
-        printf("- %le\n", data[like.Ntheta*(tomo.shear_Npowerspectra+nz)+i]);
       }
     }
   }
@@ -185,7 +187,8 @@ void set_data_ggl(double *theta, double *data, int start)
     for (i = 0; i < like.Ntheta; i++){
       if (mask(start+(like.Ntheta*nz)+i)){
         data[start+(like.Ntheta*nz)+i] = 
-          w_gamma_t_fullsky(i,zl,zs)
+          //w_gamma_t_fullsky(i,zl,zs)
+			w_gamma_t_TATT(i, zl, zs)
           //w_gamma_t_tomo(theta[i], zl, zs)
           *(1.0+nuisance.shear_calibration_m[zs]);
       }
@@ -199,8 +202,10 @@ void set_data_clustering(double *theta, double *data, int start)
   for (nz = 0; nz < tomo.clustering_Npowerspectra; nz++){
     for (i = 0; i < like.Ntheta; i++){
       if (mask(start+(like.Ntheta*nz)+i)){
-        data[start+(like.Ntheta*nz)+i] = w_tomo_exact(i,nz,nz); //curved sky legendre, std for Y1
-        //data[start+(like.Ntheta*nz)+i] = w_tomo_nonLimber(i, nz, nz); //nonLimber+RSD
+        data[start+(like.Ntheta*nz)+i] = 
+            //w_tomo_exact(i,nz,nz); //curved sky legendre, std for Y1; do not use this one;
+            //w_tomo_fullsky(i, nz, nz);
+            w_tomo_nonLimber(i, nz, nz); //nonLimber+RSD
       }
     }
   }
@@ -260,7 +265,8 @@ void set_data_kk_bandpower(double *data, int start)
 {
   for(int L=like.lmin_bp_with_corr; L<like.lmax_bp_with_corr+1; L++)
   {
-    double _C_kk_limber = C_kk((double)L);// use the interpolate version
+    //double _C_kk_limber = C_kk((double)L);// use the interpolate version
+    double _C_kk_limber = C_kk_nointerp((double)L);
     for(int i=0; i<like.Nbp; i++)
     {
       if(mask(start+i))
@@ -311,15 +317,15 @@ int set_cosmology_params(double OMM, double NORM, double NS, double W0,double WA
    if (cosmology.wa < -2.6 || cosmology.wa > 2.6) return 0;
    if (cosmology.h0 < 0.4 || cosmology.h0 > 0.9) return 0;
   
-  printf("cosmology.theta_s = %le \n", cosmology.theta_s);
+  /*printf("cosmology.theta_s = %le \n", cosmology.theta_s);
   printf("cosmology.A_s = %le \n", cosmology.A_s);
   printf("cosmology.w0 = %le \n", cosmology.w0);
   printf("cosmology.wa = %le \n", cosmology.wa);
-
+  printf("cosmology.sigma_8 = %le \n", cosmology.sigma_8);
   printf("cosmology.h0= %le \n", cosmology.h0);
   printf("cosmology.omb = %le \n", cosmology.omb);
   printf("cosmology.Omega_m = %le \n", cosmology.Omega_m);
-  printf("cosmology.Omega_nu = %le \n", cosmology.Omega_nu);
+  printf("cosmology.Omega_nu = %le \n", cosmology.Omega_nu);*/
 
   return 1;
 }

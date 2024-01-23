@@ -1,16 +1,16 @@
 # output file
 ######## specify base_dir only if absolute path required. chain_file will use base_dir as prefix
-base_dir : /xdisk/timeifler/jiachuanxu/cosmolike_chains/desy1
+base_dir : /xdisk/timeifler/jiachuanxu/cosmolike_chains/desy1/
 chain_file : DESY1_3x2_code_comparison
 
 n_threads  : 1
-iterations : 5000
+iterations : 6000
 nwalkers : 192
 
 # 2pt files
 cov_file    : covs/cov_y1xplanck_mix6x2pt_pp_p18cosmo_agr2_withAnnulus_kkkkSimDR3
 # homebrew datavec
-data_file   : datav/xi_desy1xplanck_6x2pt_realdata_20_wA_ref_pp_agr2
+data_file   : datav/xi_desy1xplanck_6x2pt_test_fullsky
 
 # if no mask_file specified,
 # then generate mask from scale cuts specified below
@@ -57,14 +57,14 @@ Q3_range : 0.0
 ######################################
 omega_m_range : [0.1, 0.3, 0.9]
 #A_s_range : [5.e-10, 2.3e-9, 5.e-9]
-sigma_8_range : [0.4, 0.82355, 1.2]
+sigma_8_range : [0.4, 0.843051, 1.2]
 n_s_range : [0.87, 0.97, 1.07]
 w0_range : -1.0
 wa_range : 0.0
 omega_b_range : [0.03, 0.048, 0.07]
 #omega_nuh2_range : [0.0006,0.0006155,0.01]
-omega_nuh2_range : 0.0006442
-#omega_nuh2_range : 0.0
+#omega_nuh2_range : 0.0006442
+omega_nuh2_range : 0.0
 h0_range : [0.55, 0.69, 0.91]
 MGSigma_range : 0.0
 MGmu_range : 0.0
@@ -90,7 +90,7 @@ CMB_name    : planck
 noise_Nkk   : cmblensrec/plancksmica/cmb_lmax3000.txt
 
 # baryon PCAs
-baryon_pca  : datav/cosmic_shear_9sim.pca
+baryon_pca  : datav/cosmic_shear_10sim.pca
 
 
 # galaxy bias scale cuts [Mpc/h]

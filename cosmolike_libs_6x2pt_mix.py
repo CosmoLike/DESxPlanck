@@ -371,7 +371,7 @@ class LikelihoodFunctionWrapper(object):
         #    print "outside flat prior range"
             return -np.inf,-1.
         like = lib.log_like_wrapper(icp, inp)
-        print ("Likelihood = {}".format(like))
+        # print ("Likelihood = {}".format(like))
         # print inp.p_ia[0], inp.p_ia[1], '<-- p_ia'
         # print inp.bias[0], inp.bias[1], inp.bias[2], inp.bias[3], inp.bias[4], '<-- bias'
         # print inp.b_mag[0], inp.b_mag[1], inp.b_mag[2], inp.b_mag[3], inp.b_mag[4], '<-- bmag'

@@ -300,7 +300,7 @@ def parse_IA_mpp_flat_prior(params, nuisance_min, nuisance_fid, nuisance_max, va
             varied_params.append("{}_{}".format(p,i))
             var +=1
     else:
-        if "A_z_range" not in params:
+        if "eta_ia_range" not in params:
             print "run_cosmolike_mpp.py: eta_ia not found in yaml file, use cosmolike_libs_real_mpp.py default value"
     if (var == 0):
         is_var = 0

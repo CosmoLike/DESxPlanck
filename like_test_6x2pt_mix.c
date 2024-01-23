@@ -41,20 +41,22 @@ void test_mix_desy1_planck()
 	char cov_file[500] = "./covs/cov_y1xplanck_mix6x2pt_pp_p18cosmo_agr2_withAnnulus_kkkkSimDR3";
 	char data_file[500] = "./datav/xi_desy1xplanck_6x2pt_realdata_20_wA_ref_pp_agr2";
 	char mask_file[500] = "./yaml/xi_desy1xplanck_6x2pt_realdata_pp_agr2_CMBmarged.mask";
-	char test_model_file[500] = "./datav/xi_desy1xplanck_6x2pt_test_fullsky";
-	char baryon_pca_file[500] = "./datav/cosmic_shear_9sim.pca";
+	char test_model_file[500] = "/home/u17/jiachuanxu/cocoa/Cocoa/projects/desy1xplanck/data/data_vectors/ccc/cosmolike_desy1xplanck_6x2pt_fullsky_limber_noRSD_NLA_exact";
+	char baryon_pca_file[500] = "./datav/cosmic_shear_10sim.pca";
 
 	// cosmological parameters
 	input_cosmo_params_y3 ic = {
 		.omega_m = 0.3,
-		//.sigma_8 = 0.8191,
-		.A_s = 2.10e-9,
+		//.sigma_8 = 0.827706,
+		.sigma_8 = 0.843051,
+        //.A_s = 2.10e-9,
 		.n_s = 0.96605,
 		.w0 = -1.0,
 		.wa = 0.0,
 		.omega_b = 0.04,
-		.omega_nuh2 = 0.06/93.14,// neutrino mass [0, 0, 0.06] eV
-		.h0 = 0.6732,
+		//.omega_nuh2 = 0.6/93.14,// neutrino mass [0, 0, 0.06] eV
+		.omega_nuh2 = 0.0,
+        .h0 = 0.6732,
 		.MGSigma = 0.0,
 		.MGmu = 0.0,
 		.theta_s = 0.0104854,
@@ -62,10 +64,11 @@ void test_mix_desy1_planck()
 
 	// nuisance parameters
 	double b2[10] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-	input_nuisance_params_y3 in = {
+	/*input_nuisance_params_y3 in = {
 		.bias = {1.72716, 1.65168, 1.61423, 1.92886, 2.11633, 
 				0.0, 0.0, 0.0, 0.0, 0.0},
-		.b_mag = {-0.19375, -0.6285407, -0.69319886, 1.17735723, 1.87509758,
+		.b_mag = {//-0.19375, -0.6285407, -0.69319886, 1.17735723, 1.87509758,
+                  1.0, 1.0, 1.0, 1.0, 1.0,
 				0.0, 0.0, 0.0, 0.0, 0.0},
 		.lens_z_bias = {0.008, -0.005, 0.006, 0.0, 0.0, 
 			0.0, 0.0, 0.0, 0.0, 0.0},
@@ -75,7 +78,22 @@ void test_mix_desy1_planck()
 			0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
 		.p_ia = {0.606102, -1.51541, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
 		.Q1 = 0.0, .Q2 = 0.0, .Q3 = 0.0,
+	};*/
+    input_nuisance_params_y3 in = {
+		.bias = {1.6, 1.6, 1.6, 1.6, 1.6, 
+				0.0, 0.0, 0.0, 0.0, 0.0},
+		.b_mag = {1.0, 1.0, 1.0, 1.0, 1.0,
+				0.0, 0.0, 0.0, 0.0, 0.0},
+		.lens_z_bias = {0.0, 0.0, 0.0, 0.0, 0.0, 
+			0.0, 0.0, 0.0, 0.0, 0.0},
+		.source_z_bias = {0.0, 0.0, 0.0, 0.0,
+			0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+		.shear_m = {0.0, 0.0, 0.0, 0.0, 
+			0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+		.p_ia = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+		.Q1 = 0.0, .Q2 = 0.0, .Q3 = 0.0,
 	};
+
 	/********* parameter setting end *********/
 
 	clock_t begin, end;
@@ -107,6 +125,27 @@ void test_mix_desy1_planck()
 	end = clock();
 	time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 	printf("time spent %le\n",time_spent);
+    
+    // Print Pdelta(k,a) for sanity check
+/*
+    FILE *F;
+    F=fopen("Pdelta_table_cosmolike.txt", "w");
+    if(F==NULL){
+      printf("ERORR: Can not open file Pdelta_table.txt\nAborting...\n");
+      exit(1);
+    }
+    for (int aa=0; aa<19; aa++){
+      for (int kk=0; kk<41; kk++){
+        double a = 0.1 + aa*0.05;
+        double k = pow(10.0, -4+0.15*kk);
+        fprintf(F, "%f %f %le\n", k, a, Pdelta(k*cosmology.coverH0, a));
+      }
+    }
+    fclose(F);
+
+    double Pk = Pdelta(0.1, 0.99);
+    printf("P(0.1,0.99)=%le\n", Pk);
+*/
 }
 
 int main(void)

@@ -4,12 +4,12 @@
 # --------------------------------------------------------------
 
 ###--- Optional. Set the job name
-#SBATCH --job-name=Y1_3x2_test
+#SBATCH --job-name=ccoce
 
 ###--- Optional. Set the output filename.
 ###--- SLURM reads %x as the job name and %j as the job ID
-#SBATCH --output=/home/u17/jiachuanxu/output/%x-%j.out
-#SBATCH --error=/home/u17/jiachuanxu/output/%x-%j.err
+#SBATCH --output=/xdisk/timeifler/jiachuanxu/cosmolike_chains/outputs/%x-%j.out
+#SBATCH --error=/xdisk/timeifler/jiachuanxu/cosmolike_chains/outputs/%x-%j.err
 
 ###--- REQUIRED. Specify the PI group for this job
 #SBATCH --account=timeifler
@@ -22,46 +22,40 @@
 
 ###--- REQUIRED. Set the partition for your job.
 #SBATCH --partition=standard
+#SBATCH --qos=qual_qos_timeifler
 
 ###--- REQUIRED. Set the number of cores that will be used for this job.
-#SBATCH --ntasks-per-node=96
+#SBATCH --ntasks-per-node=28
 
 ###--- REQUIRED. Set the number of nodes
-#SBATCH --nodes=2
+#SBATCH --nodes=20
 
 ###--- REQUIRED. Set the memory-per-node required for this job.
 #SBATCH --mem=168gb
 
 ###--- REQUIRED. Specify the walltime required for this job, hhh:mm:ss
-#SBATCH --time=09:00:00
+#SBATCH --time=24:00:00
  
  
 # --------------------------------------------------------------
 ### PART 2: Executes bash commands to run your job
 # --------------------------------------------------------------
 ### Load required modules/libraries if needed
-#module load gnu/5.4.0
-module load gsl/2.6
-module load python/3.6/3.6.5
-#module load mpich/3.3.1
-module load openmpi3/3.1.4
+module load gsl
+module load anaconda
+module load openmpi3
 
 ### change to your script submission directory
 cd $SLURM_SUBMIT_DIR
 
 ### activate your python virtual environment
-VIRTUAL_ENV="/home/u17/jiachuanxu/python3_virtualenv"
-export VIRTUAL_ENV
-_OLD_VIRTUAL_PATH="$PATH"
-PATH="$VIRTUAL_ENV/bin:$PATH"
-export PATH
+conda init bash
+source ~/.bashrc 
+conda activate kltools
 
 ### Run your work
 ### run your executable program with begin and end date and time output
 export MPI_DSM_DISTRIBUTE
 date
-/usr/bin/time mpiexec -n 192 python run_cosmolike_wrapper_3x2pt.py yaml/DESY1_3x2pt_test.yaml
+/usr/bin/time mpiexec -n 560 --mca btl tcp,self python run_cosmolike_wrapper_3x2pt.py yaml/DESY1_3x2pt_code_comparison.yaml
 date
-
-PATH="$_OLD_VIRTUAL_PATH"
-export PATH

@@ -52,7 +52,7 @@ def run_cosmolike(params, pool=None):
     if 'run_mode' in params:
         runmode = params['run_mode']
     # probes = "".join(params['twoptnames'])
-    probes = "3x2pt"
+    probes = "6x2pt"
     
     initcosmo(runmode.encode('utf-8'))
     initsources(source_nz.encode('utf-8'), ntomo_source)
@@ -262,7 +262,8 @@ def parse_nuisance_gaussian_prior(params, p, nbin, nuisance_fid, mean_ptr, sigma
         raise ValueError("Wrong length for parameter {}_sigma - should be {}".format(p, nbin))
 
     for i in range(nbin):
-        getattr(nuisance_fid, p)[i] = mean_vector[i]
+        _l = getattr(nuisance_fid, p)
+        _l[i] = mean_vector[i]
 
     if is_var:
         for i in range(nbin):
@@ -280,15 +281,18 @@ def parse_nuisance_flat_prior(params, p, nbin, nuisance_min, nuisance_fid, nuisa
         min_val, fid_val, max_val, is_var = parse_range(p_range)
         if nbin>0:
             for i in range(nbin):
-                getattr(nuisance_min, p)[i] = min_val
-                getattr(nuisance_fid, p)[i] = fid_val
-                getattr(nuisance_max, p)[i] = max_val
+                _l = getattr(nuisance_min, p)
+                _l[i] = min_val
+                _f = getattr(nuisance_fid, p)
+                _f[i] = fid_val
+                _h = getattr(nuisance_max, p)
+                _h[i] = max_val
                 if is_var:
                     varied_params.append("{}_{}".format(p,i))
         else:
-            getattr(nuisance_min, p) = min_val
-            getattr(nuisance_fid, p) = fid_val
-            getattr(nuisance_max, p) = max_val
+            setattr(nuisance_min, p, min_val)
+            setattr(nuisance_fid, p, fid_val)
+            setattr(nuisance_max, p, max_val)
             if is_var:
                 varied_params.append("{}".format(p))
     if p+"_fiducial" in params:
@@ -296,9 +300,10 @@ def parse_nuisance_flat_prior(params, p, nbin, nuisance_min, nuisance_fid, nuisa
         values = params[p+"_fiducial"]
         if nbin>0:
             for i in range(nbin):
-                getattr(nuisance_fid, p)[i] = values[i]
+                _l = getattr(nuisance_fid, p)
+                _l[i] = values[i]
         else:
-            getattr(nuisance_fid, p) = values
+            setattr(nuisance_fid, p, values)
         is_var = False
     if (set == 0):
         print ("run_cosmolike_mpp.py: %s not found in yaml file, use cosmolike_libs_y3 default value" %(p))
@@ -315,9 +320,12 @@ def parse_IA_mpp_flat_prior(params, nuisance_min, nuisance_fid, nuisance_max, va
         p_range = params["A_ia_range"]
         min_val, fid_val, max_val, is_var = parse_range(p_range)
         i = 0            
-        getattr(nuisance_min, p)[i] = min_val
-        getattr(nuisance_fid, p)[i] = fid_val
-        getattr(nuisance_max, p)[i] = max_val
+        _l = getattr(nuisance_min, p)
+        _l[i] = min_val
+        _f = getattr(nuisance_fid, p)
+        _f[i] = fid_val
+        _h = getattr(nuisance_max, p)
+        _h[i] = max_val
         if is_var:
             varied_params.append("{}_{}".format(p,i))
             var = 1
@@ -327,17 +335,20 @@ def parse_IA_mpp_flat_prior(params, nuisance_min, nuisance_fid, nuisance_max, va
 
     if "eta_ia_range" in params:
         initia(4)
-        p_range = params["A_ia_range"]
+        p_range = params["eta_ia_range"]
         min_val, fid_val, max_val, is_var = parse_range(p_range)
         i = 1            
-        getattr(nuisance_min, p)[i] = min_val
-        getattr(nuisance_fid, p)[i] = fid_val
-        getattr(nuisance_max, p)[i] = max_val
+        _l = getattr(nuisance_min, p)
+        _l[i] = min_val
+        _f = getattr(nuisance_fid, p)
+        _f[i] = fid_val
+        _h = getattr(nuisance_max, p)
+        _h[i] = max_val
         if is_var:
             varied_params.append("{}_{}".format(p,i))
             var +=1
     else:
-        if "A_z_range" not in params:
+        if "eta_ia_range" not in params:
             print ("run_cosmolike_mpp.py: eta_ia not found in yaml file, use cosmolike_libs_real_mpp.py default value")
     if (var == 0):
         is_var = 0

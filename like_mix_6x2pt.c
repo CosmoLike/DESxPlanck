@@ -372,7 +372,7 @@ int set_nuisance_clustering_photoz(double *CP)
 
 int set_nuisance_ia(double *p_ia)
 {
-  switch like.IA
+  switch (like.IA)
   {
     case 4: // NLA power-law
       nuisance.A_ia=p_ia[0];

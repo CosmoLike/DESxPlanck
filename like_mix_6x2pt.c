@@ -37,8 +37,10 @@
 #include "../cosmolike_core/theory/halo_fast.c"
 #include "../cosmolike_core/theory/HOD.c"
 #include "../cosmolike_core/theory/pt.c"
+#include "../cosmolike_core/theory/pt_cfastpt.c"
 #include "../cosmolike_core/theory/cosmo2D_fourier.c"
 #include "../cosmolike_core/theory/IA.c"
+#include "../cosmolike_core/theory/reduced_shear.c"
 #include "../cosmolike_core/theory/CMBxLSS_fourier.c"
 #include "../cosmolike_core/theory/cosmo2D_exact.c"
 #include "../cosmolike_core/theory/cosmo2D_real.c"
@@ -166,7 +168,7 @@ void set_data_shear(double *theta, double *data, int start)
         }
         else if ((like.IA==5)||(like.IA==6))
         {
-          data[like.Ntheta*nz+i] = xi_pm_TATT(1, i, z1, z3)*(1.0+nuisance.shear_calibration_m[z1])*(1.0+nuisance.shear_calibration_m[z2]);
+          data[like.Ntheta*nz+i] = xi_pm_TATT(1, i, z1, z2)*(1.0+nuisance.shear_calibration_m[z1])*(1.0+nuisance.shear_calibration_m[z2]);
         }
       }
       if (mask(like.Ntheta*(tomo.shear_Npowerspectra+nz)+i)){

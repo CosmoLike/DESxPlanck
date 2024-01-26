@@ -8,8 +8,6 @@
 #include <time.h>
 #include <string.h>
 
-#include <fftw3.h>
-
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_sf_erf.h>
 #include <gsl/gsl_integration.h>
@@ -25,6 +23,11 @@
 #include <gsl/gsl_interp2d.h>
 #include <gsl/gsl_spline2d.h>
 
+#include <fftw3.h>
+#include "../cosmolike_core/cfftlog/cfftlog.h"
+#include "../cosmolike_core/cfftlog/utils.h"
+#include "../cosmolike_core/cfastpt/cfastpt.h"
+#include "../cosmolike_core/cfastpt/utils.h"
 
 #include "../cosmolike_core/theory/basics.c"
 #include "../cosmolike_core/theory/structs.c"
@@ -36,7 +39,7 @@
 //#include "../cosmolike_core/theory/halo.c"
 #include "../cosmolike_core/theory/halo_fast.c"
 #include "../cosmolike_core/theory/HOD.c"
-#include "../cosmolike_core/theory/pt.c"
+//#include "../cosmolike_core/theory/pt.c"
 #include "../cosmolike_core/theory/pt_cfastpt.c"
 #include "../cosmolike_core/theory/cosmo2D_fourier.c"
 #include "../cosmolike_core/theory/IA.c"

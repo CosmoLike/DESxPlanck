@@ -219,8 +219,8 @@ void set_data_clustering(double *theta, double *data, int start)
       if (mask(start+(like.Ntheta*nz)+i)){
         data[start+(like.Ntheta*nz)+i] = 
             //w_tomo_exact(i,nz,nz); //curved sky legendre, std for Y1; do not use this one;
-            //w_tomo_fullsky(i, nz, nz);
-            w_tomo_nonLimber(i, nz, nz); //nonLimber+RSD
+            w_tomo_fullsky(i, nz, nz);
+            //w_tomo_nonLimber(i, nz, nz); //nonLimber+RSD
       }
     }
   }

@@ -41,7 +41,7 @@ void test_mix_desy1_planck()
 	char cov_file[500] = "./covs/cov_y1xplanck_mix6x2pt_pp_p18cosmo_agr2_withAnnulus_kkkkSimDR3";
 	char data_file[500] = "./datav/xi_desy1xplanck_6x2pt_realdata_20_wA_ref_pp_agr2";
 	char mask_file[500] = "./yaml/xi_desy1xplanck_6x2pt_realdata_pp_agr2_CMBmarged.mask";
-	char test_model_file[500] = "/home/u17/jiachuanxu/cocoa/Cocoa/projects/desy1xplanck/data/data_vectors/ccc/cosmolike_desy1xplanck_6x2pt_fullsky_limber_noRSD_NLA_exact";
+	char test_model_file[500] = "/home/u17/jiachuanxu/cocoa/Cocoa/projects/desy1xplanck/data/data_vectors/ccc/cosmolike_desy1xplanck_6x2pt_fullsky_limber_noRSD_NLA";
 	char baryon_pca_file[500] = "./datav/cosmic_shear_10sim.pca";
 
 	// cosmological parameters

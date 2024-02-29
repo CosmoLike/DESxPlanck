@@ -35,13 +35,13 @@ void test_mix_desy1_planck()
 	// misc
 	char runmode[50] = "halofit";
 	char probes[50] = "6x2pt";
-	int IA_model = 4; // 4 = NLA, power-law redshift evolution
+	int IA_model = 6; // 4 = NLA, power-law redshift evolution
 	
 	// data vector, mask, and covariance matrix
 	char cov_file[500] = "./covs/cov_y1xplanck_mix6x2pt_pp_p18cosmo_agr2_withAnnulus_kkkkSimDR3";
 	char data_file[500] = "./datav/xi_desy1xplanck_6x2pt_realdata_20_wA_ref_pp_agr2";
 	char mask_file[500] = "./yaml/xi_desy1xplanck_6x2pt_realdata_pp_agr2_CMBmarged.mask";
-	char test_model_file[500] = "/home/u17/jiachuanxu/cocoa/Cocoa/projects/desy1xplanck/data/data_vectors/ccc/cosmolike_desy1xplanck_6x2pt_fullsky_limber_noRSD_NLA";
+	char test_model_file[500] = "/home/u17/jiachuanxu/cocoa/Cocoa/projects/desy1xplanck/data/data_vectors/ccc/cosmolike_desy1xplanck_6x2pt_fullsky_limber_noRSD_TATT_nomagbias";
 	char baryon_pca_file[500] = "./datav/cosmic_shear_10sim.pca";
 
 	// cosmological parameters
@@ -82,7 +82,9 @@ void test_mix_desy1_planck()
     input_nuisance_params_y3 in = {
 		.bias = {1.6, 1.6, 1.6, 1.6, 1.6, 
 				0.0, 0.0, 0.0, 0.0, 0.0},
-		.b_mag = {1.0, 1.0, 1.0, 1.0, 1.0,
+		//.b_mag = {1.0, 1.0, 1.0, 1.0, 1.0,
+		//		0.0, 0.0, 0.0, 0.0, 0.0},
+        .b_mag = {0.0, 0.0, 0.0, 0.0, 0.0,
 				0.0, 0.0, 0.0, 0.0, 0.0},
 		.lens_z_bias = {0.0, 0.0, 0.0, 0.0, 0.0, 
 			0.0, 0.0, 0.0, 0.0, 0.0},
@@ -90,7 +92,9 @@ void test_mix_desy1_planck()
 			0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
 		.shear_m = {0.0, 0.0, 0.0, 0.0, 
 			0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-		.p_ia = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+		.p_ia = {0.6, -1.5, 1.0, 0.6, -1.5, 0.0, 0.0, 0.0, 0.0, 0.0},
+        //.p_ia = {0.6, -1.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+		//.p_ia = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
 		.Q1 = 0.0, .Q2 = 0.0, .Q3 = 0.0,
 	};
 

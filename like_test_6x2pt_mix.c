@@ -20,7 +20,7 @@ void test_mix_desy1_planck()
 	// NOTE: the scale-cuts and FWHM of Planck beam size is hard-coded
 	// lmin/lmax_kappacmb = 40/2999, FWHM = 7 arcmin
 	char cmbName[50] = "planck";
-  sprintf(cmb.pathLensRecNoise, "./cmblensrec/plancksmica/cmb_lmax3000.txt")
+  sprintf(cmb.pathLensRecNoise, "./cmblensrec/plancksmica/cmb_lmax3000.txt");
 	// scale-cuts
 	double Rmin_bias = 20.0;
 	double lmax_shear = 3000.0;

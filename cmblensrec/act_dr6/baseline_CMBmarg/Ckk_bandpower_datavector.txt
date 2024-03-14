@@ -1,5 +1,3 @@
-# ACT DR6 Lensing Bandpowers | MV default foreground mitigation using profile hardening | CMB Lensing Convergence Power Spectrum Bandpowers 
-#  C_L_kk with no other factors.
 2.429987296187917014e-07
 2.304175564693678723e-07
 2.353935778425300647e-07

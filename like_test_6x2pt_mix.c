@@ -20,8 +20,7 @@ void test_mix_desy1_planck()
 	// NOTE: the scale-cuts and FWHM of Planck beam size is hard-coded
 	// lmin/lmax_kappacmb = 40/2999, FWHM = 7 arcmin
 	char cmbName[50] = "planck";
-	char cmb_lens_noise_file[500] = "./cmblensrec/plancksmica/cmb_lmax3000.txt";
-
+  sprintf(cmb.pathLensRecNoise, "./cmblensrec/plancksmica/cmb_lmax3000.txt")
 	// scale-cuts
 	double Rmin_bias = 20.0;
 	double lmax_shear = 3000.0;
@@ -114,7 +113,7 @@ void test_mix_desy1_planck()
 	init_binning_real(Ntheta, theta_min, theta_max);
 	init_scalecuts(Rmin_bias, lmax_shear);
 	init_probes(probes);
-	init_cmb(cmbName, cmb_lens_noise_file);
+	init_cmb(cmbName);
 	//init_data_fourier(cov_file, mask_file, data_file);
 	init_data_bandpower(cov_file, mask_file, data_file, binmat_with_corr_file, 
 		ckk_offset_file, baryon_pca_file);

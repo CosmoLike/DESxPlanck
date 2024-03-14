@@ -1,101 +1,131 @@
-#include "like_fourier_6x2pt.c"
+#include "like_mix_6x2pt.c"
 
 void test_Cls_desy3_planck()
 {
+  /********* parameter settings start *********/
+  // ell binning
+  double ell_min = 30.0, ell_max = 3000.0;
+  int Nell = 20;
+
+  // CMB band-power binning
+  int l_min = 2, l_max = 2500;
+  int Nbp = 14;
+  char binmat_with_corr_file[500] = "./cmblensrec/plancksmica/pp_agr2_CMBmarged/binning_matrix_with_correction_table.txt";
+  char ckk_offset_file[500] = "./cmblensrec/plancksmica/pp_agr2_CMBmarged/Ckk_bandpower_offset.txt";
+
+  // CMB setting
+  // NOTE: the scale-cuts and FWHM of Planck beam size is hard-coded
+  // lmin/lmax_kappacmb = 40/2999, FWHM = 7 arcmin
+  char cmbName[50] = "planck";
+  char cmb_lens_noise_file[500] = "./cmblensrec/plancksmica/cmb_lmax3000.txt";
+
+  // scale-cuts
+  double Rmin_bias = 20.0;
+  double lmax_shear = 3000.0;
+  double ggl_cut = 0.0;
+
+  // galaxy sample
+  int ntomo_source = 4, ntomo_lens = 6;
+  char source_nz[500] = "./zdistris/mcal_y3.nz";
+  char lens_nz[500] = "./zdistris/maglim_y3.nz";
+
+  // misc
+  char runmode[50] = "halofit";
+  char probes[50] = "6x2pt";
+  int IA_model = 4; // 4 = NLA, power-law redshift evolution
+
+  // data vector, mask, and covariance matrix
+  char cov_file[500] = "./covs/cov_y1xplanck_mix6x2pt_pp_p18cosmo_agr2_withAnnulus_kkkkSimDR3";
+  char data_file[500] = "./datav/xi_desy1xplanck_6x2pt_realdata_20_wA_ref_pp_agr2";
+  char mask_file[500] = "./yaml/xi_desy1xplanck_6x2pt_realdata_pp_agr2_CMBmarged.mask";
+  char test_model_file[500] = "/home/u17/jiachuanxu/cocoa/Cocoa/projects/desy1xplanck/data/data_vectors/ccc/cosmolike_desy1xplanck_6x2pt_fullsky_limber_noRSD_TATT_nomagbias";
+  char baryon_pca_file[500] = "./datav/cosmic_shear_10sim.pca";
+
+  // cosmological parameters
+  input_cosmo_params_y3 ic = {
+    .omega_m = 0.3,
+    //.sigma_8 = 0.827706,
+    .sigma_8 = 0.843051,
+        //.A_s = 2.10e-9,
+    .n_s = 0.96605,
+    .w0 = -1.0,
+    .wa = 0.0,
+    .omega_b = 0.04,
+    //.omega_nuh2 = 0.6/93.14,// neutrino mass [0, 0, 0.06] eV
+    .omega_nuh2 = 0.0,
+        .h0 = 0.6732,
+    .MGSigma = 0.0,
+    .MGmu = 0.0,
+    .theta_s = 0.0104854,
+  };
+
+  // nuisance parameters
+  double b2[10] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+  /*input_nuisance_params_y3 in = {
+    .bias = {1.72716, 1.65168, 1.61423, 1.92886, 2.11633, 
+        0.0, 0.0, 0.0, 0.0, 0.0},
+    .b_mag = {//-0.19375, -0.6285407, -0.69319886, 1.17735723, 1.87509758,
+                  1.0, 1.0, 1.0, 1.0, 1.0,
+        0.0, 0.0, 0.0, 0.0, 0.0},
+    .lens_z_bias = {0.008, -0.005, 0.006, 0.0, 0.0, 
+      0.0, 0.0, 0.0, 0.0, 0.0},
+    .source_z_bias = {-0.001, -0.019, 0.009, -0.018,
+      0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+    .shear_m = {0.012, 0.012, 0.012, 0.012, 
+      0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+    .p_ia = {0.606102, -1.51541, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+    .Q1 = 0.0, .Q2 = 0.0, .Q3 = 0.0,
+  };*/
+    input_nuisance_params_y3 in = {
+    .bias = {1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 
+        0.0, 0.0, 0.0, 0.0},
+    //.b_mag = {1.0, 1.0, 1.0, 1.0, 1.0,
+    //    0.0, 0.0, 0.0, 0.0, 0.0},
+    .b_mag = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
+      0.0, 0.0, 0.0, 0.0},
+    .lens_z_bias = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
+      0.0, 0.0, 0.0, 0.0},
+    .source_z_bias = {0.0, 0.0, 0.0, 0.0,
+      0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+    .shear_m = {0.0, 0.0, 0.0, 0.0, 
+      0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+    //.p_ia = {0.6, -1.5, 1.0, 0.6, -1.5, 0.0, 0.0, 0.0, 0.0, 0.0},
+    .p_ia = {0.6, -1.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+    //.p_ia = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+    .Q1 = 0.0, .Q2 = 0.0, .Q3 = 0.0,
+  };
+
+ /********* parameter setting end *********/
+  like.shearcalib=1;
   clock_t begin, end;
   double time_spent;
-
   int i;
+  begin = clock();
 
-  init_binning_fourier(20, 30., 3000.);
-  init_scalecuts(20., 3000.); // Rmin_bias = 20Mpc/h, lmax_shear=3000
-
+  // Initialization
+  init_cosmo_runmode(runmode);
+  init_source_sample_mpp(source_nz, ntomo_source);
+  init_lens_sample_mpp(lens_nz, ntomo_lens, in.bias, b2, ggl_cut);
+  init_binning_fourier(Nell, ell_min, ell_max);
+  init_binning_bandpower(Nbp, l_min, l_max);
+  init_binning_real(0, 0.0, 0.0;
+  init_scalecuts(Rmin_bias, lmax_shear);
+  init_probes(probes);
+  init_cmb(cmbName, cmb_lens_noise_file);
+  //init_data_fourier(cov_file, mask_file, data_file);
+  init_data_bandpower(cov_file, mask_file, data_file, binmat_with_corr_file, 
+    ckk_offset_file, baryon_pca_file);
+  init_IA_mpp(IA_model);
   sprintf(survey.name,"%s","DESY3xplanck");
 
-  // init_bary(argv[2]);
+  // calculate and write model vector
+  printf("test DES Y3 Fourier space\n\n");
+  write_datavector_wrapper(test_model_file, ic, in);
+  printf("model vector written to %s\n", test_model_file);
 
-  // init_priors(0.002,sigma_zphot_shear[sce],0.001,0.001,sigma_zphot_clustering[sce],0.001,0.001,3.0,1.2,3.8,2.0,16.0,5.0,0.8);
-
-
-  double NORM;
-  like.IA = 4; 
-/* sample parameter values */
-  // nuisance.oneplusz0_ia = 1.62;
-
-/* here, do your time-consuming job */
-  // init_cosmo_runmode("CLASS");
-  init_cosmo_runmode("halofit");
-//  init_bary("owls_AGN");
-  cosmology.Omega_m   = 0.3;
-  NORM    = 0.82355;
-  // NORM  = 2.13137e-09;
-  cosmology.n_spec    = 0.97;
-  
-  cosmology.w0=-1.;
-  cosmology.wa=0.;
-  cosmology.omb=0.048;
-  cosmology.h0=0.69;
-  double Omega_nuh2 = 0.0;//0.00083;//0.001743331232934258;
-  cosmology.Omega_v=1.0-cosmology.Omega_m;
-//  cosmology.theta_s  = -1.;
-  double b1[10]={0.,0.,0.,0.,0.,0.,0.,0.,0.,0.}, b2[10] ={0.,0.,0.,0.,0.,0.,0.,0.,0.,0.},b_mag[10] ={0.,0.,0.,0.,0.,0.,0.,0.,0.,0.};
-  b1[0] = 1.7;
-  b1[1] = 1.7;
-  b1[2] = 1.7;
-  b1[3] = 2.0;
-  b1[4] = 2.0;
-//
-//  b2[0] = 0.23; b2[1] = 0.23; b2[2] = 0.23; b2[3] = 0.5; b2[4] = .5;
-  b_mag[0] = -0.19375;
-  b_mag[1] = -0.6285407;
-  b_mag[2] = -0.69319886;
-  b_mag[3] = 1.17735723;
-  b_mag[4] = 1.87509758;
-
-  double A_ia=0.5, eta_ia=0.;
-  double p_ia[10]={0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-  p_ia[0] = A_ia; p_ia[1] = eta_ia;
-
-  double mean_m[10]={0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-  double sigma_m[10]={0.03,0.03,0.03,0.03,0.03,0.03,0.03,0.03,0.03,0.03};
-  double bias_photoz_s[10]={0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-  // double sigma_b_photoz_s[10]={0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08};
-  double bias_photoz_l[10]={0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-  // double sigma_b_photoz_l[10]={0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04};
-
-  // init_source_sample_mpp("./zdistris/nz_v0.16_smoothed.txt",4);
-  // init_lens_sample_mpp("./zdistris/nz_y3_redmagic_v0.5.1_wide_gold_2.2.1_combined_hd3_hl2_z_samp.txt",5,b1,b2,0.0);
-
-  init_source_sample_mpp("./zdistris/mcal_1101_source.nz",4);
-  init_lens_sample_mpp("./zdistris/mcal_1101_lens.nz",5,b1,b2,0.0);
-
-
-  // init_binning_mpp(20,2.5,250.);
-
-  init_probes("6x2pt");
-  init_cmb("planck");
-  
-  // set_shear_priors_mpp(mean_m,sigma_m);
-  //set_wlphotoz_priors_mpp(bias_photoz_s,sigma_b_photoz_s);
-  //set_clphotoz_priors_mpp(bias_photoz_l,sigma_b_photoz_l);
-
-  sprintf(like.MASK_FILE,"%s","none");
-  printf("PATH TO MASK: %s\n",like.MASK_FILE);
-  begin = clock();
-  char datavfile[200];
-  sprintf(datavfile,"datav/xi_Y3_6x2pt");
-//  sprintf(datavfile,"datav/xi_Y3_baseline+b2_MICE+bary_owls_AGN");
-  compute_data_vector(datavfile,cosmology.Omega_m,NORM ,cosmology.n_spec,cosmology.w0,cosmology.wa,cosmology.omb,Omega_nuh2,cosmology.h0,0.0,0.0,cosmology.theta_s,
-    b1, b_mag,
-    bias_photoz_s, //source photo-z bias
-    bias_photoz_l, //lens photo-z bias
-    mean_m, //shear calibration
-    p_ia); // IA
-  
   end = clock();
   time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-   printf("time spent %le\n",time_spent);
-   printf("like.IA = %d\n", like.IA);
+  printf("time spent %le\n",time_spent);
 
 }
 
@@ -594,8 +624,8 @@ void test_likelihood_desy6_planck()
 
 int main(void)
 {
-  // test_Cls_desy3_planck();
-  test_Cls_desy6_planck();
+  test_Cls_desy3_planck();
+  // test_Cls_desy6_planck();
   // test_Cls_desy6_planck_fid();
   // test_Cls_desy6_planck_3src();
   // test_likelihood_desy3_planck();

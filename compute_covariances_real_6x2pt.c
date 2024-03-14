@@ -107,7 +107,7 @@ int main(int argc, char** argv)
     dtheta[i]=thetamax[i]-thetamin[i];
   }
   thetamin[Ntheta] = thetamax[Ntheta-1];
-  like.theta=theta; // like.theta ponts to memory of theta
+  like.theta=theta; // like.theta points to memory of theta
   like.Ntheta = Ntheta;
   like.vtmax = theta_max;
   like.vtmin = theta_min;
@@ -137,7 +137,6 @@ int main(int argc, char** argv)
   int Nbp=covparams.nbp;
   int **bindef;
   bindef=create_int_matrix(0, Nbp-1, 0, 1); // binning definition
-  //bindef = create_double_matrix(0, Nbp -1, 0, 10);
   printf("Reading band definition file %s\n", covparams.BINDEF_FILE);
   F3 = fopen(covparams.BINDEF_FILE,"r");
   if (F3 != NULL) {
@@ -163,15 +162,15 @@ int main(int argc, char** argv)
   }
   like.bindef_bp = bindef;
   like.Nbp = Nbp;
-  like.lmin_bp = bindef[0][0];
-  like.lmax_bp = bindef[Nbp-1][1];
+  // like.lmin_bp = bindef[0][0];
+  // like.lmax_bp = bindef[Nbp-1][1];
 
   printf("Init galaxy samples ...\n");
   init_source_sample_();
   init_lens_sample_();
 
   init_probes("6x2pt");
-  init_cmb("planck", argv[3]);
+  init_cmb("act_dr6");
   
   /* pre-Calculate galaxy bias for src (5 bins) and lens (5 bins) galaxies */
   // double zbins[10] = {0.318457,0.518719,0.724785,0.993135,1.595836,0.320976,0.508596,0.686747,0.882423,1.131005};

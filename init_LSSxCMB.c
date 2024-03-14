@@ -26,9 +26,10 @@ void init_source_sample_mpp(char *multihisto_file, int Ntomo);
 void init_lens_sample_mpp(char *multihisto_file, int Ntomo, double *b1, double *b2, double ggl_cut);
 void init_IA_mpp(int N);
 
-void init_cmb(char * cmbName, char * cmb_lens_noise_file);
-void set_cmb_planck(char * cmb_lens_noise_file);
+void init_cmb(char * cmbName);
+void set_cmb_planck();
 void set_cmb_cmbs4();
+void set_cmb_act_dr6();
 void set_cmb_so_Y5();
 void set_cmb_so_Y1();
 
@@ -810,28 +811,29 @@ void init_probes(char *probes)
 
 
 /************ CMB Settings ***********/
-void init_cmb(char * cmbName, char *cmb_lens_noise_file) {
-   printf("\n");
-   printf("-----------------------------------\n");
-   printf("Initializing CMB\n");
-   printf("-----------------------------------\n");
-   
-   printf("CMB survey: %s\n", cmbName);
-   if (strcmp(cmbName, "planck")==0)
-      set_cmb_planck(cmb_lens_noise_file);
-   if (strcmp(cmbName, "cmbs4")==0)
-      set_cmb_cmbs4();
-   if (strcmp(cmbName, "so_Y1")==0)
-      set_cmb_so_Y1();
-   if (strcmp(cmbName, "so_Y5")==0)
-      set_cmb_so_Y5();
+void init_cmb(char * cmbName) {
+  printf("\n");
+  printf("-----------------------------------\n");
+  printf("Initializing CMB\n");
+  printf("-----------------------------------\n");
+
+  printf("CMB survey: %s\n", cmbName);
+  if (strcmp(cmbName, "planck")==0)
+    set_cmb_planck();
+  if (strcmp(cmbName, "act_dr6")==0)
+    set_cmb_act_dr6();
+  if (strcmp(cmbName, "cmbs4")==0)
+  set_cmb_cmbs4();
+  if (strcmp(cmbName, "so_Y1")==0)
+  set_cmb_so_Y1();
+  if (strcmp(cmbName, "so_Y5")==0)
+  set_cmb_so_Y5();
 }
 
-void set_cmb_planck(char * cmb_lens_noise_file) {
+void set_cmb_planck() {
    sprintf(cmb.name, "planck");
    //cmb.pathLensRecNoise = "./cmblensrec/plancksmica/cmb_lmax3000.txt";
    //cmb.pathLensRecNoise = "./cmblensrec/plancksmica/cmb_tSZ_deprojected_smoothed_7arcmin.txt";
-   cmb.pathLensRecNoise = cmb_lens_noise_file;
    cmb.fsky = 0.6706296;
    // turn on/off gaussian smoothing
    cmb.fwhm = 7.0 * constants.arcmin;
@@ -847,9 +849,26 @@ void set_cmb_planck(char * cmb_lens_noise_file) {
    printf("CMB lmin = %e\n", like.lmin_kappacmb);
 }
 
+void set_cmb_act_dr6() {
+  sprintf(cmb.name, "act_dr6");
+  cmb.fsky = 0.2483373483022054;
+  cmb.fwhm = 7.0 * constants.arcmin;
+  // Fourier space filtering; used to truncate Gaussian beam & applied to map
+  // ACT DR6 PR has 2 ≤ L ≤ 3000, but more conservative choice should be used
+  // For band-power, L in range 8 - 2048
+  // For cross-correlation, L in range 40 - 3000
+  like.lmax_kappacmb = 3000.;
+  like.lmin_kappacmb = 40;
+  printf("path for CMB lens noise: %s\n", cmb.pathLensRecNoise);
+  printf("CMB fsky = %e\n", cmb.fsky);
+  printf("CMB beam FWHM = %e rad\n", cmb.fwhm);
+  printf("CMB lmax = %e\n", like.lmax_kappacmb);
+  printf("CMB lmin = %e\n", like.lmin_kappacmb);
+}
+
 void set_cmb_cmbs4() {
    sprintf(cmb.name, "cmbs4");
-   cmb.pathLensRecNoise = "./cmblensrec/cmbs4/cmb_lmax3000.txt";
+   //cmb.pathLensRecNoise = "./cmblensrec/cmbs4/cmb_lmax3000.txt";
    printf("ini_LSSxCMB.c: set_cmb_cmbs4(): need to specify cmb.fsky for cmbs4\n"); exit(1);
    like.lmax_kappacmb = 2999.;
    printf("path for CMB lens noise: %s\n", cmb.pathLensRecNoise);
@@ -859,7 +878,7 @@ void set_cmb_so_Y5() {
    sprintf(cmb.name, "so_Y5");
    // cmb.fwhm = 1.4 * (constants.pi/180.) / 60.;
    // cmb.sensitivity = 18.*(constants.pi/180.)/60.;
-   cmb.pathLensRecNoise = "./cmblensrec/so/YEAR5_2colformat_nlkk_v3_1_0deproj0_SENS1_fsky0p4_it_lT30-3000_lP30-5000.dat";
+   //cmb.pathLensRecNoise = "./cmblensrec/so/YEAR5_2colformat_nlkk_v3_1_0deproj0_SENS1_fsky0p4_it_lT30-3000_lP30-5000.dat";
    printf("ini_LSSxCMB.c: set_cmb_so_Y5(): need to specify cmb.fsky for SO_Y5\n"); exit(1);
    like.lmax_kappacmb = 2999.;
    printf("path for CMB lens noise: %s\n", cmb.pathLensRecNoise);
@@ -868,7 +887,7 @@ void set_cmb_so_Y1() {
    sprintf(cmb.name, "so_Y1");
    // cmb.fwhm = 1.4 * (constants.pi/180.) / 60.;
    // cmb.sensitivity = 18.*(constants.pi/180.)/60.;
-   cmb.pathLensRecNoise = "./cmblensrec/so/YEAR1_nlkk_SOlike_y1_tt_SENS1_qe_fsky0p4_lT30-3000.dat";
+   //cmb.pathLensRecNoise = "./cmblensrec/so/YEAR1_nlkk_SOlike_y1_tt_SENS1_qe_fsky0p4_lT30-3000.dat";
    printf("ini_LSSxCMB.c: set_cmb_so_Y1(): need to specify cmb.fsky for SO_Y1\n"); exit(1);
    like.lmax_kappacmb = 2999.;
    printf("path for CMB lens noise: %s\n", cmb.pathLensRecNoise);

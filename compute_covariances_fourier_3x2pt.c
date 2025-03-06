@@ -67,18 +67,10 @@ int main(int argc, char** argv)
   set_cov_parameters_to_(argv[2],1);// ini_files -> covparams
   //here: setting values internally
 
-  // set this to zero to quickly run Gaussian-only covariances for testing
-  if (covparams.ng==1){
-    NG = 1;
-  }
-  else {
-    NG = 0;
-  }
-
   // set this to one to output details about inputs for diagnostics
   output = 0;
   FILE *F;
-  printf("running multi_covariance_real with NG = %d\n",NG);
+  printf("running multi_covariance_real with NG = %d\n",covparams.ng);
   
   set_cosmological_parameters_to_(argv[2],1);// ini_files -> cosmoparams?
 

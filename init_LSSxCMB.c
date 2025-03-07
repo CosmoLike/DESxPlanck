@@ -825,24 +825,24 @@ void init_probes_fourier(char *probes)
 
   sprintf(like.probes,"%s",probes);
   if(strcmp(probes,"shear_shear")==0){
-    like.Ndata=like.Nell*tomo.shear_Npowerspectra;
+    like.Ndata=like.Ncl*tomo.shear_Npowerspectra;
     like.shear_shear=1;
     printf("[Fourier SPACE] Shear-Shear computation initialized\n");
   }
   if(strcmp(probes,"pos_pos")==0){
-    like.Ndata= like.Nell*tomo.clustering_Npowerspectra;
+    like.Ndata= like.Ncl*tomo.clustering_Npowerspectra;
     like.pos_pos=1;
     printf("[Fourier SPACE] Position-Position computation initialized\n");
   }
   if(strcmp(probes,"ggl_cl")==0){
-    like.Ndata=like.Nell*(tomo.ggl_Npowerspectra + tomo.clustering_Npowerspectra);
+    like.Ndata=like.Ncl*(tomo.ggl_Npowerspectra + tomo.clustering_Npowerspectra);
     like.shear_pos=1;
     like.pos_pos=1;
     printf("[Fourier SPACE] Shear-Position computation initialized\n");
     printf("[Fourier SPACE] Position-Position computation initialized\n");
   }
   if(strcmp(probes,"3x2pt")==0){
-    like.Ndata=like.Nell*(tomo.shear_Npowerspectra + tomo.ggl_Npowerspectra + tomo.clustering_Npowerspectra);
+    like.Ndata=like.Ncl*(tomo.shear_Npowerspectra + tomo.ggl_Npowerspectra + tomo.clustering_Npowerspectra);
     like.shear_shear=1;
     like.shear_pos=1;
     like.pos_pos=1;

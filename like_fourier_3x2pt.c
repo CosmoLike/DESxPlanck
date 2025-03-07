@@ -210,9 +210,9 @@ void set_data_shear(double *ell, double *data, int start)
   int i,z1,z2,nz,j;
   for (nz = 0; nz < tomo.shear_Npowerspectra; nz++){
     z1 = Z1(nz); z2 = Z2(nz);
-    for (i = 0; i < like.Nell; i++){
-      if (mask(start+like.Nell*nz+i)){
-        data[start+like.Nell*nz+i] = C_shear_tomo_sys(ell, i, z1, z2);
+    for (i = 0; i < like.Ncl; i++){
+      if (mask(start+like.Ncl*nz+i)){
+        data[start+like.Ncl*nz+i] = C_shear_tomo_sys(ell, i, z1, z2);
       }
     }
   }
@@ -224,9 +224,9 @@ void set_data_ggl(double *ell, double *data, int start)
   for (nz = 0; nz < tomo.ggl_Npowerspectra; nz++){
     zl = ZL(nz); zs = ZS(nz);
     //printf("ggl bin combos %d %d\n",zl,zs);
-    for (i = 0; i < like.Nell; i++){
-      if (mask(start+(like.Nell*nz)+i)){
-        data[start+(like.Nell*nz)+i] = C_gl_tomo_sys(ell, i, zl, zs);
+    for (i = 0; i < like.Ncl; i++){
+      if (mask(start+(like.Ncl*nz)+i)){
+        data[start+(like.Ncl*nz)+i] = C_gl_tomo_sys(ell, i, zl, zs);
       }
     }
   }
@@ -236,9 +236,9 @@ void set_data_clustering(double *ell, double *data, int start)
 {
   int i,nz,j;
   for (nz = 0; nz < tomo.clustering_Npowerspectra; nz++){
-    for (i = 0; i < like.Nell; i++){
-      if (mask(start+(like.Nell*nz)+i)){
-        data[start+(like.Nell*nz)+i] = C_cl_tomo_sys(ell, i, nz);
+    for (i = 0; i < like.Ncl; i++){
+      if (mask(start+(like.Ncl*nz)+i)){
+        data[start+(like.Ncl*nz)+i] = C_cl_tomo_sys(ell, i, nz);
       }
     }
   }
@@ -247,12 +247,12 @@ void set_data_clustering(double *ell, double *data, int start)
 /*void set_data_gk(double *theta, double *data, int start)
 {
    for (int nz=0; nz<tomo.clustering_Nbin; nz++){
-      for (int i=0; i<like.Nell; i++){
-         if (mask(start+(like.Nell*nz)+i)){
-            data[start+(like.Nell*nz)+i] = w_gk_fullsky(i,nz);
+      for (int i=0; i<like.Ncl; i++){
+         if (mask(start+(like.Ncl*nz)+i)){
+            data[start+(like.Ncl*nz)+i] = w_gk_fullsky(i,nz);
          }
          else{
-            data[start+(like.Nell*nz)+i] = 0.;
+            data[start+(like.Ncl*nz)+i] = 0.;
          }
       }
    }
@@ -261,12 +261,12 @@ void set_data_clustering(double *ell, double *data, int start)
 void set_data_ks(double *theta, double *data, int start)
 {
    for (int nz=0; nz<tomo.shear_Nbin; nz++){
-      for (int i=0; i<like.Nell; i++){
-         if (mask(start+(like.Nell*nz)+i)){
-            data[start+(like.Nell*nz)+i] = w_ks_sys(i,nz);
+      for (int i=0; i<like.Ncl; i++){
+         if (mask(start+(like.Ncl*nz)+i)){
+            data[start+(like.Ncl*nz)+i] = w_ks_sys(i,nz);
          }
          else{
-            data[start+(like.Nell*nz)+i] = 0.;
+            data[start+(like.Ncl*nz)+i] = 0.;
          }
       }
    }
@@ -540,15 +540,15 @@ double log_multi_like(double OMM, double NORM, double NS, double W0,double WA, d
 
   if(like.shear_shear==1) {
     set_data_shear(ellmin, pred, start);
-    start=start+like.Nell*tomo.shear_Npowerspectra; 
+    start=start+like.Ncl*tomo.shear_Npowerspectra; 
   }
   if(like.shear_pos==1){
     set_data_ggl(ellmin, pred, start);
-    start=start+like.Nell*tomo.ggl_Npowerspectra;
+    start=start+like.Ncl*tomo.ggl_Npowerspectra;
   } 
   if(like.pos_pos==1){
     set_data_clustering(ellmin, pred, start);
-    start=start+like.Nell*tomo.clustering_Npowerspectra;
+    start=start+like.Ncl*tomo.clustering_Npowerspectra;
   }
   /*if(like.gk==1) {
     set_data_gk(theta, pred, start);
@@ -623,19 +623,19 @@ void compute_data_vector(char *filename, double OMM, double NORM, double NS, dou
   if(like.shear_shear==1) {
     printf("Start with shear-shear\n");
     set_data_shear(ellmin, pred, start);
-    start=start+like.Nell*tomo.shear_Npowerspectra;
+    start=start+like.Ncl*tomo.shear_Npowerspectra;
     printf("Done with shear-shear\n");
   }
   if(like.shear_pos==1){
     printf("Start with galaxy-galaxy lensing\n");
     set_data_ggl(ellmin, pred, start);
-    start=start+like.Nell*tomo.ggl_Npowerspectra;
+    start=start+like.Ncl*tomo.ggl_Npowerspectra;
     printf("Done with galaxy-galaxy lensing\n");
   } 
   if(like.pos_pos==1){
     printf("Start with clustering\n");
     set_data_clustering(ellmin, pred, start);
-    start=start+like.Nell*tomo.clustering_Npowerspectra;
+    start=start+like.Ncl*tomo.clustering_Npowerspectra;
     printf("Done with clustering\n");
   }
   /*if(like.gk==1) {

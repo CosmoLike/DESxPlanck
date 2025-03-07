@@ -51,8 +51,8 @@
 // covariance matrix calculation wrapper
 //#include "../cosmolike_core/theory/run_covariances_real_fullsky.c"
 #include "../cosmolike_core/theory/run_covariances_fourier_binned_6x2pt.c"
-//#include "init_LSSxCMB.c"
-#include "../cosmolike_core/theory/init.c"
+#include "init_LSSxCMB.c"
+//#include "../cosmolike_core/theory/init.c"
 
 // Usage example
 // compute_covariances_Fourier_3x2pt ${hit} ini_files/cov_y1_mcal_mix.ini >&/home/u1/xfang/output/job_output_$PBS_ARRAY_INDEX.log
@@ -76,7 +76,7 @@ int main(int argc, char** argv)
 
   set_survey_parameters_to_(argv[2],1);// ini_files -> surveyparams?
   //init_clusters();
-  init_IA("none", "GAMA");
+  //init_IA("none", "GAMA");
   //printf("test values: %d, %d, %s",redshift.clustering_photoz,tomo.clustering_Nbin,redshift.clustering_REDSHIFT_FILE);
   // printf("end of setup in main\n");
 
@@ -129,8 +129,8 @@ int main(int argc, char** argv)
   init_source_sample_();
   init_lens_sample_();
 
-  init_probes("all_2pt");
-  
+  init_probes_fourier("3x2pt");
+  init_cmb("planck");
   /* pre-Calculate galaxy bias for src (5 bins) and lens (5 bins) galaxies */
   // double zbins[10] = {0.318457,0.518719,0.724785,0.993135,1.595836,0.320976,0.508596,0.686747,0.882423,1.131005};
   // double grow_z;

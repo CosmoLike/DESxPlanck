@@ -15,6 +15,7 @@ void init_binning_bandpower(int Nbp, int lmin, int lmax);
 void init_scalecuts(double Rmin_bias, double lmax_shear);
 
 void init_probes(char *probes);
+void init_probes_fourier(char *probes);
 
 void init_data_fourier(char *COV_FILE, char *MASK_FILE, char *DATA_FILE);
 void init_data_bandpower(char *COV_FILE, char *MASK_FILE, char *DATA_FILE,
@@ -805,6 +806,50 @@ void init_probes(char *probes)
       printf("[BAND-POWER] CMBkappa-CMBkappa computation initialized\n");
     }
   }
+  printf("Total number of data points like.Ndata=%d\n",like.Ndata);
+}
+
+void init_probes_fourier(char *probes)
+{
+  printf("\n");
+  printf("------------------------------\n");
+  printf("Initializing Probes\n");
+  printf("------------------------------\n"); 
+  printf("\nWARNING: PLEASE MAKE SURE THAT THE PROBES ARE SET IN THE CORRECT SPACE!!!\n\n");
+  printf("------------------------------\n");
+  printf("like.Ncl=%d\n",like.Ncl);
+  printf("like.Ntheta=%d\n", like.Ntheta);
+  printf("tomo.shear_Npowerspectra=%d\n",tomo.shear_Npowerspectra);
+  printf("tomo.ggl_Npowerspectra=%d\n",tomo.ggl_Npowerspectra);
+  printf("tomo.clustering_Npowerspectra=%d\n",tomo.clustering_Npowerspectra);
+
+  sprintf(like.probes,"%s",probes);
+  if(strcmp(probes,"shear_shear")==0){
+    like.Ndata=like.Nell*tomo.shear_Npowerspectra;
+    like.shear_shear=1;
+    printf("[Fourier SPACE] Shear-Shear computation initialized\n");
+  }
+  if(strcmp(probes,"pos_pos")==0){
+    like.Ndata= like.Nell*tomo.clustering_Npowerspectra;
+    like.pos_pos=1;
+    printf("[Fourier SPACE] Position-Position computation initialized\n");
+  }
+  if(strcmp(probes,"ggl_cl")==0){
+    like.Ndata=like.Nell*(tomo.ggl_Npowerspectra + tomo.clustering_Npowerspectra);
+    like.shear_pos=1;
+    like.pos_pos=1;
+    printf("[Fourier SPACE] Shear-Position computation initialized\n");
+    printf("[Fourier SPACE] Position-Position computation initialized\n");
+  }
+  if(strcmp(probes,"3x2pt")==0){
+    like.Ndata=like.Nell*(tomo.shear_Npowerspectra + tomo.ggl_Npowerspectra + tomo.clustering_Npowerspectra);
+    like.shear_shear=1;
+    like.shear_pos=1;
+    like.pos_pos=1;
+    printf("[Fourier SPACE] Shear-Shear computation initialized\n");
+    printf("[Fourier SPACE] Shear-Position computation initialized\n");
+    printf("[Fourier SPACE] Position-Position computation initialized\n");
+  } 
   printf("Total number of data points like.Ndata=%d\n",like.Ndata);
 }
 

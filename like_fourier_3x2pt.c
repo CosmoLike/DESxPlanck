@@ -54,6 +54,7 @@
 #include "../cosmolike_core/theory/external_prior.c"
 #include "../cosmolike_core/theory/init_baryon.c"
 #include "init_LSSxCMB.c"
+//#include "../cosmolike_core/theory/init.c"
 
 #include "../cosmolike_core/theory/priors_mpp.c"
 // Naming convention:

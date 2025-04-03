@@ -64,14 +64,19 @@ hpc_cov_mix:
 	gcc compute_covariances_real_6x2pt.c  -o ./compute_covariances_real_6x2pt $(opt_ocelote) $(cfftlog) $(cfastpt)
 
 hpc_mix_clean:
-	rm like_mix_6x2pt.so ./compute_covariances_real_6x2pt
+	rm like_mix_6x2pt.so like_test_6x2pt_mix compute_covariances_real_6x2pt
 
 ################################################
 hpc_fourier:
+	make hpc_lib_fourier
+	make hpc_datavs_fourier
 	make hpc_cov_fourier
-
+hpc_lib_fourier:
+	gcc -shared -o like_fourier_3x2pt.so -fPIC like_fourier_3x2pt.c -DSAMPLING $(opt_ocelote) $(cfftlog) $(cfastpt)
+hpc_datavs_fourier:
+	gcc like_test_3x2pt_fourier.c -o ./like_test_3x2pt_fourier $(opt_ocelote) $(cfftlog) $(cfastpt)
 hpc_cov_fourier:
 	gcc compute_covariances_fourier_3x2pt.c  -o ./compute_covariances_fourier_3x2pt $(opt_ocelote) $(cfftlog) $(cfastpt)
 
 hpc_fourier_clean:
-	rm ./compute_covariances_fourier_3x2pt
+	rm like_fourier_3x2pt.so like_test_3x2pt_fourier compute_covariances_fourier_3x2pt

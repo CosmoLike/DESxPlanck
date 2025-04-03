@@ -61,7 +61,7 @@ def run_cosmolike(params, pool=None):
     initbins_bandpower(Nbp, bp_lmin, bp_lmax)
     initscalecuts(Rmin_bias, lmax_shear)
     initprobes(probes.encode('utf-8'))
-    initcmb(cmbname.encode('utf-8'), CMB_noise_Nkk.encode('utf-8'))
+    initcmb(cmbname.encode('utf-8')) # CMB_noise_Nkk.encode('utf-8')
     #initdata_fourier(cov_file.encode('utf-8'), mask_file.encode('utf-8'), data_file.encode('utf-8'))
     initdata_bandpower(cov_file.encode('utf-8'), mask_file.encode('utf-8'), 
         data_file.encode('utf-8'), bp_binmat.encode('utf-8'), 

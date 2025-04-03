@@ -6,7 +6,7 @@ import sys
 import copy
 
 dirname = os.path.split(__file__)[0]
-lib_name = os.path.join(dirname, "./like_fourier_6x2pt.so")
+lib_name = os.path.join(dirname, "./like_fourier_3x2pt.so")
 lib=ctypes.cdll.LoadLibrary(lib_name)
 double = ctypes.c_double
 

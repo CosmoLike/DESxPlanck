@@ -104,9 +104,13 @@ void test_Cls_Roman_DC1(int argc, char** argv)
   sprintf(survey.name,"%s","Roman_DC1");
 
   // calculate and write model vector
-  printf("test Roman DC1\n\n");
+  printf("Test Roman DC1 Model Vector Evaluation\n\n");
   write_datavector_wrapper(test_model_file, ic, in);
   printf("model vector written to %s\n", test_model_file);
+  // calculate an example likelihood evaluation
+  printf("Test Roman DC1 Likelihood Evaluation\n\n");
+  double lgpost_test = log_like_wrapper(ic, in);
+  printf("Example likelihood evaluation: lgpost = %.2f\n", lgpost_test);
 
   end = clock();
   time_spent = (double)(end - begin) / CLOCKS_PER_SEC;

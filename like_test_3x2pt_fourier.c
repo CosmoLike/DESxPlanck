@@ -15,7 +15,7 @@ void test_Cls_Roman_DC1(int argc, char** argv)
 
   // CMB band-power binning
   int l_min = 2, l_max = 2500;
-  int Nbp = 14;
+  int Nbp = 0;
   char binmat_with_corr_file[500] = "./cmblensrec/plancksmica/pp_agr2_CMBmarged/binning_matrix_with_correction_table.txt";
   char ckk_offset_file[500] = "./cmblensrec/plancksmica/pp_agr2_CMBmarged/Ckk_bandpower_offset.txt";
 

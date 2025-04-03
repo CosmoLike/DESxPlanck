@@ -15,7 +15,7 @@ void test_Cls_Roman_DC1(int argc, char** argv)
 
   // CMB band-power binning
   int l_min = 2, l_max = 2500;
-  int Nbp = 14;
+  int Nbp = 0;
   char binmat_with_corr_file[500] = "./cmblensrec/plancksmica/pp_agr2_CMBmarged/binning_matrix_with_correction_table.txt";
   char ckk_offset_file[500] = "./cmblensrec/plancksmica/pp_agr2_CMBmarged/Ckk_bandpower_offset.txt";
 
@@ -41,12 +41,12 @@ void test_Cls_Roman_DC1(int argc, char** argv)
   int IA_model = 4; // 4 = NLA, power-law redshift evolution
   
   // data vector, mask, and covariance matrix
-  // char cov_file[500] = "./covs/cov_Roman_Fourier_3x2pt";
-  char cov_file[500] = "./yaml/Cl_Roman_3x2pt.mask";
+  char cov_file[500] = "./covs/cov_Roman_Fourier_3x2pt";
+  //char cov_file[500] = "./yaml/Cl_Roman_3x2pt.mask";
   // char data_file[500] = "./datav/Cl_Roman_3x2pt.realvector";
   char data_file[500] = "./yaml/Cl_Roman_3x2pt.mask";
   char mask_file[500] = "./yaml/Cl_Roman_3x2pt.mask";
-  char test_model_file[500] = "./datav/Cl_Roman_3x2pt.modelvector";
+  char test_model_file[500] = "./datav/Cl_Roman_3x2pt_test.modelvector";
   // char baryon_pca_file[500] = "./datav/cosmic_shear_10sim.pca";
   char baryon_pca_file[500] = "./yaml/Cl_Roman_3x2pt.mask";
 
@@ -97,9 +97,9 @@ void test_Cls_Roman_DC1(int argc, char** argv)
   init_scalecuts(Rmin_bias, lmax_shear);
   init_probes_fourier(probes);
   init_cmb(cmbName);
-  //init_data_fourier(cov_file, mask_file, data_file);
-  init_data_bandpower(cov_file, mask_file, data_file, binmat_with_corr_file, 
-    ckk_offset_file, baryon_pca_file);
+  init_data_fourier(cov_file, mask_file, data_file);
+  //init_data_bandpower(cov_file, mask_file, data_file, binmat_with_corr_file, 
+  //  ckk_offset_file, baryon_pca_file);
   init_IA_mpp(IA_model);
   sprintf(survey.name,"%s","Roman_DC1");
 
@@ -111,6 +111,13 @@ void test_Cls_Roman_DC1(int argc, char** argv)
   end = clock();
   time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
   printf("time spent %le\n",time_spent);
+
+  /*for(int i=0;i<ntomo_source;i++){
+    for(int j=0;j<ntomo_lens;j++){
+      if(test_zoverlap(i,j)==0){printf("[test_zoverlap] ggl pair %d-%d excluded!\n", i, j);}
+      if(test_zoverlap_c(i,j)==0){printf("[test_zoverlap_c] ggl pair %d-%d excluded!\n", i, j);}
+    }
+  }*/
     
     // Print Pdelta(k,a) for sanity check
 /*
@@ -135,9 +142,9 @@ void test_Cls_Roman_DC1(int argc, char** argv)
 }
 
 
-int main(void)
+int main(int argc, char**argv)
 {
-  test_Cls_Roman_DC1(int argc, char**argv);
+  test_Cls_Roman_DC1(argc, argv);
   return 0;
 }
 

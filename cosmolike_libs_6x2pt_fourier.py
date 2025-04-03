@@ -42,8 +42,8 @@ initia.argtypes=[ctypes.c_int]
 initthetas=lib.init_sample_theta_s
 initthetas.argtypes=[]
 
-initprobes=lib.init_probes
-initprobes.argtypes=[ctypes.c_char_p]
+initprobes_fourier=lib.init_probes_fourier
+initprobes_fourier.argtypes=[ctypes.c_char_p]
 
 initdata_fourier=lib.init_data_fourier
 initdata_fourier.argtypes=[ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]

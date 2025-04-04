@@ -42,9 +42,7 @@ void test_Cls_Roman_DC1(int argc, char** argv)
   
   // data vector, mask, and covariance matrix
   char cov_file[500] = "./covs/cov_Roman_Fourier_3x2pt";
-  //char cov_file[500] = "./yaml/Cl_Roman_3x2pt.mask";
-  // char data_file[500] = "./datav/Cl_Roman_3x2pt.realvector";
-  char data_file[500] = "./yaml/Cl_Roman_3x2pt.mask";
+  char data_file[500] = "./datav/Cl_Roman_3x2pt.modelvector";
   char mask_file[500] = "./yaml/Cl_Roman_3x2pt.mask";
   char test_model_file[500] = "./datav/Cl_Roman_3x2pt_test.modelvector";
   // char baryon_pca_file[500] = "./datav/cosmic_shear_10sim.pca";

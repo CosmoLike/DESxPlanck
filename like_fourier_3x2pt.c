@@ -514,9 +514,11 @@ double log_multi_like(double OMM, double NORM, double NS, double W0,double WA, d
   // Flat priors are implemented in python wrapper
   // if(like.IA!=0) log_L_prior+=log_L_ia();
   // if(like.IA!=0) log_L_prior+=log_like_f_red();
+/* test likelihood evaluation JX
   if(like.wlphotoz!=0) log_L_prior+=log_L_wlphotoz();
   if(like.clphotoz!=0) log_L_prior+=log_L_clphotoz();
   if(like.shearcalib==1) log_L_prior+=log_L_shear_calib();
+*/
   // Flat priors are implemented in python wrapper
   // if(like.IA!=0) {
   //   log_L = 0.0;
@@ -572,8 +574,8 @@ double log_multi_like(double OMM, double NORM, double NS, double W0,double WA, d
   chisqr=0.0;
   for (i=0; i<like.Ndata; i++){
     for (j=0; j<like.Ndata; j++){
-      a=(pred[i]-data_read(1,i)+Q1*bary_read(1,0,i)+Q2*bary_read(1,1,i)+Q3*bary_read(1,2,i))*invcov_mask(1,i,j)*(pred[j]-data_read(1,j)+Q1*bary_read(1,0,j)+Q2*bary_read(1,1,j)+Q3*bary_read(1,2,j));
-      //a=(pred[i]-data_read(1,i))*invcov_mask(1,i,j)*(pred[j]-data_read(1,j));
+      //a=(pred[i]-data_read(1,i)+Q1*bary_read(1,0,i)+Q2*bary_read(1,1,i)+Q3*bary_read(1,2,i))*invcov_mask(1,i,j)*(pred[j]-data_read(1,j)+Q1*bary_read(1,0,j)+Q2*bary_read(1,1,j)+Q3*bary_read(1,2,j));
+      a=(pred[i]-data_read(1,i))*invcov_mask(1,i,j)*(pred[j]-data_read(1,j));
       chisqr=chisqr+a;
     }
     // if (fabs(data_read(1,i)) < 1.e-25){

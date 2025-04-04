@@ -77,6 +77,10 @@ void test_Cls_Roman_DC1(int argc, char** argv)
     //.p_ia = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
     .Q1 = 0.0, .Q2 = 0.0, .Q3 = 0.0,
   };
+  // nuisance parameters priors
+  double shear_m_sigma[10] = {0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01};
+  double lens_z_bias_sigma[10] = {0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02};
+  double source_z_bias_sigma[10] = {0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02};
 
   /********* parameter setting end *********/
 
@@ -99,6 +103,10 @@ void test_Cls_Roman_DC1(int argc, char** argv)
   //init_data_bandpower(cov_file, mask_file, data_file, binmat_with_corr_file, 
   //  ckk_offset_file, baryon_pca_file);
   init_IA_mpp(IA_model);
+  // set priors 
+  set_shear_priors_mpp(in.shear_m, shear_m_sigma);
+  set_clphotoz_priors_mpp(in.lens_z_bias, lens_z_bias_sigma);
+  set_wlphotoz_priors_mpp(in.source_z_bias, source_z_bias_sigma);
   sprintf(survey.name,"%s","Roman_DC1");
 
   // calculate and write model vector

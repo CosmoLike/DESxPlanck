@@ -131,6 +131,19 @@ int main(int argc, char** argv)
 
   init_probes_fourier("3x2pt");
   init_cmb("planck");
+
+  /* Show if any ggl pairs are discarded*/
+  printf("---- Galaxy-Galaxy Lensing Tomo-pair Counting ----\n");
+  int ggl_count = 0;
+  for (int zl=0; zl<tomo.clustering_Nbin; zl++){
+    for (int zs=0; zs<tomo.shear_Nbin; zs++){
+      int overlap = test_zoverlap_cov(zl, zs);
+      if (overlap==0){printf("ggl: L%d-S%d is discarded!\n", zl, zs);}
+      else {ggl_count += 1;}
+    }
+  }
+  printf("ggl: %d tomo pairs included in total.\n", ggl_count);
+  printf("--------------------------------------------------\n");
   /* pre-Calculate galaxy bias for src (5 bins) and lens (5 bins) galaxies */
   // double zbins[10] = {0.318457,0.518719,0.724785,0.993135,1.595836,0.320976,0.508596,0.686747,0.882423,1.131005};
   // double grow_z;

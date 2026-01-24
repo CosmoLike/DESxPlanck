@@ -63,6 +63,8 @@
 // s = kappa from source galaxies ("s" as in "shear")
 // And alphabetical order
 
+// #define BIN_AVERAGE
+
 typedef double (*C_tomo_pointer)(double l, int n1, int n2);
 void twopoint_via_hankel(double **xi, double *logthetamin, double *logthetamax, C_tomo_pointer C_tomo, int ni, int nj, int N_Bessel);
 
@@ -137,6 +139,7 @@ double get_sigma_8(input_cosmo_params_y3 ic){
 double C_shear_tomo_sys(double *ell, int nl, int z1, int z2)
 {
   double Cl = 0.0;
+  #ifdef BIN_AVERAGE
   int l_min, l_max, l, Nl;
   l_min = (int)ceil(ell[nl]);
   l_max = (int)ceil(ell[nl+1])-1;
@@ -157,6 +160,22 @@ double C_shear_tomo_sys(double *ell, int nl, int z1, int z2)
     }
   }
   Cl /= (double)Nl;
+  #else
+  double l = sqrt(ell[nl]*ell[nl+1]);
+  if(like.IA==0){
+    Cl = C_shear_tomo(l, z1, z2);
+  }
+  else if (like.IA==1||like.IA==3||like.IA==4){
+    Cl = C_shear_shear_IA(l, z1, z2);
+  }
+  else if (like.IA==5||like.IA==6){
+    Cl = C_EE_TATT(l, z1, z2);
+  }
+  else{
+    printf("like.IA = %d is not supported!\n", like.IA);
+    exit(-1);
+  }
+  #endif
   if(like.shearcalib==1) Cl *=(1.0+nuisance.shear_calibration_m[z1])*(1.0+nuisance.shear_calibration_m[z2]);
   return Cl;
 }
@@ -164,6 +183,7 @@ double C_shear_tomo_sys(double *ell, int nl, int z1, int z2)
 double C_gl_tomo_sys(double *ell, int nl, int zl, int zs)
 {
   double Cl = 0.0;
+  #ifdef BIN_AVERAGE
   int l_min, l_max, l, Nl;
   l_min = (int)ceil(ell[nl]);
   l_max = (int)ceil(ell[nl+1])-1;
@@ -186,6 +206,22 @@ double C_gl_tomo_sys(double *ell, int nl, int zl, int zs)
     }
   }
   Cl /= (double)Nl;
+  #else
+  double l = sqrt(ell[nl]*ell[nl+1]);
+  if(like.IA==0){
+    Cl = C_gl_tomo(l, zl, zs);
+  }
+  else if (like.IA==1||like.IA==3||like.IA==4){
+    Cl = C_ggl_IA(l, zl, zs);
+  }
+  else if (like.IA==5||like.IA==6){
+    Cl = C_ggl_TATT(l, zl, zs);
+  }
+  else{
+    printf("like.IA = %d is not supported!\n", like.IA);
+    exit(-1);
+  }
+  #endif
   if(like.shearcalib==1) Cl *=(1.0+nuisance.shear_calibration_m[zs]);
   return Cl;
 }
@@ -193,6 +229,7 @@ double C_gl_tomo_sys(double *ell, int nl, int zl, int zs)
 double C_cl_tomo_sys(double *ell, int nl, int zs)
 {
   double Cl = 0.0;
+  #ifdef BIN_AVERAGE
   int l_min, l_max, l, Nl;
   l_min = (int)ceil(ell[nl]);
   l_max = (int)ceil(ell[nl+1])-1;
@@ -202,6 +239,10 @@ double C_cl_tomo_sys(double *ell, int nl, int zs)
     Cl += C_cl_tomo((double)l, zs, zs);
   }
   Cl /= (double)Nl;
+  #else
+  double l = sqrt(ell[nl]*ell[nl+1]);
+  Cl = C_cl_tomo(l, zs, zs);
+  #endif
   return Cl;
 }
 
@@ -514,7 +555,6 @@ double log_multi_like(double OMM, double NORM, double NS, double W0,double WA, d
   // Flat priors are implemented in python wrapper
   // if(like.IA!=0) log_L_prior+=log_L_ia();
   // if(like.IA!=0) log_L_prior+=log_like_f_red();
-  //test likelihood evaluation JX
   if(like.wlphotoz!=0) log_L_prior+=log_L_wlphotoz();
   if(like.clphotoz!=0) log_L_prior+=log_L_clphotoz();
   if(like.shearcalib==1) log_L_prior+=log_L_shear_calib();
@@ -588,7 +628,7 @@ double log_multi_like(double OMM, double NORM, double NS, double W0,double WA, d
   }
   if (chisqr<-1.0) exit(EXIT_FAILURE);
   if (isnan(chisqr)){return -1.e+16;}
-  //printf("%le\n",chisqr);
+  printf("\n dchi2 = %le\n",chisqr);
   return -0.5*chisqr+log_L_prior;
 }
 
